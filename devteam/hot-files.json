@@ -1,0 +1,13 @@
+{
+  "description": "Files that frequently cause merge conflicts when multiple devteam slots run in parallel, or when stacked PRs are not synced after a dependency merges. Merge product-code slots before slots that only touch these. After merging a dependency PR, run `npm run devteam:sync` on downstream jobs — `devteam/README.md` conflicts are usually auto-resolvable.",
+  "files": [
+    "plans/README.md",
+    "devteam/README.md",
+    "devteam/phase-queue.json",
+    "devteam/registry.json",
+    "settings.gradle.kts",
+    "gradle/libs.versions.toml",
+    "AGENTS.md",
+    "docs/dictus-inventory.md"
+  ]
+}

@@ -12,6 +12,9 @@ zero context beyond the plan file itself. Read
 [`../AGENTS.md`](../AGENTS.md) (created by Plan 001) before executing any
 plan; it holds the "do NOT" rules the plans repeatedly reference.
 
+**Execution:** run a plan with `/devteamquick plans/NNN-*.md`, or queue
+all phases via [`../devteam/PHASE-ORCHESTRATION.md`](../devteam/PHASE-ORCHESTRATION.md).
+
 ## Execution order & status
 
 Execute strictly in numeric order. Each plan declares its dependencies
