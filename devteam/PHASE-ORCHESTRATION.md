@@ -8,7 +8,7 @@ Plans live in [`plans/`](../plans/README.md) (001–010). This file maps them to
 
 ```bash
 # After plans/ exist on your branch:
-# node scripts/generate-phase-plans.cjs    # optional: refresh phase-*.md from manifest
+npm run devteam:generate-phase-plans
 npm run devteam:queue-phases
 npm run devteam:status -- --fetch
 ```

@@ -1,40 +1,37 @@
 # Devteam archive
 
-This folder holds **finished or abandoned jobs** moved out of active `devteam/jobs/`. The archive workflow is part of devteam; this repo starts with an **empty** archive (no gallopCRM job history).
+Finished or cancelled jobs are moved here from `devteam/jobs/` by the scripts (`approve`, `cancel`, `devteam-archive`, or `status --fetch` after merge).
 
-## When jobs land here
-
-| Trigger | Action |
-|---------|--------|
-| `/devteam approve <job-id>` | After merge, move `jobs/<job-id>/` → `archive/jobs/<job-id>/` |
-| `/devteam cancel <job-id>` | Move immediately to `archive/jobs/<job-id>/` with `status: cancelled` in `meta.json` |
-| Superseded phase job | Queue script cancels and archives (e.g. `--cancel-job-018` in phase orchestration) |
-
-## Expected layout per archived job
+## Layout
 
 ```
-archive/jobs/job-NNN/
-  meta.json           # final status, models used, branch, PR URL
-  01-plan.md          # (if full job)
-  02-code.diff        # or summary
-  03-test.log
-  04-review.md
-  05-double-check.md
+devteam/archive/
+  job-001-repo-hygiene-2026-07-16/
+    meta.json
+    01-plan.md
+    02-code-summary.md
+    ...
 ```
 
-Not every stage file is required for `/devteamquick` jobs (plan skipped).
+Folder name: `{job-id}-{slug}-{YYYY-MM-DD}`.
+
+## Triggers
+
+| Event | Script |
+|-------|--------|
+| `/devteam approve` | `devteam-approve.cjs` → archive after merge |
+| `/devteam cancel` | `devteam-cancel.cjs` → archive immediately |
+| PR merged on GitHub | `devteam-status --fetch` → auto-archive |
+| Manual | `npm run devteam:archive -- <job-id>` |
 
 ## What to commit
 
-- **Do** commit archive README and empty `archive/jobs/.gitkeep` when bootstrapping.
-- **Optional:** commit archived jobs from *this* repo if you want history in git (large logs usually stay local).
-- **Do not** import archive contents from gallopCRM or other projects.
+- **Do not** import archive folders from gallopCRM or other projects.
+- Optional: commit archives from this repo for history (usually keep local only).
 
-## Restoring / auditing
+## Audit
 
 ```bash
-/devteam show job-NNN    # works if job is in jobs/ or archive/jobs/
-ls devteam/archive/jobs/
+npm run devteam:show -- job-001   # works while job is active
+ls devteam/archive/
 ```
-
-Orchestrators read `devteam/registry.json` for queue state; archived jobs are removed from the active queue but remain discoverable under `archive/jobs/<job-id>/`.
