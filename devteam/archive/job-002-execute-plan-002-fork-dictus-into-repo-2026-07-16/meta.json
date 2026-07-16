@@ -1,6 +1,6 @@
 {
   "id": "job-002",
-  "status": "awaiting_review",
+  "status": "archived",
   "mode": "quick",
   "originalAsk": "Execute plan 002: fork Dictus into repo",
   "planRef": "plans/002-fork-dictus-into-repo.md",
@@ -18,8 +18,8 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:11.071Z",
-  "lastStatusAt": "2026-07-16T17:32:01.956Z",
-  "completedAt": "2026-07-16T17:32:01.956Z",
+  "lastStatusAt": "2026-07-16T17:32:26.605Z",
+  "completedAt": "2026-07-16T17:32:26.605Z",
   "plannedFiles": [
     "plans/README.md",
     "plans/001-repo-hygiene-and-agents-md.md",
@@ -53,5 +53,7 @@
     "test": "done",
     "review": "done",
     "doubleCheck": "done"
-  }
+  },
+  "archivedAt": "2026-07-16T17:32:26.606Z",
+  "archiveReason": "approved"
 }
