@@ -1,18 +1,29 @@
 package com.gallopkeyboard.ime.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.isSystemInDarkTheme
 import com.gallopkeyboard.core.theme.DictusTheme
 import com.gallopkeyboard.core.theme.ThemeMode
+import com.gallopkeyboard.ime.R
 import com.gallopkeyboard.ime.model.KeyDefinition
 import com.gallopkeyboard.ime.model.KeyboardLayer
 import com.gallopkeyboard.ime.model.KeyType
@@ -39,6 +50,7 @@ fun KeyboardScreen(
     onSendReturn: () -> Unit,
     onSwitchKeyboard: () -> Unit,
     onMicTap: () -> Unit = {},
+    onVoicePanelToggle: (() -> Unit)? = null,
     isEmojiPickerOpen: Boolean = false,
     onEmojiToggle: () -> Unit = {},
     onEmojiSelected: (String) -> Unit = {},
@@ -80,69 +92,88 @@ fun KeyboardScreen(
                 },
             )
         } else {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                // Suggestion bar (36.dp) — always visible with 3 slots and separators
-                SuggestionBar(
-                    currentWord = currentWord,
-                    suggestions = suggestions,
-                    onSuggestionSelected = onSuggestionSelected,
-                    onCurrentWordSelected = onCurrentWordSelected,
-                )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    // Suggestion bar (36.dp) — always visible with 3 slots and separators
+                    SuggestionBar(
+                        currentWord = currentWord,
+                        suggestions = suggestions,
+                        onSuggestionSelected = onSuggestionSelected,
+                        onCurrentWordSelected = onCurrentWordSelected,
+                    )
 
-                // Mic button row above keyboard (46.dp)
-                MicButtonRow(
-                    onSwitchKeyboard = onSwitchKeyboard,
-                    onMicTap = onMicTap,
-                    isRecording = false,
-                )
+                    // Mic button row above keyboard (46.dp)
+                    MicButtonRow(
+                        onSwitchKeyboard = onSwitchKeyboard,
+                        onMicTap = onMicTap,
+                        isRecording = false,
+                    )
 
-                // Keyboard area (264.dp) for 48.dp keys with existing row spacing.
-                KeyboardView(
-                    layer = currentLayer,
-                    isShifted = isShifted,
-                    isCapsLock = isCapsLock,
-                    layout = currentLayout,
-                    hapticsEnabled = hapticsEnabled,
-                    onKeyPress = { key ->
-                        handleKeyPress(
-                            key = key,
-                            isShifted = isShifted,
-                            isCapsLock = isCapsLock,
-                            currentLayer = currentLayer,
-                            lastShiftTapTime = lastShiftTapTime,
-                            onCommitText = onCommitText,
-                            onDeleteBackward = onDeleteBackward,
-                            onSendReturn = onSendReturn,
-                            onEmojiToggle = onEmojiToggle,
-                            onShiftChanged = { shifted, caps, tapTime ->
-                                isShifted = shifted
-                                isCapsLock = caps
-                                lastShiftTapTime = tapTime
-                                Timber.d("Shift toggled: %s, CapsLock: %s", shifted, caps)
-                            },
-                            onLayerChanged = { layer ->
-                                currentLayer = layer
-                                Timber.d("Layer switched to: %s", layer)
-                            },
-                            onAutoUnshift = {
-                                // Turn off shift after typing a character (unless caps lock)
-                                if (isShifted && !isCapsLock) {
-                                    isShifted = false
-                                }
-                            },
+                    // Keyboard area (264.dp) for 48.dp keys with existing row spacing.
+                    KeyboardView(
+                        layer = currentLayer,
+                        isShifted = isShifted,
+                        isCapsLock = isCapsLock,
+                        layout = currentLayout,
+                        hapticsEnabled = hapticsEnabled,
+                        onKeyPress = { key ->
+                            handleKeyPress(
+                                key = key,
+                                isShifted = isShifted,
+                                isCapsLock = isCapsLock,
+                                currentLayer = currentLayer,
+                                lastShiftTapTime = lastShiftTapTime,
+                                onCommitText = onCommitText,
+                                onDeleteBackward = onDeleteBackward,
+                                onSendReturn = onSendReturn,
+                                onEmojiToggle = onEmojiToggle,
+                                onShiftChanged = { shifted, caps, tapTime ->
+                                    isShifted = shifted
+                                    isCapsLock = caps
+                                    lastShiftTapTime = tapTime
+                                    Timber.d("Shift toggled: %s, CapsLock: %s", shifted, caps)
+                                },
+                                onLayerChanged = { layer ->
+                                    currentLayer = layer
+                                    Timber.d("Layer switched to: %s", layer)
+                                },
+                                onAutoUnshift = {
+                                    // Turn off shift after typing a character (unless caps lock)
+                                    if (isShifted && !isCapsLock) {
+                                        isShifted = false
+                                    }
+                                },
+                            )
+                        },
+                        onAccentSelected = { accent ->
+                            onCommitText(accent)
+                            if (isShifted && !isCapsLock) {
+                                isShifted = false
+                            }
+                            Timber.d("Accent selected: %s", accent)
+                        },
+                        modifier = Modifier.height(264.dp),
+                    )
+                }
+
+                // Bottom-right voice panel toggle — overlays empty key corner (HANDOFF UX).
+                if (onVoicePanelToggle != null) {
+                    IconButton(
+                        onClick = onVoicePanelToggle,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(8.dp)
+                            .size(40.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Mic,
+                            contentDescription = stringResource(R.string.panel_toggle_voice),
+                            tint = MaterialTheme.colorScheme.primary,
                         )
-                    },
-                    onAccentSelected = { accent ->
-                        onCommitText(accent)
-                        if (isShifted && !isCapsLock) {
-                            isShifted = false
-                        }
-                        Timber.d("Accent selected: %s", accent)
-                    },
-                    modifier = Modifier.height(264.dp),
-                )
+                    }
+                }
             }
         }
     }

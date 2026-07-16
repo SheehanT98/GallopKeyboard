@@ -3,4 +3,7 @@
     <string name="ime_recording_listening">Listening\u2026</string>
     <string name="ime_transcribing">Transcribing\u2026</string>
     <string name="ime_emoji_return_keyboard">ABC</string>
+    <string name="panel_toggle_voice">Switch to voice panel</string>
+    <string name="panel_toggle_typing">Switch to typing panel</string>
+    <string name="voice_panel_placeholder_button">Hold / Tap to speak</string>
 </resources>

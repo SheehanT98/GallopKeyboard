@@ -31,6 +31,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import com.gallopkeyboard.ime.panel.PanelController
+import com.gallopkeyboard.ime.panel.PanelHost
 import com.gallopkeyboard.ime.model.KeyboardLayer
 
 /**
@@ -75,6 +77,8 @@ class DictusImeService : LifecycleInputMethodService() {
     // Local mirror of the DictationService state, observed by Compose via collectAsState().
     // This MutableStateFlow is updated by collecting the service's StateFlow after binding.
     private val _serviceState = MutableStateFlow<DictationState>(DictationState.Idle)
+
+    private val panelController = PanelController()
 
     // Emoji picker visibility state, hoisted here so back key can dismiss it via onKeyDown.
     // BackHandler (Compose) does not work in IME context -- back key is not dispatched through
@@ -161,6 +165,18 @@ class DictusImeService : LifecycleInputMethodService() {
         }
         bindingScope.cancel()
         super.onDestroy()
+    }
+
+    override fun onStartInputView(info: android.view.inputmethod.EditorInfo?, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+        if (!restarting) {
+            panelController.reset()
+        }
+    }
+
+    override fun onFinishInputView(finishingInput: Boolean) {
+        panelController.reset()
+        super.onFinishInputView(finishingInput)
     }
 
     /**
@@ -304,108 +320,114 @@ class DictusImeService : LifecycleInputMethodService() {
             imm.showInputMethodPicker()
         }
 
-        when (dictationState) {
-            is DictationState.Idle -> {
-                KeyboardScreen(
-                    onCommitText = { text -> commitText(text) },
-                    onDeleteBackward = { deleteBackward() },
-                    onSendReturn = { sendReturnKey() },
-                    onSwitchKeyboard = switchKeyboard,
-                    onMicTap = { handleMicTap() },
-                    isEmojiPickerOpen = isEmojiPickerOpen,
-                    onEmojiToggle = { _isEmojiPickerOpen.value = !_isEmojiPickerOpen.value },
-                    onEmojiSelected = { emoji -> commitText(emoji) },
-                    currentWord = currentWord,
-                    suggestions = suggestions,
-                    onSuggestionSelected = { suggestion ->
-                        // Replace the current word fragment with the selected suggestion + space
-                        val ic = currentInputConnection ?: return@KeyboardScreen
-                        val word = _currentWord.value
-                        if (word.isNotEmpty()) {
-                            ic.deleteSurroundingText(word.length, 0)
-                        }
-                        ic.commitText("$suggestion ", 1)
-                        // Count suggestion selection toward personal dictionary learning (2 taps = learned).
-                        // Safe cast: at runtime suggestionEngine is always DictionaryEngine, but the safe
-                        // cast avoids a hard coupling on the declared SuggestionEngine interface type.
-                        (suggestionEngine as? DictionaryEngine)?.personalDictionary?.recordWordTyped(suggestion)
-                        _suggestions.value = emptyList()
-                        _currentWord.value = ""
-                    },
-                    onCurrentWordSelected = {
-                        // Commit the raw input as-is + space (user accepts what they typed)
-                        val ic = currentInputConnection ?: return@KeyboardScreen
-                        val word = _currentWord.value
-                        if (word.isNotEmpty()) {
-                            // Count the committed raw word toward personal dictionary learning.
-                            (suggestionEngine as? DictionaryEngine)?.personalDictionary?.recordWordTyped(word)
-                            ic.commitText(" ", 1)
-                            _suggestions.value = emptyList()
-                            _currentWord.value = ""
-                        }
-                    },
-                    themeMode = themeMode,
-                    initialLayer = initialLayer,
-                    hapticsEnabled = hapticsEnabled,
-                    keyboardLayout = keyboardLayout,
-                )
-            }
-            is DictationState.Recording -> {
-                val recording = dictationState as DictationState.Recording
-
-                // Feed raw energy into the driver so it has up-to-date targets.
-                waveformDriver.update(recording.energy)
-
-                // Run the per-frame animation loop. LaunchedEffect(Unit) starts it when
-                // the Recording composable enters composition and cancels automatically
-                // when it leaves (i.e. when state transitions away from Recording).
-                LaunchedEffect(Unit) {
-                    waveformDriver.runLoop()
-                }
-
-                // Collect the smoothed display levels for WaveformBars.
-                val smoothedEnergy by waveformDriver.displayLevels.collectAsState()
-
-                // Wrap in DictusTheme so MaterialTheme.colorScheme.background
-                // resolves to the Dictus brand colors instead of Material 3 defaults
-                // (which have a pinkish/rose tint).
-                DictusTheme(themeMode = themeMode) {
-                    RecordingScreen(
-                        elapsedMs = recording.elapsedMs,
-                        energy = smoothedEnergy,
-                        onCancel = {
-                            dictationController?.cancelRecording()
-                            Timber.d("Recording cancelled")
-                        },
-                        onConfirm = {
-                            val controller = dictationController
-                            if (controller != null) {
-                                bindingScope.launch {
-                                    val text = controller.confirmAndTranscribe()
-                                    if (text != null) {
-                                        commitText(text)
-                                        Timber.d("Transcribed text inserted: '%s'", text)
-                                        // Clear suggestions after voice transcription so the bar
-                                        // does not show stale suggestions from the last typed word.
-                                        // Suggestions resume when user types on keyboard.
-                                        _suggestions.value = emptyList()
-                                        _currentWord.value = ""
-                                    } else {
-                                        Timber.w("Transcription returned null (failed or empty)")
-                                    }
-                                }
-                            }
-                        },
+        PanelHost(
+            controller = panelController,
+            themeMode = themeMode,
+        ) {
+            when (dictationState) {
+                is DictationState.Idle -> {
+                    KeyboardScreen(
+                        onCommitText = { text -> commitText(text) },
+                        onDeleteBackward = { deleteBackward() },
+                        onSendReturn = { sendReturnKey() },
                         onSwitchKeyboard = switchKeyboard,
                         onMicTap = { handleMicTap() },
+                        onVoicePanelToggle = panelController::showVoice,
+                        isEmojiPickerOpen = isEmojiPickerOpen,
+                        onEmojiToggle = { _isEmojiPickerOpen.value = !_isEmojiPickerOpen.value },
+                        onEmojiSelected = { emoji -> commitText(emoji) },
+                        currentWord = currentWord,
+                        suggestions = suggestions,
+                        onSuggestionSelected = { suggestion ->
+                            // Replace the current word fragment with the selected suggestion + space
+                            val ic = currentInputConnection ?: return@KeyboardScreen
+                            val word = _currentWord.value
+                            if (word.isNotEmpty()) {
+                                ic.deleteSurroundingText(word.length, 0)
+                            }
+                            ic.commitText("$suggestion ", 1)
+                            // Count suggestion selection toward personal dictionary learning (2 taps = learned).
+                            // Safe cast: at runtime suggestionEngine is always DictionaryEngine, but the safe
+                            // cast avoids a hard coupling on the declared SuggestionEngine interface type.
+                            (suggestionEngine as? DictionaryEngine)?.personalDictionary?.recordWordTyped(suggestion)
+                            _suggestions.value = emptyList()
+                            _currentWord.value = ""
+                        },
+                        onCurrentWordSelected = {
+                            // Commit the raw input as-is + space (user accepts what they typed)
+                            val ic = currentInputConnection ?: return@KeyboardScreen
+                            val word = _currentWord.value
+                            if (word.isNotEmpty()) {
+                                // Count the committed raw word toward personal dictionary learning.
+                                (suggestionEngine as? DictionaryEngine)?.personalDictionary?.recordWordTyped(word)
+                                ic.commitText(" ", 1)
+                                _suggestions.value = emptyList()
+                                _currentWord.value = ""
+                            }
+                        },
+                        themeMode = themeMode,
+                        initialLayer = initialLayer,
+                        hapticsEnabled = hapticsEnabled,
+                        keyboardLayout = keyboardLayout,
                     )
                 }
-            }
-            is DictationState.Transcribing -> {
-                // Wrap in DictusTheme so MaterialTheme.colorScheme.background
-                // resolves to the Dictus brand colors instead of Material 3 defaults.
-                DictusTheme(themeMode = themeMode) {
-                    TranscribingScreen()
+                is DictationState.Recording -> {
+                    val recording = dictationState as DictationState.Recording
+
+                    // Feed raw energy into the driver so it has up-to-date targets.
+                    waveformDriver.update(recording.energy)
+
+                    // Run the per-frame animation loop. LaunchedEffect(Unit) starts it when
+                    // the Recording composable enters composition and cancels automatically
+                    // when it leaves (i.e. when state transitions away from Recording).
+                    LaunchedEffect(Unit) {
+                        waveformDriver.runLoop()
+                    }
+
+                    // Collect the smoothed display levels for WaveformBars.
+                    val smoothedEnergy by waveformDriver.displayLevels.collectAsState()
+
+                    // Wrap in DictusTheme so MaterialTheme.colorScheme.background
+                    // resolves to the Dictus brand colors instead of Material 3 defaults
+                    // (which have a pinkish/rose tint).
+                    DictusTheme(themeMode = themeMode) {
+                        RecordingScreen(
+                            elapsedMs = recording.elapsedMs,
+                            energy = smoothedEnergy,
+                            onCancel = {
+                                dictationController?.cancelRecording()
+                                Timber.d("Recording cancelled")
+                            },
+                            onConfirm = {
+                                val controller = dictationController
+                                if (controller != null) {
+                                    bindingScope.launch {
+                                        val text = controller.confirmAndTranscribe()
+                                        if (text != null) {
+                                            commitText(text)
+                                            Timber.d("Transcribed text inserted: '%s'", text)
+                                            // Clear suggestions after voice transcription so the bar
+                                            // does not show stale suggestions from the last typed word.
+                                            // Suggestions resume when user types on keyboard.
+                                            _suggestions.value = emptyList()
+                                            _currentWord.value = ""
+                                        } else {
+                                            Timber.w("Transcription returned null (failed or empty)")
+                                        }
+                                    }
+                                }
+                            },
+                            onSwitchKeyboard = switchKeyboard,
+                            onMicTap = { handleMicTap() },
+                        )
+                    }
+                }
+                is DictationState.Transcribing -> {
+                    // Wrap in DictusTheme so MaterialTheme.colorScheme.background
+                    // resolves to the Dictus brand colors instead of Material 3 defaults.
+                    DictusTheme(themeMode = themeMode) {
+                        TranscribingScreen()
+                    }
                 }
             }
         }

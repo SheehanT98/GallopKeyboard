@@ -69,3 +69,42 @@ Plan 006 (streaming pass) still needs live partial-transcript wiring; the engine
 - **Keyboard / IME screens:** Jetpack Compose (`ime/ui/*`, `DictusImeService` hosts Compose via `setContent`)
 - **Launcher / settings:** Jetpack Compose (`app/` screens)
 - **No XML `KeyboardView`** — layout data is Kotlin (`KeyboardLayouts.kt`, `KeyDefinition.kt`)
+
+## Plan 004 additions
+
+New panel scaffold for typing ↔ voice toggle (Plan 005 wires the smart button).
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/src/main/java/com/gallopkeyboard/ime/panel/PanelState.kt` | `TYPING` / `VOICE` enum |
+| `ime/src/main/java/com/gallopkeyboard/ime/panel/PanelController.kt` | `StateFlow` panel state; `toggle()`, `showTyping()`, `showVoice()`, `reset()` |
+| `ime/src/main/java/com/gallopkeyboard/ime/panel/VoicePanel.kt` | Compose placeholder voice panel (smart button + toolbar row) |
+| `ime/src/main/java/com/gallopkeyboard/ime/panel/PanelHost.kt` | Root composable switching typing ↔ voice |
+| `ime/src/test/java/com/gallopkeyboard/ime/panel/PanelControllerTest.kt` | Unit tests for controller transitions |
+
+### IME service edits
+
+| Class | Methods |
+|-------|---------|
+| `com.gallopkeyboard.ime.DictusImeService` | `KeyboardContent()` wraps content in `PanelHost`; `onStartInputView()` calls `panelController.reset()` when `!restarting`; `onFinishInputView()` calls `panelController.reset()` |
+
+`PanelController` is a manual instance field on `DictusImeService` (not Hilt-injected).
+
+### Typing panel edits
+
+| Class | Change |
+|-------|--------|
+| `com.gallopkeyboard.ime.ui.KeyboardScreen` | Optional `onVoicePanelToggle` callback; bottom-right `IconButton` with `Icons.Filled.Mic` overlay (40×40 dp, 8 dp inset) calls `panelController.showVoice()` |
+
+### `strings.xml` keys added (`ime/src/main/res/values/strings.xml`)
+
+- `panel_toggle_voice` — "Switch to voice panel"
+- `panel_toggle_typing` — "Switch to typing panel"
+- `voice_panel_placeholder_button` — "Hold / Tap to speak"
+
+### Note on upstream dictation UI
+
+Dictus still ships `RecordingScreen` / `TranscribingScreen` driven by `DictationState` (top mic pill in `MicButtonRow`). The new `VoicePanel` is the HANDOFF scaffold for Plans 005–007; it is separate from the legacy recording overlay until Plan 005 replaces the placeholder button.
+
