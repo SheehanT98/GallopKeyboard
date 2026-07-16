@@ -211,4 +211,35 @@
     <string name="cd_back">Back</string>
     <string name="cd_selected">Selected</string>
 
+    <!-- Voice model onboarding (Plan 008) -->
+    <string name="voice_onboarding_title">Set up GallopKeyboard voice</string>
+    <string name="voice_onboarding_subtitle">Downloads ~%1$d MB of on-device voice models. No data leaves your phone.</string>
+    <string name="voice_onboarding_metered_warning">You\u2019re on mobile data \u2014 this will use ~%1$d MB.</string>
+    <string name="voice_onboarding_download">Download</string>
+    <string name="voice_onboarding_skip">Skip for now</string>
+    <string name="voice_onboarding_retry">Retry</string>
+    <string name="voice_onboarding_downloading">Downloading %1$s\u2026</string>
+    <string name="voice_onboarding_error_generic">Download failed</string>
+    <string name="voice_onboarding_success">Voice ready. Open your keyboard settings to enable GallopKeyboard.</string>
+    <string name="voice_onboarding_open_keyboard_settings">Open keyboard settings</string>
+
+    <!-- Voice model settings (Plan 008) -->
+    <string name="voice_settings_title">Voice models</string>
+    <string name="voice_settings_installed_header">Installed models</string>
+    <string name="voice_settings_spec_meta">%1$d MB \u2014 %2$s</string>
+    <string name="voice_settings_status_installed">Installed</string>
+    <string name="voice_settings_status_missing">Missing</string>
+    <string name="voice_settings_status_corrupt">Corrupt</string>
+    <string name="voice_settings_fix">Fix</string>
+    <string name="voice_settings_tier_header">Quality tier</string>
+    <string name="voice_settings_tier_base">Base (fast, ~140 MB)</string>
+    <string name="voice_settings_tier_small">Small (accurate, ~470 MB)</string>
+    <string name="voice_settings_storage_usage">Storage usage: %1$d MB</string>
+    <string name="voice_settings_delete_all">Delete all models</string>
+    <string name="voice_settings_delete_all_title">Delete all voice models?</string>
+    <string name="voice_settings_delete_all_message">This removes Parakeet and Whisper files from your device. You can download them again from setup.</string>
+    <string name="voice_settings_delete_confirm">Delete</string>
+    <string name="voice_settings_cancel">Cancel</string>
+    <string name="voice_settings_downloading">Downloading %1$s\u2026</string>
+
 </resources>

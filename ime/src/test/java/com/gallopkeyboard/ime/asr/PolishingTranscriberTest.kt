@@ -42,7 +42,7 @@ class PolishingTranscriberTest {
         committer = RecordingImeTextCommitter()
         val dispatcher = RecorderCoroutineDispatcher()
         val context: Context = androidx.test.core.app.ApplicationProvider.getApplicationContext()
-        streaming = StreamingTranscriber(streamingEngine, committer, dispatcher, context)
+        streaming = StreamingTranscriber(streamingEngine, committer, dispatcher, VoiceModelPromptState(), context)
         transcriber = PolishingTranscriber(streaming, polishEngine, committer)
         Flags.polishEnabled = true
     }

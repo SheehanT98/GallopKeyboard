@@ -45,8 +45,11 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.core.ktx)
+    implementation(libs.okhttp)
+    implementation(libs.coroutines.android)
 
     testImplementation(libs.junit)
+    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(platform(libs.compose.bom))
     testImplementation(libs.compose.ui.test.junit4)
     testImplementation(libs.robolectric)
