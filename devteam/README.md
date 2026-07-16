@@ -4,12 +4,12 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 
 ## Dashboard
 
-**Active agent jobs:** 1
+**Active agent jobs:** 0
 **Queued:** 0
 **Awaiting your review:** 0
 | Job | Status | Feature | Branch | PR | Review |
 |-----|--------|---------|--------|-----|--------|
-| job-010 | testing | Execute plan 010: Hardening battery crashes release | `cursor/devteam-job-010-execute-plan-010-hardening-battery-crashes-relea-c1fc` | #25 | — |
+| job-010 | double_checking | Execute plan 010: Hardening battery crashes release | `cursor/devteam-job-010-execute-plan-010-hardening-battery-crashes-relea-c1fc` | #25 | — |
 
 ## Ready for review
 
