@@ -1,0 +1,68 @@
+{
+  "id": "job-005",
+  "status": "conflict_hold",
+  "mode": "quick",
+  "originalAsk": "Execute plan 005: Smart button + AudioRecorder",
+  "planRef": "plans/005-smart-button-and-audio-recorder.md",
+  "feature": "Execute plan 005: Smart button + AudioRecorder",
+  "slug": "execute-plan-005-smart-button-audiorecorder",
+  "branch": "cursor/devteam-job-005-execute-plan-005-smart-button-audiorecorder-c1fc",
+  "pr": null,
+  "prNumber": null,
+  "chatTitle": null,
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-16T17:07:11.658Z",
+  "lastStatusAt": "2026-07-16T17:07:12.855Z",
+  "completedAt": null,
+  "plannedFiles": [
+    "plans/README.md",
+    "plans/004-panel-controller-and-voice-panel-scaffold.md",
+    "docs/adr/0003-smart-button-gesture-spec.md",
+    "docs/dictus-inventory.md",
+    "ime/src/main/AndroidManifest.xml",
+    "audio/AudioSession.kt",
+    "audio/RingByteBuffer.kt",
+    "audio/AudioRecorderEngine.kt",
+    "audio/RecorderCoroutineDispatcher.kt",
+    "audio/StubTranscriber.kt",
+    "audio/Transcriber.kt",
+    "panel/SmartVoiceButton.kt",
+    "panel/VoicePanel.kt",
+    "panel/PermissionRequester.kt",
+    "ime/src/main/res/values/strings.xml",
+    "ime/src/test/java/com/gallopkeyboard/ime/panel/GestureFsmTest.kt",
+    "ime/src/test/java/com/gallopkeyboard/ime/audio/RingByteBufferTest.kt",
+    "audio/RingByteBufferTest.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/di/AudioModule.kt",
+    "panel/PermissionProxyActivity.kt",
+    "panel/GestureFsmTest.kt",
+    "scripts/verify.sh"
+  ],
+  "touchedFiles": [],
+  "blockedBy": [
+    "job-001",
+    "job-004"
+  ],
+  "dependsOn": [
+    "job-004"
+  ],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "pending",
+    "test": "pending",
+    "review": "pending",
+    "doubleCheck": "pending"
+  }
+}
