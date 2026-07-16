@@ -41,6 +41,7 @@ android {
 dependencies {
     implementation(project(":core"))
     implementation(project(":asr"))
+    implementation(project(":whisper"))
     implementation(libs.datastore.preferences)
 
     implementation(platform(libs.compose.bom))

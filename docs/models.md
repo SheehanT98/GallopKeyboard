@@ -58,4 +58,45 @@ Requires models on the device/emulator and a reference WAV under `asr/src/androi
 
 ## Whisper polish (Plan 007)
 
-Whisper GGML models live as flat files under `context.filesDir/models/` (see upstream `ModelManager`). Plan 007 wires the polish pass; this document only lists Parakeet streaming paths for Plan 006.
+Directory on device (app-private storage):
+
+```
+context.getFilesDir()/models/whisper/
+  base.en.gguf          # default (~140 MB)
+  small.en.gguf         # optional higher accuracy (~470 MB)
+```
+
+Legacy Dictus flat filenames (`ggml-base.bin`, etc.) under the same `whisper/` subdirectory are also accepted if sideloaded for development.
+
+For the IME process (`com.gallopkeyboard.ime`):
+
+```
+/data/data/com.gallopkeyboard.ime/files/models/whisper/
+```
+
+On a user-visible path via `adb`:
+
+```
+/sdcard/Android/data/com.gallopkeyboard.ime/files/models/whisper/
+```
+
+### Sizes
+
+| File | Approx. size |
+|------|----------------|
+| `base.en.gguf` | ~140 MB |
+| `small.en.gguf` | ~470 MB |
+
+### Obtaining models
+
+Download GGML/GGUF English models from the HuggingFace [ggerganov/whisper.cpp](https://huggingface.co/ggerganov/whisper.cpp) release files. Filename convention: `<name>.gguf` (whisper.cpp ggml format). Do **not** commit model binaries to git.
+
+### Sideload for local dev (before Plan 008)
+
+```bash
+adb shell mkdir -p /sdcard/Android/data/com.gallopkeyboard.ime/files/models/whisper/
+adb push base.en.gguf /sdcard/Android/data/com.gallopkeyboard.ime/files/models/whisper/
+```
+
+Polish runs as a single non-streaming pass over the full session buffer on stop, with a 2 s timeout (see ADR-0003). If polish times out, the streaming partial from Plan 006 remains committed.
+

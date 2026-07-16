@@ -1,5 +1,8 @@
 package com.gallopkeyboard.ime.audio
 
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+
 /**
  * Fixed-capacity thread-safe ring buffer for PCM bytes.
  *
@@ -30,6 +33,15 @@ class RingByteBuffer(capacityBytes: Int) {
                 writeIndex = (writeIndex + 1) % buffer.size
             }
         }
+    }
+
+    /** Snapshot of buffered PCM16 little-endian samples at 16 kHz mono. */
+    fun snapshotShorts(): ShortArray {
+        val bytes = snapshot()
+        if (bytes.isEmpty()) return ShortArray(0)
+        val shorts = ShortArray(bytes.size / 2)
+        ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts)
+        return shorts
     }
 
     fun snapshot(): ByteArray {

@@ -169,6 +169,7 @@ sealed class CommitterCall {
     data class SetComposing(val text: String) : CommitterCall()
     data object ClearComposing : CommitterCall()
     data class CommitFinal(val text: String) : CommitterCall()
+    data class CommitText(val text: String) : CommitterCall()
 }
 
 class RecordingImeTextCommitter : ImeTextCommitter({ null }) {
@@ -180,6 +181,10 @@ class RecordingImeTextCommitter : ImeTextCommitter({ null }) {
 
     override fun commitFinal(text: String) {
         calls.add(CommitterCall.CommitFinal(text))
+    }
+
+    override fun commitText(text: String) {
+        calls.add(CommitterCall.CommitText(text))
     }
 
     override fun clearComposing() {
