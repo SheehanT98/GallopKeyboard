@@ -40,8 +40,8 @@ first real measurement if the target was too aspirational.
 | mAh (30 min) | _pending device run_ | Requires physical S22, unplugged |
 | CPU fg time | _pending_ | From `batterystats` |
 | Wake locks | _pending_ | `adb shell dumpsys power \| grep -i wake` |
-| Debug APK size | _run `du -h app/build/outputs/apk/debug/*.apk`_ | |
-| Release APK size | _run `du -h app/build/outputs/apk/release/*.apk`_ | After `assembleRelease` |
+| Debug APK size | 157M | `app-debug.apk` (includes debug symbols) |
+| Release APK size | 88M | `app-release.apk` after R8 (native `.so` dominate; models not bundled) |
 
 ## Model lifecycle idle test
 
