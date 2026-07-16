@@ -1,15 +1,15 @@
 {
   "id": "job-001",
-  "status": "coding",
+  "status": "testing",
   "mode": "quick",
   "originalAsk": "Execute plan 001: repo hygiene + AGENTS.md + ADRs",
   "planRef": "plans/001-repo-hygiene-and-agents-md.md",
   "feature": "Execute plan 001: repo hygiene + AGENTS.md + ADRs",
   "slug": "execute-plan-001-repo-hygiene-agents-md-adrs",
   "branch": "cursor/devteam-job-001-execute-plan-001-repo-hygiene-agents-md-adrs-c1fc",
-  "pr": null,
-  "prNumber": null,
-  "chatTitle": null,
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/8",
+  "prNumber": 8,
+  "chatTitle": "devteam pr8",
   "models": {
     "plan": "cursor-grok-4.5-high",
     "code": "composer-2.5",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:10.873Z",
-  "lastStatusAt": "2026-07-16T17:07:10.873Z",
+  "lastStatusAt": "2026-07-16T17:10:06.306Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -42,7 +42,7 @@
   "notifiedAt": null,
   "stages": {
     "plan": "skipped",
-    "code": "in_progress",
+    "code": "done",
     "test": "pending",
     "review": "pending",
     "doubleCheck": "pending"
