@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,25 +69,12 @@ fun VoicePanel(
                     )
                 }
 
-                Row(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                    contentAlignment = Alignment.CenterEnd,
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Text(
-                            text = "Think?",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = GallopColors.Placeholder,
-                        )
-                        Text(
-                            text = "Search?",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = GallopColors.Placeholder,
-                        )
-                    }
                     IconButton(
                         onClick = onSwitchToTyping,
                         modifier = Modifier.size(40.dp),

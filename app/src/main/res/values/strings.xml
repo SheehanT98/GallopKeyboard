@@ -2,19 +2,19 @@
 <resources>
 
     <!-- Onboarding: Welcome screen (Step 1) -->
-    <string name="onboarding_welcome_wordmark">Dictus</string>
+    <string name="onboarding_welcome_wordmark">GallopKeyboard</string>
     <string name="onboarding_welcome_tagline">Voice dictation, 100\u00a0% offline</string>
     <string name="onboarding_welcome_cta">Start</string>
 
     <!-- Onboarding: Microphone permission screen (Step 2) -->
     <string name="onboarding_mic_permission_title">Microphone</string>
-    <string name="onboarding_mic_permission_body">Dictus needs the microphone to transcribe your voice. Your recordings stay on your device.</string>
+    <string name="onboarding_mic_permission_body">GallopKeyboard needs the microphone to transcribe your voice. Your recordings stay on your device.</string>
     <string name="onboarding_mic_permission_cta_grant">Allow Microphone</string>
     <string name="onboarding_mic_permission_cta_continue">Continue</string>
 
     <!-- Onboarding: Keyboard setup screen (Step 3) -->
     <string name="onboarding_keyboard_setup_title">Add the keyboard</string>
-    <string name="onboarding_keyboard_setup_body">Enable the Dictus keyboard in your device settings.</string>
+    <string name="onboarding_keyboard_setup_body">Enable GallopKeyboard in your device settings.</string>
     <string name="onboarding_keyboard_setup_cta_open_settings">Open Settings</string>
     <string name="onboarding_keyboard_setup_cta_continue">Continue</string>
 
@@ -37,7 +37,7 @@
 
     <!-- Onboarding: Test recording screen (Step 6) -->
     <string name="onboarding_test_recording_title">Test dictation</string>
-    <string name="onboarding_test_recording_body">Tap the mic and speak.\nDictus will transcribe your voice.</string>
+    <string name="onboarding_test_recording_body">Tap the mic and speak.\nGallopKeyboard will transcribe your voice.</string>
     <string name="onboarding_test_recording_result">Result</string>
     <string name="onboarding_test_recording_transcribing">Transcribing\u2026</string>
     <string name="onboarding_test_recording_no_result">(No result)</string>
@@ -49,7 +49,7 @@
 
     <!-- Onboarding: Success screen (Step 7) -->
     <string name="onboarding_success_title">All set!</string>
-    <string name="onboarding_success_body">Dictus is configured and ready to use.</string>
+    <string name="onboarding_success_body">GallopKeyboard is configured and ready to use.</string>
     <string name="onboarding_success_cta">Start</string>
 
     <!-- Settings: Section headers -->
@@ -135,7 +135,7 @@
     <string name="licences_back_cd">Back</string>
 
     <!-- ImeStatusCard -->
-    <string name="ime_status_active">Dictus keyboard active</string>
+    <string name="ime_status_active">GallopKeyboard active</string>
     <string name="ime_status_enabled_not_selected">Keyboard enabled but not selected</string>
     <string name="ime_status_not_enabled">Keyboard not enabled</string>
     <string name="ime_status_select_keyboard">Select Keyboard</string>
@@ -191,7 +191,7 @@
     <string name="recording_record_cd">Record</string>
     <string name="recording_new_dictation_cd">New dictation</string>
     <string name="recording_idle_title">New dictation</string>
-    <string name="recording_idle_body">Tap the mic and speak.\nDictus will transcribe your voice.</string>
+    <string name="recording_idle_body">Tap the mic and speak.\nGallopKeyboard will transcribe your voice.</string>
     <string name="recording_tap_to_stop">Tap to stop</string>
     <string name="recording_transcribing">Transcribing\u2026</string>
     <string name="recording_no_result">(No result)</string>

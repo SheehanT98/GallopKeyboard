@@ -63,7 +63,7 @@ class ImeStatusCardTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Dictus keyboard active").assertIsDisplayed()
+        composeTestRule.onNodeWithText("GallopKeyboard active").assertIsDisplayed()
         composeTestRule.onNodeWithText("Enable Keyboard").assertDoesNotExist()
         composeTestRule.onNodeWithText("Select Keyboard").assertDoesNotExist()
     }

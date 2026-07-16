@@ -22,7 +22,8 @@ See [docs/sideload-galaxy-s22.md](docs/sideload-galaxy-s22.md) for the full walk
 1. Enable USB debugging and connect the device.
 2. `adb install -r app/build/outputs/apk/debug/app-debug.apk`
 3. **Settings → General Management → Keyboard → Manage keyboards** → enable **GallopKeyboard** → set as default.
-4. Grant microphone permission when prompted on first voice use.
+4. Open the **GallopKeyboard** app and **download voice models** (~220 MB, Wi‑Fi recommended) before using dictation.
+5. Grant microphone permission when prompted on first voice use.
 
 ## Repo layout
 

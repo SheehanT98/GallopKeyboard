@@ -177,7 +177,7 @@ fun RecordingScreen(
                                         Context.CLIPBOARD_SERVICE,
                                     ) as ClipboardManager
                                     clipboard.setPrimaryClip(
-                                        ClipData.newPlainText("Dictus", transcriptionResult),
+                                        ClipData.newPlainText("GallopKeyboard", transcriptionResult),
                                     )
                                     copied = true
                                 }

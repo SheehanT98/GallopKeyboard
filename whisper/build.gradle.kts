@@ -10,7 +10,8 @@ android {
     defaultConfig {
         minSdk = 29
         ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            // Match app packaging — personal v1 targets 64-bit devices (S22+).
+            abiFilters += listOf("arm64-v8a")
         }
     }
 

@@ -43,6 +43,7 @@ class StreamingTranscriber @Inject constructor(
         runBlocking(dispatcher.dispatcher) {
             try {
                 engine.beginStream()
+                promptState.dismissBanner()
                 committer.setComposing("")
             } catch (e: AsrModelMissingException) {
                 Log.w(TAG, "models missing: ${e.files}")

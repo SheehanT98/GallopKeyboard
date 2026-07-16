@@ -34,6 +34,10 @@ Use an absolute path for `storeFile`.
 
 Output: `app/build/outputs/apk/release/app-release.apk`
 
+The release APK packages **arm64-v8a only** (modern phones including Galaxy S22).
+That drops ~17 MB of unused 32-bit JNI versus a universal APK. 32-bit-only
+devices are not supported in v1 — see [`limitations.md`](limitations.md).
+
 Install the same way as debug:
 
 ```bash

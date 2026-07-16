@@ -1,6 +1,24 @@
 # On-device ASR model layout
 
-GallopKeyboard keeps speech models **out of the APK**. They are downloaded (Plan 008) or sideloaded for development.
+GallopKeyboard keeps speech models **out of the APK** so the install stays
+smaller. Voice typing needs a **one-time download (~220 MB)** the first time
+you use it.
+
+## For phone users (recommended)
+
+1. Install GallopKeyboard and open the **GallopKeyboard** app.
+2. Tap **Download voice models** (Wi‑Fi recommended).
+3. When it finishes, enable GallopKeyboard as your keyboard and grant the mic.
+
+If you open the voice panel before models are installed, the keyboard shows a
+clear **Voice models needed** card with the same download button.
+
+You can also manage models later: **GallopKeyboard app → Voice models**.
+
+## For developers (manual layout)
+
+Models live under the app’s private files directory (or are downloaded there by
+the onboarding flow):
 
 ## Streaming Parakeet (Plan 006)
 

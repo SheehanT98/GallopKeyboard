@@ -33,7 +33,21 @@ Expect `Success` from `adb`.
 
 ## Grant microphone permission
 
-Open any text field (Notes, Messages, etc.). Long-press the space bar or tap the mic toggle (depending on which panel is showing). Android will prompt for **RECORD_AUDIO** — allow it.
+Open any text field (Notes, Messages, etc.). Switch to the voice panel and use
+the mic button. Android will prompt for **RECORD_AUDIO** — allow it.
+
+## Download voice models (required for dictation)
+
+Voice models are **not** inside the APK (~220 MB total).
+
+1. Open the **GallopKeyboard** app from the launcher.
+2. Tap **Download** (use Wi‑Fi if you can).
+3. Wait until it says voice is ready.
+
+If you open the voice panel before downloading, you’ll see a **Voice models
+needed** card with a **Download voice models** button that opens the same flow.
+
+See [`models.md`](models.md) for details and optional adb sideload.
 
 ## Reinstall for a new build
 

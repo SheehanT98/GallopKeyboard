@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 object GallopColors {
     val Surface = Color(0xFF1A1A1D)
     val OnSurface = Color(0xFFE8E8EA)
+    /** Reserved for muted secondary labels. */
     val Placeholder = Color(0xFF6B6B70)
     val Accent = Color(0xFF4A9EFF)
     val AccentOn = Color(0xFFFFFFFF)

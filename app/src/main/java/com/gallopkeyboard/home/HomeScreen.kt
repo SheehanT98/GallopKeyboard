@@ -90,7 +90,7 @@ fun HomeScreen(
 
         // "Dictus" wordmark in accent blue
         Text(
-            text = "Dictus",
+            text = "GallopKeyboard",
             color = DictusColors.Accent,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
@@ -172,7 +172,7 @@ fun HomeScreen(
                                     Context.CLIPBOARD_SERVICE,
                                 ) as ClipboardManager
                                 clipboard.setPrimaryClip(
-                                    ClipData.newPlainText("Dictus", lastTranscription),
+                                    ClipData.newPlainText("GallopKeyboard", lastTranscription),
                                 )
                             },
                     )

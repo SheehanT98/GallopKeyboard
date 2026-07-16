@@ -57,6 +57,11 @@ android {
         val ciVersionName = System.getenv("VERSION_NAME")
         if (ciVersionCode != null) versionCode = ciVersionCode
         if (ciVersionName != null) versionName = ciVersionName
+        // Galaxy S22 and modern phones are 64-bit. Skipping armeabi-v7a cuts ~17 MB
+        // of bundled JNI (sherpa-onnx + onnxruntime) from the APK.
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
     }
 
     buildTypes {
