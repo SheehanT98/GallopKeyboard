@@ -305,3 +305,42 @@ or `arrays.xml` per STOP condition — existing picker extended in place (emoji 
 - Fresh install: empty strip until user copies text (watcher-only history).
 - Fallback read on keyboard show documented in `docs/limitations.md`.
 
+## Plan 010 additions
+
+Hardening: local crash logs, StrictMode (debug), model lifecycle unload, release APK.
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `core/.../log/CrashHandler.kt` | Uncaught handler → `filesDir/crashes/*.txt` (max 20 files) |
+| `ime/.../asr/ModelLifecycleManager.kt` | Unloads Parakeet + Whisper after 60 s voice-panel idle |
+| `ime/.../asr/ModelLifecycleController.kt` | Lifecycle callback interface |
+| `app/.../settings/CrashLogsScreen.kt` | List / copy / share / delete crash files |
+| `app/proguard-rules.pro` | R8 keep rules for JNI, sherpa-onnx, whisper |
+| `docs/release-signing.md` | Local keystore setup for sideload release APK |
+| `docs/manual-test-matrix.md` | Cross-app smoke + battery profiling checklist |
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `DictusApplication.kt` | `CrashHandler.install`, StrictMode in debug |
+| `DictusImeService.kt` | `CrashHandler.install` |
+| `PolishingTranscriber.kt` | Lifecycle hooks on session start/stop |
+| `PanelHost.kt` | Voice panel shown/hidden → lifecycle timer |
+| `PreferenceKeys.kt` | `MODELS_KEEP_LOADED` (default false) |
+| `SettingsScreen.kt` / `SettingsViewModel.kt` | Toggle + Crash logs nav |
+| `app/build.gradle.kts` | Release minify/shrink, `~/.gallopkeyboard/keystore.properties` |
+| `scripts/verify.sh` | `System.out.println` guard + hot-path Log.d advisory |
+
+### Model unload default
+
+`ModelLifecycleManager.UNLOAD_DELAY_MS` = **60_000** (60 s). Toggle
+`models_keep_loaded` in Settings skips unload entirely.
+
+### Battery baseline
+
+Recorded in `docs/manual-test-matrix.md` — requires unplugged S22 device run
+(agent environment: pending owner measurement).
+

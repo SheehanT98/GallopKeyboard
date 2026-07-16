@@ -18,6 +18,7 @@ class PolishingTranscriber @Inject constructor(
     private val streaming: StreamingTranscriber,
     private val engine: AsrPolishEngine,
     private val committer: ImeTextCommitter,
+    private val lifecycleManager: ModelLifecycleController,
 ) : Transcriber {
 
     companion object {
@@ -25,8 +26,10 @@ class PolishingTranscriber @Inject constructor(
         const val POLISH_TIMEOUT_MS = 2000L
     }
 
-    override fun onSessionStart(session: AudioSession) =
+    override fun onSessionStart(session: AudioSession) {
+        lifecycleManager.onSessionStarted()
         streaming.onSessionStart(session)
+    }
 
     override fun onAudioFrame(session: AudioSession, frame: ShortArray) =
         streaming.onAudioFrame(session, frame)
@@ -36,7 +39,10 @@ class PolishingTranscriber @Inject constructor(
 
     override suspend fun onSessionStop(session: AudioSession) {
         streaming.onSessionStop(session)
-        if (!Flags.polishEnabled) return
+        if (!Flags.polishEnabled) {
+            lifecycleManager.onSessionStopped()
+            return
+        }
 
         val pcm = session.buffer.snapshotShorts()
         val polished = try {
@@ -56,5 +62,6 @@ class PolishingTranscriber @Inject constructor(
         } else {
             committer.clearComposing()
         }
+        lifecycleManager.onSessionStopped()
     }
 }

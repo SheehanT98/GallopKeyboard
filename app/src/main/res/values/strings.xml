@@ -68,6 +68,8 @@
     <string name="settings_theme">Theme</string>
     <string name="settings_version">Version</string>
     <string name="settings_debug_logs">Debug Logs</string>
+    <string name="settings_crash_logs">Crash logs</string>
+    <string name="settings_models_keep_loaded">Keep models loaded</string>
     <string name="settings_export_logs">Export debug logs</string>
     <string name="settings_licences">Licences</string>
     <string name="settings_github">GitHub</string>
@@ -118,6 +120,15 @@
     <string name="debug_logs_copy">Copy</string>
     <string name="debug_logs_menu_cd">Menu</string>
     <string name="debug_logs_back_cd">Back</string>
+
+    <!-- CrashLogsScreen -->
+    <string name="crash_logs_title">Crash logs</string>
+    <string name="crash_logs_empty">No crashes recorded. That\u2019s the goal.</string>
+    <string name="crash_logs_copy">Copy to clipboard</string>
+    <string name="crash_logs_share">Share</string>
+    <string name="crash_logs_delete">Delete</string>
+    <string name="crash_logs_back_cd">Back</string>
+    <string name="crash_logs_share_chooser">Share crash log</string>
 
     <!-- LicencesScreen -->
     <string name="licences_title">Licences</string>

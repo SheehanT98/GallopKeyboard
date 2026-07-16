@@ -43,7 +43,7 @@ class PolishingTranscriberTest {
         val dispatcher = RecorderCoroutineDispatcher()
         val context: Context = androidx.test.core.app.ApplicationProvider.getApplicationContext()
         streaming = StreamingTranscriber(streamingEngine, committer, dispatcher, VoiceModelPromptState(), context)
-        transcriber = PolishingTranscriber(streaming, polishEngine, committer)
+        transcriber = PolishingTranscriber(streaming, polishEngine, committer, NoOpModelLifecycleController)
         Flags.polishEnabled = true
     }
 
@@ -166,6 +166,13 @@ class FakeAsrPolishEngine : AsrPolishEngine {
     override fun cancel() = Unit
 
     override fun close() = Unit
+}
+
+private object NoOpModelLifecycleController : ModelLifecycleController {
+    override fun onSessionStarted() = Unit
+    override fun onSessionStopped() = Unit
+    override fun onVoicePanelHidden() = Unit
+    override fun onVoicePanelShown() = Unit
 }
 
 class PolishFakeStreamingAsrEngine : StreamingAsrEngine {

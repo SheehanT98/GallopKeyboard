@@ -25,6 +25,10 @@ obj/
 # Keystores (never commit)
 *.jks
 *.keystore
+.gallopkeyboard/
+
+# Runtime crash dumps (local only)
+**/crashes/
 
 # Kotlin
 .kotlin/

@@ -52,4 +52,8 @@ object PreferenceKeys {
     // --- Personal dictionary (Phase 8) ---
     /** Set of words the user has typed at least twice, persisted across restarts. */
     val PERSONAL_DICTIONARY = stringSetPreferencesKey("personal_dictionary")
+
+    // --- Model lifecycle (Plan 010) ---
+    /** When true, keep Parakeet + Whisper engines loaded in RAM (faster voice, more battery). */
+    val MODELS_KEEP_LOADED = booleanPreferencesKey("models_keep_loaded")
 }

@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import dagger.hilt.android.EntryPointAccessors
+import com.gallopkeyboard.core.log.CrashHandler
 import com.gallopkeyboard.core.models.ModelInstaller
 import com.gallopkeyboard.core.models.ModelRegistry
 import com.gallopkeyboard.core.preferences.PreferenceKeys
@@ -154,6 +155,7 @@ class DictusImeService : LifecycleInputMethodService() {
 
     override fun onCreate() {
         super.onCreate()
+        CrashHandler.install(this)
         Timber.d("DictusImeService created")
         clipboardWatcher = ClipboardWatcher(applicationContext, clipboardStore)
         clipboardWatcher.start()
@@ -353,6 +355,7 @@ class DictusImeService : LifecycleInputMethodService() {
             transcriber = entryPoint.transcriber(),
             permissionRequester = entryPoint.permissionRequester(),
             promptState = entryPoint.voiceModelPromptState(),
+            modelLifecycleManager = entryPoint.modelLifecycleManager(),
         ) {
             when (dictationState) {
                 is DictationState.Idle -> {

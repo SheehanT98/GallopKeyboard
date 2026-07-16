@@ -7,11 +7,32 @@ plugins {
     alias(libs.plugins.licensee)
 }
 
+import java.io.FileInputStream
+import java.util.Properties
+
+val keystorePropsFile = File(
+    System.getProperty("user.home"),
+    ".gallopkeyboard/keystore.properties",
+)
+val keystoreProps = if (keystorePropsFile.exists()) {
+    Properties().apply { load(FileInputStream(keystorePropsFile)) }
+} else {
+    null
+}
+
 android {
     namespace = "com.gallopkeyboard.app"
     compileSdk = 35
 
     signingConfigs {
+        if (keystoreProps != null) {
+            create("releaseKeystore") {
+                storeFile = File(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
         create("release") {
             val keystorePath = System.getenv("SIGNING_KEYSTORE_PATH")
             val keyAlias = System.getenv("SIGNING_KEY_ALIAS")
@@ -40,8 +61,17 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+            signingConfig = signingConfigs.findByName("releaseKeystore")
+                ?: signingConfigs.findByName("release")?.takeIf {
+                    it.storeFile?.exists() == true
+                }
+                ?: signingConfigs.getByName("debug")
         }
     }
 

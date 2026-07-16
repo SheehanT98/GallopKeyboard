@@ -38,6 +38,7 @@ import com.gallopkeyboard.onboarding.OnboardingTestRecordingScreen
 import com.gallopkeyboard.onboarding.OnboardingViewModel
 import com.gallopkeyboard.onboarding.OnboardingWelcomeScreen
 import com.gallopkeyboard.ui.navigation.DictusBottomNavBar
+import com.gallopkeyboard.app.settings.CrashLogsScreen
 import com.gallopkeyboard.ui.settings.DebugLogsScreen
 import com.gallopkeyboard.ui.settings.LicencesScreen
 import com.gallopkeyboard.ui.settings.SettingsScreen
@@ -239,6 +240,7 @@ private fun MainTabsScreen(
     val showBottomBar = currentRoute != AppDestination.Recording.route &&
         currentRoute != AppDestination.Licences.route &&
         currentRoute != AppDestination.DebugLogs.route &&
+        currentRoute != AppDestination.CrashLogs.route &&
         currentRoute != AppDestination.SoundSettings.route &&
         !currentRoute.startsWith("sound_picker")
 
@@ -287,6 +289,9 @@ private fun MainTabsScreen(
                     onNavigateToDebugLogs = {
                         navController.navigate(AppDestination.DebugLogs.route)
                     },
+                    onNavigateToCrashLogs = {
+                        navController.navigate(AppDestination.CrashLogs.route)
+                    },
                     onNavigateToSoundSettings = {
                         navController.navigate(AppDestination.SoundSettings.route)
                     },
@@ -299,6 +304,11 @@ private fun MainTabsScreen(
             }
             composable(AppDestination.DebugLogs.route) {
                 DebugLogsScreen(
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable(AppDestination.CrashLogs.route) {
+                CrashLogsScreen(
                     onBack = { navController.popBackStack() },
                 )
             }

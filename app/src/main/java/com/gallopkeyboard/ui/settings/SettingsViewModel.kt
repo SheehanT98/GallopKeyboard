@@ -235,6 +235,18 @@ class SettingsViewModel @Inject constructor(
         (uiLanguage as MutableStateFlow).value = languageTag
     }
 
+    /** Whether to keep ASR models loaded in RAM (Plan 010). */
+    val modelsKeepLoaded: StateFlow<Boolean> = dataStore.data
+        .map { it[PreferenceKeys.MODELS_KEEP_LOADED] ?: false }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun toggleModelsKeepLoaded() {
+        viewModelScope.launch {
+            val current = modelsKeepLoaded.value
+            dataStore.edit { it[PreferenceKeys.MODELS_KEEP_LOADED] = !current }
+        }
+    }
+
     /** Returns the current UI language tag by reading AppCompatDelegate. */
     private fun getCurrentUiLanguage(): String {
         val locales = AppCompatDelegate.getApplicationLocales()
