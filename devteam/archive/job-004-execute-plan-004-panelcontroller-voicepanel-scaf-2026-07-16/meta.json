@@ -1,6 +1,6 @@
 {
   "id": "job-004",
-  "status": "double_checking",
+  "status": "archived",
   "mode": "quick",
   "originalAsk": "Execute plan 004: PanelController + VoicePanel scaffold",
   "planRef": "plans/004-panel-controller-and-voice-panel-scaffold.md",
@@ -18,8 +18,8 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:11.465Z",
-  "lastStatusAt": "2026-07-16T17:51:46.067Z",
-  "completedAt": null,
+  "lastStatusAt": "2026-07-16T17:56:28.190Z",
+  "completedAt": "2026-07-16T17:56:28.190Z",
   "plannedFiles": [
     "plans/README.md",
     "docs/dictus-inventory.md",
@@ -56,6 +56,8 @@
     "code": "done",
     "test": "done",
     "review": "done",
-    "doubleCheck": "in_progress"
-  }
+    "doubleCheck": "done"
+  },
+  "archivedAt": "2026-07-16T17:56:28.191Z",
+  "archiveReason": "approved"
 }
