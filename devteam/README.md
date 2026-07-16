@@ -13,7 +13,7 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 | job-009 | conflict_hold | Execute plan 009: Keyboard polish clipboard + emoji | `cursor/devteam-job-009-execute-plan-009-keyboard-polish-clipboard-emoji-c1fc` | — | — |
 | job-008 | conflict_hold | Execute plan 008: Model download UX | `cursor/devteam-job-008-execute-plan-008-model-download-ux-c1fc` | — | — |
 | job-007 | conflict_hold | Execute plan 007: Whisper polish pass | `cursor/devteam-job-007-execute-plan-007-whisper-polish-pass-c1fc` | — | — |
-| job-006 | testing | Execute plan 006: Parakeet streaming pass | `cursor/devteam-job-006-execute-plan-006-parakeet-streaming-pass-c1fc` | #17 | — |
+| job-006 | reviewing | Execute plan 006: Parakeet streaming pass | `cursor/devteam-job-006-execute-plan-006-parakeet-streaming-pass-c1fc` | #17 | — |
 
 ## Ready for review
 

@@ -1,6 +1,6 @@
 {
   "id": "job-006",
-  "status": "testing",
+  "status": "reviewing",
   "mode": "quick",
   "originalAsk": "Execute plan 006: Parakeet streaming pass",
   "planRef": "plans/006-parakeet-streaming-pass.md",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:11.855Z",
-  "lastStatusAt": "2026-07-16T18:19:07.075Z",
+  "lastStatusAt": "2026-07-16T18:20:45.199Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -60,8 +60,8 @@
   "stages": {
     "plan": "skipped",
     "code": "done",
-    "test": "pending",
-    "review": "pending",
+    "test": "done",
+    "review": "in_progress",
     "doubleCheck": "pending"
   }
 }
