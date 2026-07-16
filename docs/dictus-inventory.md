@@ -170,7 +170,7 @@ Streaming Parakeet partial transcripts via `InputConnection` composing text (Pla
 | `ime/src/main/java/com/gallopkeyboard/ime/asr/ImeTextCommitter.kt` | `setComposingText` / `finishComposingText` helper + `InputConnectionSupplier` |
 | `ime/src/main/java/com/gallopkeyboard/ime/asr/StreamingTranscriber.kt` | `Transcriber` impl — partials every 500 ms |
 | `ime/src/main/java/com/gallopkeyboard/ime/di/AsrModule.kt` | Hilt bindings for engine + committer |
-| `core/src/main/java/com/gallopkeyboard/core/flags/Flags.kt` | `polishEnabled` flag (default `false`) |
+| `core/src/main/java/com/gallopkeyboard/core/flags/Flags.kt` | `polishEnabled` flag (default `true` since Plan 007) |
 | `docs/models.md` | On-device model directory layout |
 | `asr/src/androidTest/.../ParakeetSmokeTest.kt` | Optional smoke test (`RUN_ASR_SMOKE=1`) |
 | `ime/src/test/.../StreamingTranscriberTest.kt` | Unit tests with fake engine (8 cases) |
@@ -200,4 +200,50 @@ See `docs/models.md` for sizes, download links, and `adb push` sideload steps.
 ### Note on Case A (sherpa-onnx present)
 
 Plan 006 skipped the Case B submodule path. Streaming uses vendored `OnlineRecognizer` bindings alongside existing offline `OfflineRecognizer` JNI libs in `:asr`.
+
+## Plan 007 additions
+
+Whisper polish pass on stop — decorates Plan 006 streaming with full-buffer Whisper transcription.
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `whisper/src/main/java/com/gallopkeyboard/whisper/WhisperConfig.kt` | Model path, language, thread count |
+| `whisper/src/main/java/com/gallopkeyboard/whisper/PolishEngine.kt` | `AsrPolishEngine` wrapping `WhisperContext` |
+| `ime/src/main/java/com/gallopkeyboard/ime/asr/PolishingTranscriber.kt` | Decorator over `StreamingTranscriber` |
+| `ime/src/main/java/com/gallopkeyboard/ime/di/WhisperPolishModule.kt` | Hilt `AsrPolishEngine` provider |
+| `ime/src/test/java/com/gallopkeyboard/ime/asr/PolishingTranscriberTest.kt` | Unit tests (6 cases) |
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../asr/ImeTextCommitter.kt` | `commitText()` — atomic composing replace + commit |
+| `ime/.../audio/RingByteBuffer.kt` | `snapshotShorts()` for polish PCM buffer |
+| `core/.../flags/Flags.kt` | `polishEnabled` default `true` |
+| `ime/.../di/AudioModule.kt` | `@Binds Transcriber → PolishingTranscriber` |
+| `docs/models.md` | Whisper polish model layout |
+
+### Model layout (polish)
+
+Expected under `context.filesDir/models/whisper/`:
+
+- `base.en.gguf` (default) or `small.en.gguf` (opt-in)
+
+See `docs/models.md` for sizes, HuggingFace source, and `adb push` sideload steps.
+
+### DI / IME wiring
+
+| Class | Change |
+|-------|--------|
+| `AudioModule` | `@Binds Transcriber → PolishingTranscriber` (wraps `StreamingTranscriber`) |
+| `WhisperPolishModule` | Provides `AsrPolishEngine` / `PolishEngine` with `WhisperConfig.fromModelDir` |
+
+### STOP-condition notes (maintenance)
+
+- `WhisperContext.transcribeData` is **suspend** — `AsrPolishEngine.transcribe` is suspend; no blocking dispatcher wrap.
+- `withTimeout` does not cancel JNI whisper work — native thread may finish after timeout returns (acceptable v1).
+- `whisper_full_cancel` not exposed in `WhisperLib` — follow-up if polish overlap becomes an issue.
+
 

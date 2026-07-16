@@ -29,7 +29,7 @@ ever out of sync.
 | 004 | PanelController + VoicePanel scaffold + typing-panel toggle | 1 | P1 | M | 003 | DONE |
 | 005 | Smart voice button gesture + AudioRecorder (16 kHz PCM) | 2 | P1 | M | 004 | DONE |
 | 006 | Parakeet streaming pass (partial commits) | 3 | P1 | L | 005 | DONE |
-| 007 | Whisper polish pass on stop | 3 | P1 | M | 006 | TODO |
+| 007 | Whisper polish pass on stop | 3 | P1 | M | 006 | DONE |
 | 008 | First-launch model download UX + storage settings | 3 | P2 | M | 007 | TODO |
 | 009 | Keyboard polish — clipboard + emoji + DeepSeek look | 4 | P2 | M | 008 | TODO |
 | 010 | Hardening — battery, crashes, ANR guards, release APK | 5 | P1 | L | 009 | TODO |

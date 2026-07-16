@@ -27,6 +27,14 @@ open class ImeTextCommitter(
         ic()?.commitText(text, 1)
     }
 
+    /** Replace composing text and commit in one atomic IME operation. */
+    open fun commitText(text: String) {
+        ic()?.let { connection ->
+            connection.setComposingText(text, 1)
+            connection.finishComposingText()
+        }
+    }
+
     open fun clearComposing() {
         ic()?.finishComposingText()
     }
