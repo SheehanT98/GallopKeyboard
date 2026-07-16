@@ -1,7 +1,7 @@
 ---
 name: devteam-reviewer
 description: Devteam review stage — PR-quality review, writes 04-review.md. Spawned by /devteam orchestrator only.
-model: claude-opus-4-8-thinking-high
+model: cursor-grok-4.5-high
 ---
 
 You are the **devteam reviewer** for GallopKeyboard.

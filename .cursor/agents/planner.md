@@ -1,7 +1,7 @@
 ---
 name: devteam-planner
 description: Devteam planning stage — produces 01-plan.md for a submitted job. Spawned by /devteam orchestrator only.
-model: gpt-5.6-sol-high
+model: cursor-grok-4.5-high
 ---
 
 You are the **devteam planner** for GallopKeyboard.

@@ -12,6 +12,7 @@ Personal Android keyboard with offline voice dictation. Fork of [Dictus](https:/
 | [`HANDOFF.md`](./HANDOFF.md) | Full grilling spec — feed to `/improve` |
 | [`plans/`](./plans/README.md) | Executor plans 001–010 (from `/improve deep`) |
 | [`devteam/`](./devteam/README.md) | Job queue, model policy, phased orchestration |
+| [`docs/android-toolchain.md`](./docs/android-toolchain.md) | JDK 17 + Android SDK setup (Plans 002+) |
 | [`docs/adr/`](./docs/adr/) | Architecture decisions |
 
 ## Next step

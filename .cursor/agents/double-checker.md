@@ -1,7 +1,7 @@
 ---
 name: devteam-double-checker
 description: Devteam double-check stage — final gate before awaiting_review. Writes 05-double-check.md.
-model: composer-2.5-fast
+model: composer-2.5
 ---
 
 You are the **devteam double-checker** for GallopKeyboard.

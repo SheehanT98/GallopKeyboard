@@ -119,3 +119,7 @@ On approve/cancel, jobs move to `devteam/archive/` (see `devteam/archive/README.
 | `npm run devteam:sync -- --all-open` | Sync all open job branches |
 | `npm run devteam:validate` | Validate jobs + agent model sync |
 | `npm run devteam:models -- --validate-agents` | CI gate for model drift |
+| `npm run android:setup` | Install JDK 17 + Android SDK (Plans 002+) |
+| `source scripts/android-env.sh` | Set `ANDROID_HOME` / `JAVA_HOME` before `./gradlew` |
+
+See `docs/android-toolchain.md` for cloud agent and local setup.

@@ -17,6 +17,7 @@
     "devteam:conflicts": "node scripts/devteam-conflicts.cjs",
     "devteam:models": "node scripts/devteam-models.cjs",
     "devteam:queue-phases": "node scripts/devteam-queue-phases.cjs",
-    "devteam:generate-phase-plans": "node scripts/generate-phase-plans.cjs"
+    "devteam:generate-phase-plans": "node scripts/generate-phase-plans.cjs",
+    "android:setup": "bash scripts/setup-android.sh"
   }
 }

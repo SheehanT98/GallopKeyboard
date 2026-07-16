@@ -1,0 +1,9 @@
+{
+  "name": "GallopKeyboard Android",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "install": "npm install && bash scripts/setup-android.sh",
+  "terminals": []
+}

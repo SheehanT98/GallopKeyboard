@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "devteam": {
+      "source": ".agents/skills/devteam",
+      "sourceType": "local",
+      "computedHash": "c0c0b87a90f5418fcd092692ed61592f89dc7dfaa5eb28b3061930d0dbcd979b"
+    },
     "improve": {
       "source": "shadcn/improve",
       "sourceType": "github",
