@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.gallopkeyboard.ime.panel.PanelController
 import com.gallopkeyboard.ime.panel.PanelHost
+import com.gallopkeyboard.ime.asr.InputConnectionSupplier
 import com.gallopkeyboard.ime.model.KeyboardLayer
 
 /**
@@ -169,12 +170,14 @@ class DictusImeService : LifecycleInputMethodService() {
 
     override fun onStartInputView(info: android.view.inputmethod.EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        entryPoint.inputConnectionSupplier().supplier = { currentInputConnection }
         if (!restarting) {
             panelController.reset()
         }
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
+        entryPoint.inputConnectionSupplier().supplier = { null }
         panelController.reset()
         super.onFinishInputView(finishingInput)
     }
