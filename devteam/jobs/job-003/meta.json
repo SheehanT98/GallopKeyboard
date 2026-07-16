@@ -1,0 +1,53 @@
+{
+  "id": "job-003",
+  "status": "conflict_hold",
+  "mode": "quick",
+  "originalAsk": "Execute plan 003: Android CI + sideload baseline",
+  "planRef": "plans/003-android-ci-and-sideload-baseline.md",
+  "feature": "Execute plan 003: Android CI + sideload baseline",
+  "slug": "execute-plan-003-android-ci-sideload-baseline",
+  "branch": "cursor/devteam-job-003-execute-plan-003-android-ci-sideload-baseline-c1fc",
+  "pr": null,
+  "prNumber": null,
+  "chatTitle": null,
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-16T17:07:11.265Z",
+  "lastStatusAt": "2026-07-16T17:07:12.854Z",
+  "completedAt": null,
+  "plannedFiles": [
+    "plans/README.md",
+    "plans/002-fork-dictus-into-repo.md",
+    "scripts/verify.sh",
+    "docs/sideload-galaxy-s22.md",
+    "docs/dictus-inventory.md",
+    ".github/workflows/ci.yml",
+    "gradle/libs.versions.toml",
+    "app/build/outputs/apk/debug/app-debug.apk"
+  ],
+  "touchedFiles": [],
+  "blockedBy": [
+    "job-002"
+  ],
+  "dependsOn": [
+    "job-002"
+  ],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "pending",
+    "test": "pending",
+    "review": "pending",
+    "doubleCheck": "pending"
+  }
+}
