@@ -8,15 +8,14 @@ GallopKeyboard is a personal Android keyboard IME — a fork of [Dictus](https:/
 
 ## Build & verify commands
 
-<!-- TODO(plan-003): replace placeholders with verified commands once Gradle import lands -->
-
 | Purpose | Command | Notes |
 |---------|---------|-------|
-| Debug APK | `./gradlew assembleDebug` | Produces installable debug APK |
-| All unit tests | `./gradlew testAll` | Runs module unit tests |
-| IME lint | `./gradlew :ime:lint` | Android lint for the IME module |
+| Debug APK | `./gradlew assembleDebug` | Produces installable debug APK at `app/build/outputs/apk/debug/app-debug.apk` |
+| All unit tests | `./gradlew testAll` | Runs module unit tests (`:app`, `:core`, `:ime`) |
+| IME lint | `./gradlew :ime:lintDebug` | Android lint for the IME module |
+| Gradle smoke | `./gradlew --version` | Verifies Gradle wrapper and JDK |
 
-These commands will not work until Plan 002 has landed the Dictus import. Until then, only the docs/ADR checks apply.
+<!-- TODO(plan-003): add CI workflow commands once Android CI baseline lands -->
 
 ## Coding conventions
 
