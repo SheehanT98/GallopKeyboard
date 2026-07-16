@@ -1,15 +1,15 @@
 {
   "id": "job-004",
-  "status": "coding",
+  "status": "testing",
   "mode": "quick",
   "originalAsk": "Execute plan 004: PanelController + VoicePanel scaffold",
   "planRef": "plans/004-panel-controller-and-voice-panel-scaffold.md",
   "feature": "Execute plan 004: PanelController + VoicePanel scaffold",
   "slug": "execute-plan-004-panelcontroller-voicepanel-scaf",
   "branch": "cursor/devteam-job-004-execute-plan-004-panelcontroller-voicepanel-scaf-c1fc",
-  "pr": null,
-  "prNumber": null,
-  "chatTitle": null,
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/14",
+  "prNumber": 14,
+  "chatTitle": "devteam pr14",
   "models": {
     "plan": "cursor-grok-4.5-high",
     "code": "composer-2.5",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:11.465Z",
-  "lastStatusAt": "2026-07-16T17:42:37.287Z",
+  "lastStatusAt": "2026-07-16T17:48:20.665Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -53,7 +53,7 @@
   "notifiedAt": null,
   "stages": {
     "plan": "skipped",
-    "code": "in_progress",
+    "code": "done",
     "test": "pending",
     "review": "pending",
     "doubleCheck": "pending"

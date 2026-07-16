@@ -15,7 +15,7 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 | job-007 | conflict_hold | Execute plan 007: Whisper polish pass | `cursor/devteam-job-007-execute-plan-007-whisper-polish-pass-c1fc` | — | — |
 | job-006 | conflict_hold | Execute plan 006: Parakeet streaming pass | `cursor/devteam-job-006-execute-plan-006-parakeet-streaming-pass-c1fc` | — | — |
 | job-005 | conflict_hold | Execute plan 005: Smart button + AudioRecorder | `cursor/devteam-job-005-execute-plan-005-smart-button-audiorecorder-c1fc` | — | — |
-| job-004 | coding | Execute plan 004: PanelController + VoicePanel scaffold | `cursor/devteam-job-004-execute-plan-004-panelcontroller-voicepanel-scaf-c1fc` | — | — |
+| job-004 | testing | Execute plan 004: PanelController + VoicePanel scaffold | `cursor/devteam-job-004-execute-plan-004-panelcontroller-voicepanel-scaf-c1fc` | #14 | — |
 
 ## Ready for review
 
