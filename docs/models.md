@@ -100,3 +100,35 @@ adb push base.en.gguf /sdcard/Android/data/com.gallopkeyboard.ime/files/models/w
 
 Polish runs as a single non-streaming pass over the full session buffer on stop, with a 2 s timeout (see ADR-0003). If polish times out, the streaming partial from Plan 006 remains committed.
 
+## How model download works (Plan 008)
+
+GallopKeyboard downloads voice models on first launch via `OnboardingActivity`. Files are fetched over HTTPS, verified with SHA-256, and written atomically (`*.part` → rename). Downloads resume with HTTP `Range` when interrupted.
+
+Registry source of truth: `core/.../models/ModelRegistry.kt` (kept in sync with this section).
+
+### Parakeet streaming (zipformer int8, 2023-06-26)
+
+Base URL: `https://huggingface.co/csukuangfj/sherpa-onnx-streaming-zipformer-en-2023-06-26/resolve/main`
+
+| Device path | Source file | Size (bytes) | SHA-256 |
+|-------------|-------------|--------------|---------|
+| `models/parakeet/encoder.onnx` | `encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx` | 70,108,816 | `5022b2eca5b19d1bc104fcf33e26bc32604b7df553cd2e1f62e31dc7b05e9c87` |
+| `models/parakeet/decoder.onnx` | `decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx` | 540,688 | `780c63ee94c7cfa314211172e5d09b406c0da2beab5c40ea2f54cc95670b76a5` |
+| `models/parakeet/joiner.onnx` | `joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx` | 259,416 | `abd5e30f3f16fc510605c6029dba33f10e4386bd75c5bdc30cf94076864db10d` |
+| `models/parakeet/tokens.txt` | `tokens.txt` | 5,048 | `49e3c2646595fd907228b3c6787069658f67b17377c60aeb8619c4551b2316fb` |
+
+Parakeet bundle total: **~71 MB**.
+
+### Whisper polish
+
+Base URL: `https://huggingface.co/ggerganov/whisper.cpp/resolve/main`
+
+| Device path | Source file | Size (bytes) | SHA-256 |
+|-------------|-------------|--------------|---------|
+| `models/whisper/base.en.gguf` | `ggml-base.en.bin` | 147,964,211 | `a03779c86df3323075f5e796cb2ce5029f00ec8869eee3fdfb897afe36c6d002` |
+| `models/whisper/small.en.gguf` | `ggml-small.en.bin` | 487,614,201 | `c6138d6d58ecc8322097e0f987c32f1be8bb0a18532a3f88f734d1bbf9c41e5d` |
+
+Default first-launch bundle (Parakeet + Whisper base): **~219 MB**.
+
+Settings: `ModelsSettingsActivity` lists each spec, supports re-download / delete, and Whisper tier switch (`base.en` ↔ `small.en`).
+

@@ -24,6 +24,7 @@ class StreamingTranscriber @Inject constructor(
     private val engine: StreamingAsrEngine,
     private val committer: ImeTextCommitter,
     private val dispatcher: RecorderCoroutineDispatcher,
+    private val promptState: VoiceModelPromptState,
     @ApplicationContext private val context: Context,
 ) : Transcriber {
 
@@ -45,6 +46,7 @@ class StreamingTranscriber @Inject constructor(
                 committer.setComposing("")
             } catch (e: AsrModelMissingException) {
                 Log.w(TAG, "models missing: ${e.files}")
+                promptState.showBanner()
                 showToast(R.string.asr_models_missing)
             } catch (e: Exception) {
                 Log.e(TAG, "session start failed", e)
@@ -105,7 +107,8 @@ class StreamingTranscriber @Inject constructor(
 
     private fun showToast(messageRes: Int) {
         mainHandler.post {
-            Toast.makeText(context, messageRes, Toast.LENGTH_SHORT).show()
+            val toast = Toast.makeText(context, messageRes, Toast.LENGTH_LONG)
+            toast.show()
         }
     }
 }

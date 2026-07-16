@@ -12,6 +12,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import dagger.hilt.android.EntryPointAccessors
+import com.gallopkeyboard.core.models.ModelInstaller
+import com.gallopkeyboard.core.models.ModelRegistry
 import com.gallopkeyboard.core.preferences.PreferenceKeys
 import com.gallopkeyboard.core.service.DictationController
 import com.gallopkeyboard.core.service.DictationState
@@ -149,6 +151,12 @@ class DictusImeService : LifecycleInputMethodService() {
         super.onCreate()
         Timber.d("DictusImeService created")
         bindDictationService()
+
+        val installer = ModelInstaller(applicationContext)
+        installer.verifyInstalledIfDue()
+        if (!installer.isInstalled(ModelRegistry.defaultVoiceBundle)) {
+            entryPoint.voiceModelPromptState().showBanner()
+        }
 
         // Observe suggestions toggle from DataStore (defaults to true)
         bindingScope.launch {
@@ -329,6 +337,7 @@ class DictusImeService : LifecycleInputMethodService() {
             audioRecorderEngine = entryPoint.audioRecorderEngine(),
             transcriber = entryPoint.transcriber(),
             permissionRequester = entryPoint.permissionRequester(),
+            promptState = entryPoint.voiceModelPromptState(),
         ) {
             when (dictationState) {
                 is DictationState.Idle -> {

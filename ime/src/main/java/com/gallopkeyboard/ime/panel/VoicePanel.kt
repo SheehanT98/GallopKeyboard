@@ -39,6 +39,8 @@ fun VoicePanel(
     permissionRequester: PermissionRequester,
     keyboardHeight: Dp = KEYBOARD_PANEL_HEIGHT_DP,
     themeMode: ThemeMode = ThemeMode.DARK,
+    showSetupBanner: Boolean = false,
+    onSetupVoiceModels: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     DictusTheme(themeMode = themeMode) {
@@ -52,6 +54,9 @@ fun VoicePanel(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
+                if (showSetupBanner) {
+                    VoicePanelPromptBanner(onSetupVoiceModels = onSetupVoiceModels)
+                }
                 Box(
                     modifier = Modifier
                         .weight(1f)

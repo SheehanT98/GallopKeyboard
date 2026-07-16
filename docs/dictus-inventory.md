@@ -246,4 +246,25 @@ See `docs/models.md` for sizes, HuggingFace source, and `adb push` sideload step
 - `withTimeout` does not cancel JNI whisper work — native thread may finish after timeout returns (acceptable v1).
 - `whisper_full_cancel` not exposed in `WhisperLib` — follow-up if polish overlap becomes an issue.
 
+## Plan 008 additions
+
+GallopKeyboard-specific model download for hybrid STT (`models/parakeet/` + `models/whisper/`). **Did not reuse** upstream `app/.../service/ModelDownloader.kt` — that downloader targets Dictus `ModelCatalog` keys (tar.bz2 archives, flat Whisper bins) without SHA-256 pinning or HTTP resume. New stack in `:core`:
+
+| Path | Role |
+|------|------|
+| `core/.../models/ModelSpec.kt` | Single-file descriptor (url, sha256, relPath) |
+| `core/.../models/ModelRegistry.kt` | Pinned Parakeet zipformer + Whisper base/small specs |
+| `core/.../models/ModelDownloader.kt` | OkHttp downloader with `.part`, Range resume, SHA-256 verify |
+| `core/.../models/ModelInstaller.kt` | Sequential bundle install, corrupt detection, daily verify |
+| `core/.../models/VoiceSetupPrefs.kt` | Launcher routing flag + Whisper tier preference |
+| `core/.../models/VoiceSetupIntents.kt` | IME → app deep-link component names |
+| `app/.../onboarding/OnboardingActivity.kt` | First-launch download UX (launcher) |
+| `app/.../settings/ModelsSettingsActivity.kt` | Post-setup models screen host |
+| `app/.../settings/ModelsSettingsScreen.kt` | Re-download, tier switch, delete-all |
+| `ime/.../panel/VoicePanelPromptBanner.kt` | In-keyboard “Set up voice models” banner |
+| `ime/.../asr/VoiceModelPromptState.kt` | Banner visibility state |
+| `core/.../models/ModelDownloaderTest.kt` | MockWebServer unit tests (6 cases) |
+
+Upstream `ModelDownloader` / `ModelCatalog` remain for legacy Dictus dictation flows in the launcher app.
+
 

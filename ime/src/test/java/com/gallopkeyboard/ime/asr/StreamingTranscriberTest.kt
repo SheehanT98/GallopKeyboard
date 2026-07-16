@@ -38,7 +38,7 @@ class StreamingTranscriberTest {
         committer = RecordingImeTextCommitter()
         dispatcher = RecorderCoroutineDispatcher()
         context = androidx.test.core.app.ApplicationProvider.getApplicationContext()
-        transcriber = StreamingTranscriber(engine, committer, dispatcher, context)
+        transcriber = StreamingTranscriber(engine, committer, dispatcher, VoiceModelPromptState(), context)
         Flags.polishEnabled = false
     }
 
