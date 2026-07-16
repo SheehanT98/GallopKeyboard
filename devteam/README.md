@@ -1,12 +1,10 @@
 # Devteam
 
-Job-based pipeline for GallopKeyboard: up to **3** active agent jobs, rest queued. Human verbs: **approve**, **revise**, **cancel**.
-
-Plans: [`plans/`](../plans/README.md). Orchestration: [`.agents/skills/devteam/SKILL.md`](../.agents/skills/devteam/SKILL.md).
+Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for dependency or planned-file conflicts. Human verbs: **approve**, **revise**, **cancel**.
 
 ## Dashboard
 
-**Active agent jobs:** 0/3
+**Active agent jobs:** 0
 **Queued:** 0
 **Awaiting your review:** 0
 | Job | Status | Feature | Branch | PR | Review |

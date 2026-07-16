@@ -41,14 +41,14 @@ For executor-ready plans under `plans/`, prefer:
 
 Each plan file is self-contained (verification commands, scope, STOP conditions).
 
-## Multitask model (3 agent slots)
+## Multitask model (no active-job cap)
 
 Devteam supports:
 
 1. **Submit all phases** — `devteam:queue-phases` registers every job with `--depends-on` edges.
 2. **Auto-wait** — jobs sit in `conflict_hold` until dependency PRs **merge** (not just approve).
-3. **Auto-promote** — when you `/devteam approve job-XXX`, dependents release and enter `coding` if a slot is free.
-4. **Parallel when safe** — up to **3** jobs in `coding`/`testing`/etc. at once when:
+3. **Auto-promote** — when you `/devteam approve job-XXX`, dependents release and enter `coding` when dependencies and planned-file conflicts clear.
+4. **Parallel when safe** — any number of jobs may run in `coding`/`testing`/etc. at once when:
    - dependencies are satisfied, and
    - `plannedFiles` do not overlap (`npm run devteam:conflicts`).
 
@@ -81,7 +81,7 @@ On **approve** or **cancel**, job artifacts move to [`archive/jobs/`](./archive/
 > Read `HANDOFF.md`, `CONTEXT.md`, and `AGENTS.md` before coding.
 > For every job in `coding` status: run the full quick pipeline to `awaiting_review`.
 > Do not wait for human approve between jobs unless the job is not yet promoted.
-> Max 3 active jobs globally — if capped, poll `npm run devteam:status -- --fetch` until a slot opens.
+> No active-job cap — jobs wait only on dependency or planned-file conflict holds; poll `npm run devteam:status -- --fetch` when waiting.
 > Use model slugs from each job's `meta.json` for every stage Task launch (see `devteam/MODEL-POLICY.md`).
 > Execute plans with `bash scripts/verify.sh` as the gate before opening PRs (once Plan 003 lands).
 

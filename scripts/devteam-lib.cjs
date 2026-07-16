@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 /**
- * Devteam v2 — job queue, soft cap of 3 active agent jobs, conflict hold,
- * approve / revise / cancel.
+ * Devteam v2 — job queue, conflict hold, approve / revise / cancel.
+ * No active-job cap — as many agent jobs may run in parallel as dependencies allow.
  */
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const ACTIVE_CAP = 3;
 const MAX_TEST_RETRIES = 5;
 const MAX_DOUBLE_CHECK_RETRIES = 3;
 const DEFAULT_BRANCH = process.env.DEVTEAM_BASE_BRANCH || 'main';
@@ -558,9 +557,6 @@ function syncPlannedFiles(root, jobId) {
 }
 
 function canStartJob(root, jobId, jobs) {
-	if (countActiveAgentJobs(jobs) >= ACTIVE_CAP) {
-		return { ok: false, reason: 'active cap reached' };
-	}
 	const depBlockers = findDependencyBlockers(root, jobId, jobs);
 	if (depBlockers.length > 0) {
 		return { ok: false, reason: 'dependency', blockers: depBlockers };
@@ -609,9 +605,6 @@ function promoteQueuedJobs(root) {
 		});
 		registry.queue = registry.queue.filter((id) => id !== jobId);
 		promoted.push({ jobId, status: nextStatus });
-		if (countActiveAgentJobs(loadAllJobs(root).jobs) >= ACTIVE_CAP) {
-			break;
-		}
 	}
 
 	saveRegistry(root, registry);
@@ -682,7 +675,7 @@ function submitJob(root, feature, options = {}) {
 	const { jobs } = loadAllJobs(root);
 	jobs[jobId] = meta;
 	const startCheck = canStartJob(root, jobId, jobs);
-	if (startCheck.ok && countActiveAgentJobs(jobs) < ACTIVE_CAP) {
+	if (startCheck.ok) {
 		// start immediately — meta.status already planning/coding
 	} else {
 		meta.status =
@@ -740,7 +733,7 @@ function buildDashboardMarkdown(jobs, registry) {
 	const awaitingCount = Object.values(jobs).filter((m) => m.status === 'awaiting_review').length;
 
 	const header = [
-		'**Active agent jobs:** ' + `${activeCount}/${ACTIVE_CAP}`,
+		'**Active agent jobs:** ' + String(activeCount),
 		'**Queued:** ' + String(queuedCount),
 		'**Awaiting your review:** ' + String(awaitingCount),
 		'',
@@ -771,7 +764,7 @@ function updateReadmeDashboard(root) {
 
 	const content = `# Devteam
 
-Job-based pipeline: up to **${ACTIVE_CAP}** active agent jobs, rest queued. Human verbs: **approve**, **revise**, **cancel**.
+Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for dependency or planned-file conflicts. Human verbs: **approve**, **revise**, **cancel**.
 
 ## Dashboard
 
@@ -1605,7 +1598,6 @@ function autoArchiveMergedJobs(root, options = {}) {
 }
 
 module.exports = {
-	ACTIVE_CAP,
 	MAX_TEST_RETRIES,
 	VALID_STATUSES,
 	ACTIVE_AGENT_STATUSES,

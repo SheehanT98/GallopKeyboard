@@ -4,7 +4,7 @@ const { buildStatusReport, autoArchiveMergedJobs } = require('./devteam-lib.cjs'
 function printHelp() {
 	console.log(`Usage: node scripts/devteam-status.cjs [options]
 
-Show devteam v2 dashboard: active jobs (max 3), queue, awaiting review.
+Show devteam v2 dashboard: active jobs, queue, awaiting review.
 
 Options:
   --fetch     Fetch origin and auto-archive merged jobs first
