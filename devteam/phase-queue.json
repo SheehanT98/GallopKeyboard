@@ -1,0 +1,63 @@
+{
+  "queuedAt": null,
+  "resume": false,
+  "completedPhases": [],
+  "jobByPhase": {},
+  "phases": [
+    {
+      "phaseId": "phase-01",
+      "plans": ["001"],
+      "feature": "Phase 01: Repo hygiene + AGENTS.md + ADRs",
+      "dependsOnPhases": []
+    },
+    {
+      "phaseId": "phase-02",
+      "plans": ["002"],
+      "feature": "Phase 02: Fork Dictus into repo",
+      "dependsOnPhases": ["phase-01"]
+    },
+    {
+      "phaseId": "phase-03",
+      "plans": ["003"],
+      "feature": "Phase 03: Android CI + sideload baseline",
+      "dependsOnPhases": ["phase-02"]
+    },
+    {
+      "phaseId": "phase-04",
+      "plans": ["004"],
+      "feature": "Phase 04: PanelController + VoicePanel scaffold",
+      "dependsOnPhases": ["phase-03"]
+    },
+    {
+      "phaseId": "phase-05",
+      "plans": ["005"],
+      "feature": "Phase 05: Smart button + AudioRecorder",
+      "dependsOnPhases": ["phase-04"]
+    },
+    {
+      "phaseId": "phase-06",
+      "plans": ["006", "007"],
+      "feature": "Phase 06: Hybrid STT (Parakeet streaming + Whisper polish)",
+      "dependsOnPhases": ["phase-05"]
+    },
+    {
+      "phaseId": "phase-07",
+      "plans": ["008"],
+      "feature": "Phase 07: Model download UX",
+      "dependsOnPhases": ["phase-06"]
+    },
+    {
+      "phaseId": "phase-08",
+      "plans": ["009"],
+      "feature": "Phase 08: Keyboard polish (clipboard + emoji + DeepSeek look)",
+      "dependsOnPhases": ["phase-07"]
+    },
+    {
+      "phaseId": "phase-09",
+      "plans": ["010"],
+      "feature": "Phase 09: Hardening (battery, crashes, release APK)",
+      "dependsOnPhases": ["phase-08"]
+    }
+  ],
+  "results": []
+}
