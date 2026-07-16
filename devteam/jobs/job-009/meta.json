@@ -1,6 +1,6 @@
 {
   "id": "job-009",
-  "status": "reviewing",
+  "status": "double_checking",
   "mode": "quick",
   "originalAsk": "Execute plan 009: Keyboard polish clipboard + emoji",
   "planRef": "plans/009-keyboard-polish-clipboard-emoji.md",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:12.447Z",
-  "lastStatusAt": "2026-07-16T19:17:29.576Z",
+  "lastStatusAt": "2026-07-16T19:18:33.176Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -51,7 +51,7 @@
     "plan": "skipped",
     "code": "done",
     "test": "done",
-    "review": "in_progress",
-    "doubleCheck": "pending"
+    "review": "done",
+    "doubleCheck": "in_progress"
   }
 }
