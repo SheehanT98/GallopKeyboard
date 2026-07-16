@@ -7,7 +7,7 @@
         errorLine1="                text = String.format(&quot;%02d:%02d&quot;, elapsedMs / 60000, (elapsedMs % 60000) / 1000),"
         errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/RecordingScreen.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/RecordingScreen.kt"
             line="137"
             column="24"/>
     </issue>
@@ -18,7 +18,7 @@
         errorLine1="            .map { it[PreferenceKeys.THEME] ?: &quot;dark&quot; }"
         errorLine2="             ~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/DictusImeService.kt"
+            file="src/main/java/com/gallopkeyboard/ime/DictusImeService.kt"
             line="272"
             column="14"/>
     </issue>
@@ -29,7 +29,7 @@
         errorLine1="            .map { it[PreferenceKeys.KEYBOARD_MODE] ?: &quot;abc&quot; }"
         errorLine2="             ~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/DictusImeService.kt"
+            file="src/main/java/com/gallopkeyboard/ime/DictusImeService.kt"
             line="283"
             column="14"/>
     </issue>
@@ -40,7 +40,7 @@
         errorLine1="            .map { it[PreferenceKeys.HAPTICS_ENABLED] ?: true }"
         errorLine2="             ~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/DictusImeService.kt"
+            file="src/main/java/com/gallopkeyboard/ime/DictusImeService.kt"
             line="289"
             column="14"/>
     </issue>
@@ -51,7 +51,7 @@
         errorLine1="            .map { it[PreferenceKeys.KEYBOARD_LAYOUT] ?: &quot;azerty&quot; }"
         errorLine2="             ~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/DictusImeService.kt"
+            file="src/main/java/com/gallopkeyboard/ime/DictusImeService.kt"
             line="298"
             column="14"/>
     </issue>
@@ -62,7 +62,7 @@
         errorLine1="    modifier: Modifier = Modifier,"
         errorLine2="    ~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/EmojiPickerScreen.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/EmojiPickerScreen.kt"
             line="60"
             column="5"/>
     </issue>
@@ -73,7 +73,7 @@
         errorLine1="    modifier: Modifier = Modifier,"
         errorLine2="    ~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/KeyButton.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/KeyButton.kt"
             line="66"
             column="5"/>
     </issue>
@@ -84,7 +84,7 @@
         errorLine1="    modifier: Modifier = Modifier,"
         errorLine2="    ~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/KeyRow.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/KeyRow.kt"
             line="28"
             column="5"/>
     </issue>
@@ -95,7 +95,7 @@
         errorLine1="    modifier: Modifier = Modifier,"
         errorLine2="    ~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/KeyboardView.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/KeyboardView.kt"
             line="32"
             column="5"/>
     </issue>
@@ -106,7 +106,7 @@
         errorLine1="    modifier: Modifier = Modifier,"
         errorLine2="    ~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/MicButtonRow.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/MicButtonRow.kt"
             line="40"
             column="5"/>
     </issue>
@@ -117,7 +117,7 @@
         errorLine1="                    awaitPointerEventScope {"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/KeyButton.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/KeyButton.kt"
             line="139"
             column="21"/>
     </issue>
@@ -128,7 +128,7 @@
         errorLine1="                    awaitPointerEventScope {"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/KeyButton.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/KeyButton.kt"
             line="157"
             column="21"/>
     </issue>
@@ -150,7 +150,7 @@
         errorLine1="    var keyWidthPx by remember { mutableStateOf(0) }"
         errorLine2="                                 ~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/KeyButton.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/KeyButton.kt"
             line="71"
             column="34"/>
     </issue>
@@ -161,7 +161,7 @@
         errorLine1="    var keyPositionXPx by remember { mutableStateOf(0f) }"
         errorLine2="                                     ~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/KeyButton.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/KeyButton.kt"
             line="72"
             column="38"/>
     </issue>
@@ -172,7 +172,7 @@
         errorLine1="    var lastShiftTapTime by remember { mutableStateOf(0L) }"
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ime/ui/KeyboardScreen.kt"
+            file="src/main/java/com/gallopkeyboard/ime/ui/KeyboardScreen.kt"
             line="65"
             column="40"/>
     </issue>

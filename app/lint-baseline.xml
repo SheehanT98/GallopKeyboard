@@ -7,9 +7,42 @@
         errorLine1="        recorder = AudioRecord("
         errorLine2="                   ^">
         <location
-            file="src/main/java/com.gallopkeyboard/service/AudioCaptureManager.kt"
+            file="src/main/java/com/gallopkeyboard/service/AudioCaptureManager.kt"
             line="70"
             column="20"/>
+    </issue>
+
+    <issue
+        id="MissingClass"
+        message="Class referenced in the manifest, `com.gallopkeyboard.app.DictusApplication`, was not found in the project or the libraries"
+        errorLine1="        android:name=&quot;.DictusApplication&quot;"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="11"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="MissingClass"
+        message="Class referenced in the manifest, `com.gallopkeyboard.app.MainActivity`, was not found in the project or the libraries"
+        errorLine1="            android:name=&quot;.MainActivity&quot;"
+        errorLine2="                          ~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="19"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="MissingClass"
+        message="Class referenced in the manifest, `com.gallopkeyboard.app.service.DictationService`, was not found in the project or the libraries"
+        errorLine1="            android:name=&quot;.service.DictationService&quot;"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="29"
+            column="27"/>
     </issue>
 
     <issue
@@ -18,7 +51,7 @@
         errorLine1="                        text = String.format("
         errorLine2="                               ^">
         <location
-            file="src/main/java/com.gallopkeyboard/ui/RecordingTestArea.kt"
+            file="src/main/java/com/gallopkeyboard/ui/RecordingTestArea.kt"
             line="102"
             column="32"/>
     </issue>
@@ -29,106 +62,106 @@
         errorLine1="                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE,"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/service/DictationService.kt"
+            file="src/main/java/com/gallopkeyboard/service/DictationService.kt"
             line="203"
             column="21"/>
     </issue>
 
     <issue
         id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.application than 8.7.3 is available: 9.1.0"
+        message="A newer version of com.android.application than 8.7.3 is available: 9.3.0"
         errorLine1="agp = &quot;8.7.3&quot;"
         errorLine2="      ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="3"
             column="7"/>
     </issue>
 
     <issue
         id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.application than 8.7.3 is available: 9.1.0"
+        message="A newer version of com.android.application than 8.7.3 is available: 9.3.0"
         errorLine1="agp = &quot;8.7.3&quot;"
         errorLine2="      ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="3"
             column="7"/>
     </issue>
 
     <issue
         id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.application than 8.7.3 is available: 9.1.0"
+        message="A newer version of com.android.application than 8.7.3 is available: 9.3.0"
         errorLine1="agp = &quot;8.7.3&quot;"
         errorLine2="      ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="3"
             column="7"/>
     </issue>
 
     <issue
         id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.library than 8.7.3 is available: 9.1.0"
+        message="A newer version of com.android.library than 8.7.3 is available: 9.3.0"
         errorLine1="agp = &quot;8.7.3&quot;"
         errorLine2="      ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="3"
             column="7"/>
     </issue>
 
     <issue
         id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.library than 8.7.3 is available: 9.1.0"
+        message="A newer version of com.android.library than 8.7.3 is available: 9.3.0"
         errorLine1="agp = &quot;8.7.3&quot;"
         errorLine2="      ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="3"
             column="7"/>
     </issue>
 
     <issue
         id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.library than 8.7.3 is available: 9.1.0"
+        message="A newer version of com.android.library than 8.7.3 is available: 9.3.0"
         errorLine1="agp = &quot;8.7.3&quot;"
         errorLine2="      ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="3"
             column="7"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.compose:compose-bom than 2025.03.00 is available: 2026.03.01"
+        message="A newer version of androidx.compose:compose-bom than 2025.03.00 is available: 2026.06.01"
         errorLine1="compose-bom = &quot;2025.03.00&quot;"
         errorLine2="              ~~~~~~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="4"
             column="15"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.compose:compose-bom than 2025.03.00 is available: 2026.03.01"
+        message="A newer version of androidx.compose:compose-bom than 2025.03.00 is available: 2026.06.01"
         errorLine1="compose-bom = &quot;2025.03.00&quot;"
         errorLine2="              ~~~~~~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="4"
             column="15"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.compose:compose-bom than 2025.03.00 is available: 2026.03.01"
+        message="A newer version of androidx.compose:compose-bom than 2025.03.00 is available: 2026.06.01"
         errorLine1="compose-bom = &quot;2025.03.00&quot;"
         errorLine2="              ~~~~~~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="4"
             column="15"/>
     </issue>
@@ -139,7 +172,7 @@
         errorLine1="datastore = &quot;1.1.3&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="8"
             column="13"/>
     </issue>
@@ -150,7 +183,7 @@
         errorLine1="datastore = &quot;1.1.3&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="8"
             column="13"/>
     </issue>
@@ -161,139 +194,139 @@
         errorLine1="datastore = &quot;1.1.3&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="8"
             column="13"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.10.0"
+        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.11.0"
         errorLine1="lifecycle = &quot;2.8.7&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="9"
             column="13"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.10.0"
+        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.11.0"
         errorLine1="lifecycle = &quot;2.8.7&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="9"
             column="13"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.10.0"
+        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.11.0"
         errorLine1="lifecycle = &quot;2.8.7&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="9"
             column="13"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-service than 2.8.7 is available: 2.10.0"
+        message="A newer version of androidx.lifecycle:lifecycle-service than 2.8.7 is available: 2.11.0"
         errorLine1="lifecycle = &quot;2.8.7&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="9"
             column="13"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-service than 2.8.7 is available: 2.10.0"
+        message="A newer version of androidx.lifecycle:lifecycle-service than 2.8.7 is available: 2.11.0"
         errorLine1="lifecycle = &quot;2.8.7&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="9"
             column="13"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-service than 2.8.7 is available: 2.10.0"
+        message="A newer version of androidx.lifecycle:lifecycle-service than 2.8.7 is available: 2.11.0"
         errorLine1="lifecycle = &quot;2.8.7&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="9"
             column="13"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.10.0"
+        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.11.0"
         errorLine1="lifecycle = &quot;2.8.7&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="9"
             column="13"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.10.0"
+        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.11.0"
         errorLine1="lifecycle = &quot;2.8.7&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="9"
             column="13"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.10.0"
+        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.11.0"
         errorLine1="lifecycle = &quot;2.8.7&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="9"
             column="13"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.core:core-ktx than 1.15.0 is available: 1.18.0"
+        message="A newer version of androidx.core:core-ktx than 1.15.0 is available: 1.19.0"
         errorLine1="core-ktx = &quot;1.15.0&quot;"
         errorLine2="           ~~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="10"
             column="12"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.core:core-ktx than 1.15.0 is available: 1.18.0"
+        message="A newer version of androidx.core:core-ktx than 1.15.0 is available: 1.19.0"
         errorLine1="core-ktx = &quot;1.15.0&quot;"
         errorLine2="           ~~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="10"
             column="12"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.core:core-ktx than 1.15.0 is available: 1.18.0"
+        message="A newer version of androidx.core:core-ktx than 1.15.0 is available: 1.19.0"
         errorLine1="core-ktx = &quot;1.15.0&quot;"
         errorLine2="           ~~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="10"
             column="12"/>
     </issue>
@@ -304,7 +337,7 @@
         errorLine1="activity-compose = &quot;1.9.3&quot;"
         errorLine2="                   ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="11"
             column="20"/>
     </issue>
@@ -315,7 +348,7 @@
         errorLine1="activity-compose = &quot;1.9.3&quot;"
         errorLine2="                   ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="11"
             column="20"/>
     </issue>
@@ -326,40 +359,40 @@
         errorLine1="activity-compose = &quot;1.9.3&quot;"
         errorLine2="                   ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="11"
             column="20"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.savedstate:savedstate than 1.2.1 is available: 1.4.0"
+        message="A newer version of androidx.savedstate:savedstate than 1.2.1 is available: 1.5.0"
         errorLine1="savedstate = &quot;1.2.1&quot;"
         errorLine2="             ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="12"
             column="14"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.savedstate:savedstate than 1.2.1 is available: 1.4.0"
+        message="A newer version of androidx.savedstate:savedstate than 1.2.1 is available: 1.5.0"
         errorLine1="savedstate = &quot;1.2.1&quot;"
         errorLine2="             ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="12"
             column="14"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.savedstate:savedstate than 1.2.1 is available: 1.4.0"
+        message="A newer version of androidx.savedstate:savedstate than 1.2.1 is available: 1.5.0"
         errorLine1="savedstate = &quot;1.2.1&quot;"
         errorLine2="             ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="12"
             column="14"/>
     </issue>
@@ -370,7 +403,7 @@
         errorLine1="androidx-test-core = &quot;1.6.1&quot;"
         errorLine2="                     ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="17"
             column="22"/>
     </issue>
@@ -381,7 +414,7 @@
         errorLine1="androidx-test-core = &quot;1.6.1&quot;"
         errorLine2="                     ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="17"
             column="22"/>
     </issue>
@@ -392,7 +425,7 @@
         errorLine1="androidx-test-core = &quot;1.6.1&quot;"
         errorLine2="                     ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="17"
             column="22"/>
     </issue>
@@ -403,7 +436,7 @@
         errorLine1="androidx-test-ext-junit = &quot;1.2.1&quot;"
         errorLine2="                          ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="18"
             column="27"/>
     </issue>
@@ -414,7 +447,7 @@
         errorLine1="androidx-test-ext-junit = &quot;1.2.1&quot;"
         errorLine2="                          ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="18"
             column="27"/>
     </issue>
@@ -425,73 +458,73 @@
         errorLine1="androidx-test-ext-junit = &quot;1.2.1&quot;"
         errorLine2="                          ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="18"
             column="27"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.navigation:navigation-compose than 2.8.9 is available: 2.9.7"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.9 is available: 2.9.8"
         errorLine1="navigation = &quot;2.8.9&quot;"
         errorLine2="             ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="22"
             column="14"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.navigation:navigation-compose than 2.8.9 is available: 2.9.7"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.9 is available: 2.9.8"
         errorLine1="navigation = &quot;2.8.9&quot;"
         errorLine2="             ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="22"
             column="14"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.navigation:navigation-compose than 2.8.9 is available: 2.9.7"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.9 is available: 2.9.8"
         errorLine1="navigation = &quot;2.8.9&quot;"
         errorLine2="             ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="22"
             column="14"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.hilt:hilt-navigation-compose than 1.2.0 is available: 1.3.0"
+        message="A newer version of androidx.hilt:hilt-navigation-compose than 1.2.0 is available: 1.4.0"
         errorLine1="hilt-navigation-compose = &quot;1.2.0&quot;"
         errorLine2="                          ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="23"
             column="27"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.hilt:hilt-navigation-compose than 1.2.0 is available: 1.3.0"
+        message="A newer version of androidx.hilt:hilt-navigation-compose than 1.2.0 is available: 1.4.0"
         errorLine1="hilt-navigation-compose = &quot;1.2.0&quot;"
         errorLine2="                          ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="23"
             column="27"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.hilt:hilt-navigation-compose than 1.2.0 is available: 1.3.0"
+        message="A newer version of androidx.hilt:hilt-navigation-compose than 1.2.0 is available: 1.4.0"
         errorLine1="hilt-navigation-compose = &quot;1.2.0&quot;"
         errorLine2="                          ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="23"
             column="27"/>
     </issue>
@@ -502,7 +535,7 @@
         errorLine1="appcompat = &quot;1.7.0&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="24"
             column="13"/>
     </issue>
@@ -513,7 +546,7 @@
         errorLine1="appcompat = &quot;1.7.0&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="24"
             column="13"/>
     </issue>
@@ -524,7 +557,7 @@
         errorLine1="appcompat = &quot;1.7.0&quot;"
         errorLine2="            ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="24"
             column="13"/>
     </issue>
@@ -535,7 +568,7 @@
         errorLine1="emoji2-emojipicker = { group = &quot;androidx.emoji2&quot;, name = &quot;emoji2-emojipicker&quot;, version = &quot;1.5.0&quot; }"
         errorLine2="                                                                                         ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="56"
             column="90"/>
     </issue>
@@ -546,7 +579,7 @@
         errorLine1="emoji2-emojipicker = { group = &quot;androidx.emoji2&quot;, name = &quot;emoji2-emojipicker&quot;, version = &quot;1.5.0&quot; }"
         errorLine2="                                                                                         ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="56"
             column="90"/>
     </issue>
@@ -557,7 +590,7 @@
         errorLine1="emoji2-emojipicker = { group = &quot;androidx.emoji2&quot;, name = &quot;emoji2-emojipicker&quot;, version = &quot;1.5.0&quot; }"
         errorLine2="                                                                                         ~~~~~~~">
         <location
-            file="$HOME/dev/gallopkeyboard-android/gradle/libs.versions.toml"
+            file="../gradle/libs.versions.toml"
             line="56"
             column="90"/>
     </issue>
@@ -568,7 +601,7 @@
         errorLine1="        .map { it[PreferenceKeys.HAS_COMPLETED_ONBOARDING] ?: false }"
         errorLine2="         ~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/navigation/AppNavHost.kt"
+            file="src/main/java/com/gallopkeyboard/navigation/AppNavHost.kt"
             line="82"
             column="10"/>
     </issue>
@@ -579,7 +612,7 @@
         errorLine1="        .map { it[PreferenceKeys.ACTIVE_MODEL] ?: ModelCatalog.DEFAULT_KEY }"
         errorLine2="         ~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/home/HomeScreen.kt"
+            file="src/main/java/com/gallopkeyboard/home/HomeScreen.kt"
             line="67"
             column="10"/>
     </issue>
@@ -590,7 +623,7 @@
         errorLine1="        .map { it[PreferenceKeys.LAST_TRANSCRIPTION] }"
         errorLine2="         ~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/home/HomeScreen.kt"
+            file="src/main/java/com/gallopkeyboard/home/HomeScreen.kt"
             line="71"
             column="10"/>
     </issue>
@@ -601,7 +634,7 @@
         errorLine1="                .map { it[PreferenceKeys.THEME] ?: &quot;dark&quot; }"
         errorLine2="                 ~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/MainActivity.kt"
+            file="src/main/java/com/gallopkeyboard/MainActivity.kt"
             line="100"
             column="18"/>
     </issue>
@@ -612,7 +645,7 @@
         errorLine1="    modifier: Modifier = Modifier,"
         errorLine2="    ~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ui/onboarding/OnboardingCTAButton.kt"
+            file="src/main/java/com/gallopkeyboard/ui/onboarding/OnboardingCTAButton.kt"
             line="66"
             column="5"/>
     </issue>
@@ -623,7 +656,7 @@
         errorLine1="    modifier: Modifier = Modifier,"
         errorLine2="    ~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ui/onboarding/OnboardingProgressDots.kt"
+            file="src/main/java/com/gallopkeyboard/ui/onboarding/OnboardingProgressDots.kt"
             line="32"
             column="5"/>
     </issue>
@@ -634,7 +667,7 @@
         errorLine1="        val resId = context.resources.getIdentifier(name, &quot;raw&quot;, context.packageName)"
         errorLine2="                                      ~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/audio/DictationSoundPlayer.kt"
+            file="src/main/java/com/gallopkeyboard/audio/DictationSoundPlayer.kt"
             line="94"
             column="39"/>
     </issue>
@@ -645,7 +678,7 @@
         errorLine1="            val resId = context.resources.getIdentifier(soundName, &quot;raw&quot;, context.packageName)"
         errorLine2="                                          ~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ui/settings/SoundPickerScreen.kt"
+            file="src/main/java/com/gallopkeyboard/ui/settings/SoundPickerScreen.kt"
             line="209"
             column="43"/>
     </issue>
@@ -889,20 +922,9 @@
         errorLine1="                .offset(x = knobOffset, y = knobPadding)"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/java/com.gallopkeyboard/ui/settings/SettingsScreen.kt"
+            file="src/main/java/com/gallopkeyboard/ui/settings/SettingsScreen.kt"
             line="609"
             column="18"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;recording_test_state_transcribing&quot;>État : Transcription...&lt;/string>"
-        errorLine2="                                                     ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-fr/strings.xml"
-            line="137"
-            column="54"/>
     </issue>
 
     <issue
@@ -953,9 +975,9 @@
 
     <issue
         id="IconLocation"
-        message="Found bitmap drawable `res/drawable/ic_gallop_logo.png` in densityless folder">
+        message="Found bitmap drawable `res/drawable/ic_dictus_logo.png` in densityless folder">
         <location
-            file="src/main/res/drawable/ic_gallop_logo.png"/>
+            file="src/main/res/drawable/ic_dictus_logo.png"/>
     </issue>
 
     <issue
@@ -965,7 +987,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="97"
+            line="133"
             column="20"/>
     </issue>
 
