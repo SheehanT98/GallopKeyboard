@@ -17,7 +17,7 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 | job-005 | conflict_hold | Execute plan 005: Smart button + AudioRecorder | `cursor/devteam-job-005-execute-plan-005-smart-button-audiorecorder-c1fc` | — | — |
 | job-004 | conflict_hold | Execute plan 004: PanelController + VoicePanel scaffold | `cursor/devteam-job-004-execute-plan-004-panelcontroller-voicepanel-scaf-c1fc` | — | — |
 | job-003 | conflict_hold | Execute plan 003: Android CI + sideload baseline | `cursor/devteam-job-003-execute-plan-003-android-ci-sideload-baseline-c1fc` | — | — |
-| job-002 | coding | Execute plan 002: fork Dictus into repo | `cursor/devteam-job-002-execute-plan-002-fork-dictus-into-repo-c1fc` | — | — |
+| job-002 | testing | Execute plan 002: fork Dictus into repo | `cursor/devteam-job-002-execute-plan-002-fork-dictus-into-repo-c1fc` | #10 | — |
 
 ## Ready for review
 
