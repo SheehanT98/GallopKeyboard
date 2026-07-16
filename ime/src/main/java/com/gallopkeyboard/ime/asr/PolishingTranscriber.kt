@@ -34,8 +34,10 @@ class PolishingTranscriber @Inject constructor(
     override fun onAudioFrame(session: AudioSession, frame: ShortArray) =
         streaming.onAudioFrame(session, frame)
 
-    override fun onSessionCancel(session: AudioSession) =
+    override fun onSessionCancel(session: AudioSession) {
         streaming.onSessionCancel(session)
+        lifecycleManager.onSessionStopped()
+    }
 
     override suspend fun onSessionStop(session: AudioSession) {
         streaming.onSessionStop(session)

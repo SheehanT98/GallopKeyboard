@@ -57,6 +57,15 @@ APK sizes: debug 157M, release 88M (native libs; models not in APK).
 | Battery > 300 mAh | **Not hit** — requires physical S22 (documented as pending) |
 | No release keystore | **Not hit** — debug signing fallback works |
 
+## Review fix (cancel lifecycle)
+
+| File | Why |
+|------|-----|
+| `PolishingTranscriber.kt` | `onSessionCancel` now calls `lifecycleManager.onSessionStopped()` so `sessionActive` clears and idle unload can run after cancel |
+| `PolishingTranscriberTest.kt` | `RecordingModelLifecycleController` + tests assert cancel/stop notify lifecycle |
+
+`StreamingTranscriber` is only bound via `PolishingTranscriber` in production; lifecycle is owned at the decorator layer (no change there).
+
 ## Manual / device tests (owner)
 
 - 30-min battery run per `docs/manual-test-matrix.md`
