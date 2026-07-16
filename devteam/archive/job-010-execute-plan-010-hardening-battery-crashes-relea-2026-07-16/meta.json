@@ -1,6 +1,6 @@
 {
   "id": "job-010",
-  "status": "awaiting_review",
+  "status": "archived",
   "mode": "quick",
   "originalAsk": "Execute plan 010: Hardening battery crashes release",
   "planRef": "plans/010-hardening-battery-crashes-release.md",
@@ -18,8 +18,8 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:12.654Z",
-  "lastStatusAt": "2026-07-16T19:50:29.016Z",
-  "completedAt": "2026-07-16T19:50:29.016Z",
+  "lastStatusAt": "2026-07-16T19:54:14.723Z",
+  "completedAt": "2026-07-16T19:54:14.723Z",
   "plannedFiles": [
     "plans/README.md",
     "plans/009-keyboard-polish-clipboard-emoji.md",
@@ -52,5 +52,7 @@
     "test": "done",
     "review": "done",
     "doubleCheck": "done"
-  }
+  },
+  "archivedAt": "2026-07-16T19:54:14.724Z",
+  "archiveReason": "approved"
 }
