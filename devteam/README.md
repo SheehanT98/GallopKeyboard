@@ -11,7 +11,7 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 |-----|--------|---------|--------|-----|--------|
 | job-010 | conflict_hold | Execute plan 010: Hardening battery crashes release | `cursor/devteam-job-010-execute-plan-010-hardening-battery-crashes-relea-c1fc` | — | — |
 | job-009 | conflict_hold | Execute plan 009: Keyboard polish clipboard + emoji | `cursor/devteam-job-009-execute-plan-009-keyboard-polish-clipboard-emoji-c1fc` | — | — |
-| job-008 | coding | Execute plan 008: Model download UX | `cursor/devteam-job-008-execute-plan-008-model-download-ux-c1fc` | — | — |
+| job-008 | testing | Execute plan 008: Model download UX | `cursor/devteam-job-008-execute-plan-008-model-download-ux-c1fc` | #22 | — |
 
 ## Ready for review
 
