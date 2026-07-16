@@ -4,9 +4,9 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 
 ## Dashboard
 
-**Active agent jobs:** 1
+**Active agent jobs:** 0
 **Queued:** 0
-**Awaiting your review:** 0
+**Awaiting your review:** 1
 | Job | Status | Feature | Branch | PR | Review |
 |-----|--------|---------|--------|-----|--------|
 | job-010 | conflict_hold | Execute plan 010: Hardening battery crashes release | `cursor/devteam-job-010-execute-plan-010-hardening-battery-crashes-relea-c1fc` | — | — |
@@ -14,11 +14,11 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 | job-008 | conflict_hold | Execute plan 008: Model download UX | `cursor/devteam-job-008-execute-plan-008-model-download-ux-c1fc` | — | — |
 | job-007 | conflict_hold | Execute plan 007: Whisper polish pass | `cursor/devteam-job-007-execute-plan-007-whisper-polish-pass-c1fc` | — | — |
 | job-006 | conflict_hold | Execute plan 006: Parakeet streaming pass | `cursor/devteam-job-006-execute-plan-006-parakeet-streaming-pass-c1fc` | — | — |
-| job-005 | coding | Execute plan 005: Smart button + AudioRecorder | `cursor/devteam-job-005-execute-plan-005-smart-button-audiorecorder-c1fc` | — | — |
+| job-005 | awaiting_review | Execute plan 005: Smart button + AudioRecorder | `cursor/devteam-job-005-execute-plan-005-smart-button-audiorecorder-c1fc` | #16 | [04-review.md](jobs/job-005/04-review.md) |
 
 ## Ready for review
 
-_No jobs awaiting review._
+- **job-005** — Execute plan 005: Smart button + AudioRecorder · PR 16
 
 ## Commands
 
