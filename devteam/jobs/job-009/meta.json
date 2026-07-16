@@ -1,6 +1,6 @@
 {
   "id": "job-009",
-  "status": "conflict_hold",
+  "status": "coding",
   "mode": "quick",
   "originalAsk": "Execute plan 009: Keyboard polish clipboard + emoji",
   "planRef": "plans/009-keyboard-polish-clipboard-emoji.md",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:12.447Z",
-  "lastStatusAt": "2026-07-16T18:49:30.781Z",
+  "lastStatusAt": "2026-07-16T19:11:41.618Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -37,10 +37,7 @@
     "scripts/verify.sh"
   ],
   "touchedFiles": [],
-  "blockedBy": [
-    "job-008",
-    "job-008"
-  ],
+  "blockedBy": [],
   "dependsOn": [
     "job-008"
   ],
@@ -52,7 +49,7 @@
   "notifiedAt": null,
   "stages": {
     "plan": "skipped",
-    "code": "pending",
+    "code": "in_progress",
     "test": "pending",
     "review": "pending",
     "doubleCheck": "pending"
