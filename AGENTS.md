@@ -10,12 +10,16 @@ GallopKeyboard is a personal Android keyboard IME — a fork of [Dictus](https:/
 
 | Purpose | Command | Notes |
 |---------|---------|-------|
+| **Before you push** | `bash scripts/verify.sh` | Runs assembleDebug + testAll + lint + grep guards (mirrors CI) |
 | Debug APK | `./gradlew assembleDebug` | Produces installable debug APK at `app/build/outputs/apk/debug/app-debug.apk` |
 | All unit tests | `./gradlew testAll` | Runs module unit tests (`:app`, `:core`, `:ime`) |
-| IME lint | `./gradlew :ime:lintDebug` | Android lint for the IME module |
+| Lint (all modules) | `./gradlew lint` | Android lint across modules |
+| IME lint only | `./gradlew :ime:lintDebug` | Android lint for the IME module |
 | Gradle smoke | `./gradlew --version` | Verifies Gradle wrapper and JDK |
 
-<!-- TODO(plan-003): add CI workflow commands once Android CI baseline lands -->
+### CI
+
+CI (GitHub Actions, `.github/workflows/ci.yml`) runs the same three Gradle tasks on push and PR. A red CI run blocks merging.
 
 ## Coding conventions
 

@@ -25,7 +25,7 @@ ever out of sync.
 |------|-------|-------|----------|--------|------------|--------|
 | 001 | Repo hygiene + AGENTS.md + supporting ADRs | 0 | P1 | S | — | DONE |
 | 002 | Fork Dictus into this repo (import + rename + attribution) | 0 | P1 | L | 001 | DONE |
-| 003 | Android CI baseline + Galaxy S22 sideload docs | 0 | P1 | S | 002 | TODO |
+| 003 | Android CI baseline + Galaxy S22 sideload docs | 0 | P1 | S | 002 | DONE |
 | 004 | PanelController + VoicePanel scaffold + typing-panel toggle | 1 | P1 | M | 003 | TODO |
 | 005 | Smart voice button gesture + AudioRecorder (16 kHz PCM) | 2 | P1 | M | 004 | TODO |
 | 006 | Parakeet streaming pass (partial commits) | 3 | P1 | L | 005 | TODO |

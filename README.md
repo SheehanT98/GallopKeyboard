@@ -17,6 +17,8 @@ Output: `app/build/outputs/apk/debug/app-debug.apk`
 
 ## Install on Galaxy S22
 
+See [docs/sideload-galaxy-s22.md](docs/sideload-galaxy-s22.md) for the full walkthrough.
+
 1. Enable USB debugging and connect the device.
 2. `adb install -r app/build/outputs/apk/debug/app-debug.apk`
 3. **Settings → General Management → Keyboard → Manage keyboards** → enable **GallopKeyboard** → set as default.

@@ -16,7 +16,7 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 | job-006 | conflict_hold | Execute plan 006: Parakeet streaming pass | `cursor/devteam-job-006-execute-plan-006-parakeet-streaming-pass-c1fc` | — | — |
 | job-005 | conflict_hold | Execute plan 005: Smart button + AudioRecorder | `cursor/devteam-job-005-execute-plan-005-smart-button-audiorecorder-c1fc` | — | — |
 | job-004 | conflict_hold | Execute plan 004: PanelController + VoicePanel scaffold | `cursor/devteam-job-004-execute-plan-004-panelcontroller-voicepanel-scaf-c1fc` | — | — |
-| job-003 | coding | Execute plan 003: Android CI + sideload baseline | `cursor/devteam-job-003-execute-plan-003-android-ci-sideload-baseline-c1fc` | — | — |
+| job-003 | reviewing | Execute plan 003: Android CI + sideload baseline | `cursor/devteam-job-003-execute-plan-003-android-ci-sideload-baseline-c1fc` | #12 | — |
 
 ## Ready for review
 
