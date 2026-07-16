@@ -1,15 +1,15 @@
 {
   "id": "job-009",
-  "status": "coding",
+  "status": "awaiting_review",
   "mode": "quick",
   "originalAsk": "Execute plan 009: Keyboard polish clipboard + emoji",
   "planRef": "plans/009-keyboard-polish-clipboard-emoji.md",
   "feature": "Execute plan 009: Keyboard polish clipboard + emoji",
   "slug": "execute-plan-009-keyboard-polish-clipboard-emoji",
   "branch": "cursor/devteam-job-009-execute-plan-009-keyboard-polish-clipboard-emoji-c1fc",
-  "pr": null,
-  "prNumber": null,
-  "chatTitle": null,
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/23",
+  "prNumber": 23,
+  "chatTitle": "devteam pr23",
   "models": {
     "plan": "cursor-grok-4.5-high",
     "code": "composer-2.5",
@@ -18,8 +18,8 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:12.447Z",
-  "lastStatusAt": "2026-07-16T19:11:41.618Z",
-  "completedAt": null,
+  "lastStatusAt": "2026-07-16T19:20:02.377Z",
+  "completedAt": "2026-07-16T19:20:02.376Z",
   "plannedFiles": [
     "plans/README.md",
     "plans/008-model-download-ux.md",
@@ -49,9 +49,9 @@
   "notifiedAt": null,
   "stages": {
     "plan": "skipped",
-    "code": "in_progress",
-    "test": "pending",
-    "review": "pending",
-    "doubleCheck": "pending"
+    "code": "done",
+    "test": "done",
+    "review": "done",
+    "doubleCheck": "done"
   }
 }

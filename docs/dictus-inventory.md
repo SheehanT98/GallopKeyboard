@@ -267,4 +267,41 @@ GallopKeyboard-specific model download for hybrid STT (`models/parakeet/` + `mod
 
 Upstream `ModelDownloader` / `ModelCatalog` remain for legacy Dictus dictation flows in the launcher app.
 
+## Plan 009 additions
+
+Keyboard polish: short clipboard strip, emoji reuse, DeepSeek-inspired voice panel.
+
+### STOP-condition: emoji reuse
+
+Dictus already ships `ime/ui/EmojiPickerScreen.kt` with `androidx.emoji2.emojipicker.EmojiPickerView`
+(8-column grid, category tabs built into the widget). **Did not create** parallel `EmojiPanel.kt`
+or `arrays.xml` per STOP condition — existing picker extended in place (emoji key on row 4 via
+`KeyType.EMOJI` in `KeyboardLayouts.kt`).
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/.../clipboard/ClipboardStore.kt` | In-memory 3-item ring (plain text, dedup, 500-char cap) |
+| `ime/.../clipboard/ClipboardWatcher.kt` | `OnPrimaryClipChangedListener` + `onStartInputView` fallback |
+| `ime/.../panel/ClipboardStrip.kt` | Compose chip row above typing keys; tap insert, long-press clear |
+| `ime/.../theme/GallopTheme.kt` | `GallopColors` + `GallopVoiceTheme` for voice panel |
+| `ime/src/test/.../clipboard/ClipboardStoreTest.kt` | Unit tests (7 cases) |
+| `docs/limitations.md` | Clipboard listener / Android 13 toast notes |
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../DictusImeService.kt` | Clipboard watcher lifecycle, `itemsFlow` → `KeyboardScreen` |
+| `ime/.../ui/KeyboardScreen.kt` | `ClipboardStrip` above `KeyboardView` |
+| `ime/.../panel/VoicePanel.kt` | `GallopVoiceTheme`, flat dark surface, placeholder toolbar |
+| `ime/.../panel/SmartVoiceButton.kt` | 72.dp pill button, mic icon, 1 Hz pulse ring while recording |
+| `ime/.../panel/PanelHost.kt` | Voice panel no longer passes `themeMode` (uses Gallop theme) |
+
+### Clipboard behavior
+
+- No persistence — ring resets when IME process dies.
+- Fresh install: empty strip until user copies text (watcher-only history).
+- Fallback read on keyboard show documented in `docs/limitations.md`.
 

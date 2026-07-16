@@ -36,6 +36,8 @@ import timber.log.Timber
 import com.gallopkeyboard.ime.panel.PanelController
 import com.gallopkeyboard.ime.panel.PanelHost
 import com.gallopkeyboard.ime.asr.InputConnectionSupplier
+import com.gallopkeyboard.ime.clipboard.ClipboardStore
+import com.gallopkeyboard.ime.clipboard.ClipboardWatcher
 import com.gallopkeyboard.ime.model.KeyboardLayer
 
 /**
@@ -82,6 +84,9 @@ class DictusImeService : LifecycleInputMethodService() {
     private val _serviceState = MutableStateFlow<DictationState>(DictationState.Idle)
 
     private val panelController = PanelController()
+
+    private val clipboardStore = ClipboardStore()
+    private lateinit var clipboardWatcher: ClipboardWatcher
 
     // Emoji picker visibility state, hoisted here so back key can dismiss it via onKeyDown.
     // BackHandler (Compose) does not work in IME context -- back key is not dispatched through
@@ -150,6 +155,8 @@ class DictusImeService : LifecycleInputMethodService() {
     override fun onCreate() {
         super.onCreate()
         Timber.d("DictusImeService created")
+        clipboardWatcher = ClipboardWatcher(applicationContext, clipboardStore)
+        clipboardWatcher.start()
         bindDictationService()
 
         val installer = ModelInstaller(applicationContext)
@@ -167,6 +174,9 @@ class DictusImeService : LifecycleInputMethodService() {
     }
 
     override fun onDestroy() {
+        if (::clipboardWatcher.isInitialized) {
+            clipboardWatcher.stop()
+        }
         stateCollectionJob?.cancel()
         if (isBound) {
             unbindService(serviceConnection)
@@ -179,6 +189,9 @@ class DictusImeService : LifecycleInputMethodService() {
     override fun onStartInputView(info: android.view.inputmethod.EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         entryPoint.inputConnectionSupplier().supplier = { currentInputConnection }
+        if (::clipboardWatcher.isInitialized) {
+            clipboardWatcher.refreshFromPrimaryClip()
+        }
         if (!restarting) {
             panelController.reset()
         }
@@ -325,6 +338,8 @@ class DictusImeService : LifecycleInputMethodService() {
             .map { it[PreferenceKeys.KEYBOARD_LAYOUT] ?: "azerty" }
             .collectAsState(initial = "azerty")
 
+        val clipboardItems by clipboardStore.itemsFlow.collectAsState()
+
         val switchKeyboard = {
             val imm = getSystemService(INPUT_METHOD_SERVICE)
                 as android.view.inputmethod.InputMethodManager
@@ -384,6 +399,8 @@ class DictusImeService : LifecycleInputMethodService() {
                         initialLayer = initialLayer,
                         hapticsEnabled = hapticsEnabled,
                         keyboardLayout = keyboardLayout,
+                        clipboardItems = clipboardItems,
+                        clipboardStore = clipboardStore,
                     )
                 }
                 is DictationState.Recording -> {
