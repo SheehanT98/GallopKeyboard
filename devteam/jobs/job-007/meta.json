@@ -1,15 +1,15 @@
 {
   "id": "job-007",
-  "status": "coding",
+  "status": "testing",
   "mode": "quick",
   "originalAsk": "Execute plan 007: Whisper polish pass",
   "planRef": "plans/007-whisper-polish-pass.md",
   "feature": "Execute plan 007: Whisper polish pass",
   "slug": "execute-plan-007-whisper-polish-pass",
   "branch": "cursor/devteam-job-007-execute-plan-007-whisper-polish-pass-c1fc",
-  "pr": null,
-  "prNumber": null,
-  "chatTitle": null,
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/20",
+  "prNumber": 20,
+  "chatTitle": "devteam pr20",
   "models": {
     "plan": "cursor-grok-4.5-high",
     "code": "composer-2.5",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:12.052Z",
-  "lastStatusAt": "2026-07-16T18:23:54.816Z",
+  "lastStatusAt": "2026-07-16T18:44:08.899Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -49,7 +49,7 @@
   "notifiedAt": null,
   "stages": {
     "plan": "skipped",
-    "code": "in_progress",
+    "code": "done",
     "test": "pending",
     "review": "pending",
     "doubleCheck": "pending"
