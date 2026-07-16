@@ -1,0 +1,23 @@
+{
+  "name": "gallopkeyboard",
+  "private": true,
+  "description": "GallopKeyboard — devteam tooling and repo scripts",
+  "scripts": {
+    "devteam:submit": "node scripts/devteam-submit.cjs",
+    "devteam:advance": "node scripts/devteam-advance.cjs",
+    "devteam:open-pr": "node scripts/devteam-open-pr.cjs",
+    "devteam:validate": "node scripts/devteam-validate.cjs",
+    "devteam:status": "node scripts/devteam-status.cjs",
+    "devteam:show": "node scripts/devteam-show.cjs",
+    "devteam:approve": "node scripts/devteam-approve.cjs",
+    "devteam:revise": "node scripts/devteam-revise.cjs",
+    "devteam:cancel": "node scripts/devteam-cancel.cjs",
+    "devteam:archive": "node scripts/devteam-archive.cjs",
+    "devteam:sync": "node scripts/devteam-sync.cjs",
+    "devteam:conflicts": "node scripts/devteam-conflicts.cjs",
+    "devteam:models": "node scripts/devteam-models.cjs",
+    "devteam:queue-phases": "node scripts/devteam-queue-phases.cjs",
+    "devteam:generate-phase-plans": "node scripts/generate-phase-plans.cjs",
+    "android:setup": "bash scripts/setup-android.sh"
+  }
+}

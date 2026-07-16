@@ -8,7 +8,7 @@ Plans live in [`plans/`](../plans/README.md) (001–010). This file maps them to
 
 ```bash
 # After plans/ exist on your branch:
-# node scripts/generate-phase-plans.cjs    # optional: refresh phase-*.md from manifest
+npm run devteam:generate-phase-plans
 npm run devteam:queue-phases
 npm run devteam:status -- --fetch
 ```
@@ -99,6 +99,14 @@ npm run devteam:queue-phases -- --cancel-job-NNN
 
 Cancelled jobs are archived per [`archive/README.md`](./archive/README.md).
 
-## Script wiring (TODO)
+## Script wiring
 
-gallopCRM ships `scripts/` + `package.json` entries for `devteam:*` commands. This repo is Gradle-first until Plan 002 lands. Copy or port those scripts when adding root `package.json`, or run stages manually via the orchestrator prompt above.
+Root `package.json` exposes all `devteam:*` commands. Validate before queueing:
+
+```bash
+npm run devteam:models -- --validate-agents
+npm run devteam:generate-phase-plans
+npm run devteam:queue-phases -- --dry-run
+```
+
+Attach [`.agents/skills/devteam/SKILL.md`](../.agents/skills/devteam/SKILL.md) in Cursor for `/devteam`, `/devteamquick`, and orchestration verbs.

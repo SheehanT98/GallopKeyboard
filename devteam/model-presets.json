@@ -1,8 +1,8 @@
 {
   "description": "Single source of truth for devteam stage models. Cloud and local orchestrators MUST pass these exact slugs on every devteam subagent Task launch. See devteam/MODEL-POLICY.md.",
-  "plan": "gpt-5.6-sol-high",
+  "plan": "cursor-grok-4.5-high",
   "code": "composer-2.5",
   "test": "composer-2.5",
-  "review": "claude-opus-4-8-thinking-high",
-  "doubleCheck": "composer-2.5-fast"
+  "review": "cursor-grok-4.5-high",
+  "doubleCheck": "composer-2.5"
 }
