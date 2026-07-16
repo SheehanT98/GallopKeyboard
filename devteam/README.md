@@ -4,17 +4,16 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 
 ## Dashboard
 
-**Active agent jobs:** 0
+**Active agent jobs:** 1
 **Queued:** 0
-**Awaiting your review:** 1
+**Awaiting your review:** 0
 | Job | Status | Feature | Branch | PR | Review |
 |-----|--------|---------|--------|-----|--------|
-| job-010 | conflict_hold | Execute plan 010: Hardening battery crashes release | `cursor/devteam-job-010-execute-plan-010-hardening-battery-crashes-relea-c1fc` | — | — |
-| job-009 | awaiting_review | Execute plan 009: Keyboard polish clipboard + emoji | `cursor/devteam-job-009-execute-plan-009-keyboard-polish-clipboard-emoji-c1fc` | #23 | [04-review.md](jobs/job-009/04-review.md) |
+| job-010 | coding | Execute plan 010: Hardening battery crashes release | `cursor/devteam-job-010-execute-plan-010-hardening-battery-crashes-relea-c1fc` | — | — |
 
 ## Ready for review
 
-- **job-009** — Execute plan 009: Keyboard polish clipboard + emoji · PR 23
+_No jobs awaiting review._
 
 ## Commands
 
