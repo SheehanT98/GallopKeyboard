@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.savedstate)
     implementation(libs.core.ktx)
+    implementation(libs.coroutines.android)
     implementation(libs.emoji2.emojipicker)
 
     testImplementation(libs.junit)

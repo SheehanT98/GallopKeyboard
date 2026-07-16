@@ -323,6 +323,9 @@ class DictusImeService : LifecycleInputMethodService() {
         PanelHost(
             controller = panelController,
             themeMode = themeMode,
+            audioRecorderEngine = entryPoint.audioRecorderEngine(),
+            transcriber = entryPoint.transcriber(),
+            permissionRequester = entryPoint.permissionRequester(),
         ) {
             when (dictationState) {
                 is DictationState.Idle -> {

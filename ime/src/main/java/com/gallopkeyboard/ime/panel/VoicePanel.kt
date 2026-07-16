@@ -9,10 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Keyboard
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,24 +20,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.gallopkeyboard.core.theme.DictusTheme
 import com.gallopkeyboard.core.theme.ThemeMode
 import com.gallopkeyboard.ime.R
+import com.gallopkeyboard.ime.audio.AudioRecorderEngine
+import com.gallopkeyboard.ime.audio.Transcriber
 
 /** Matches [com.gallopkeyboard.ime.ui.KeyboardScreen] max height (suggestion + mic row + keys). */
 val KEYBOARD_PANEL_HEIGHT_DP: Dp = 346.dp
 
-/**
- * Placeholder voice panel per HANDOFF.md UX spec.
- *
- * Plan 005 replaces the center [Button] with [SmartVoiceButton] gesture handling.
- */
 @Composable
 fun VoicePanel(
     onSwitchToTyping: () -> Unit,
+    audioRecorderEngine: AudioRecorderEngine,
+    transcriber: Transcriber,
+    permissionRequester: PermissionRequester,
     keyboardHeight: Dp = KEYBOARD_PANEL_HEIGHT_DP,
     themeMode: ThemeMode = ThemeMode.DARK,
     modifier: Modifier = Modifier,
@@ -61,15 +58,11 @@ fun VoicePanel(
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Button(
-                        onClick = { /* Plan 005: smart button gestures */ },
-                        modifier = Modifier
-                            .fillMaxWidth(0.8f)
-                            .height(64.dp),
-                        shape = RoundedCornerShape(16.dp),
-                    ) {
-                        Text(text = stringResource(R.string.voice_panel_placeholder_button))
-                    }
+                    SmartVoiceButton(
+                        audioRecorderEngine = audioRecorderEngine,
+                        transcriber = transcriber,
+                        permissionRequester = permissionRequester,
+                    )
                 }
 
                 Row(
@@ -101,10 +94,4 @@ fun VoicePanel(
             }
         }
     }
-}
-
-@Preview(widthDp = 360, heightDp = 346)
-@Composable
-private fun VoicePanelPreview() {
-    VoicePanel(onSwitchToTyping = {})
 }

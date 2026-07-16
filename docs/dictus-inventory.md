@@ -108,3 +108,48 @@ New panel scaffold for typing ↔ voice toggle (Plan 005 wires the smart button)
 
 Dictus still ships `RecordingScreen` / `TranscribingScreen` driven by `DictationState` (top mic pill in `MicButtonRow`). The new `VoicePanel` is the HANDOFF scaffold for Plans 005–007; it is separate from the legacy recording overlay until Plan 005 replaces the placeholder button.
 
+## Plan 005 additions
+
+Smart voice button gesture FSM + 16 kHz mono PCM recorder for the voice panel (Plan 006 replaces [StubTranscriber]).
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/src/main/java/com/gallopkeyboard/ime/audio/RingByteBuffer.kt` | Thread-safe bounded PCM byte ring (5 min ceiling) |
+| `ime/src/main/java/com/gallopkeyboard/ime/audio/AudioSession.kt` | Session timestamps + buffer reference |
+| `ime/src/main/java/com/gallopkeyboard/ime/audio/AudioRecorderEngine.kt` | `AudioRecord` wrapper; cold `Flow<ShortArray>` at 16 kHz mono PCM16 |
+| `ime/src/main/java/com/gallopkeyboard/ime/audio/RecorderCoroutineDispatcher.kt` | Single-thread dispatcher for the read loop |
+| `ime/src/main/java/com/gallopkeyboard/ime/audio/Transcriber.kt` | ASR seam — Plan 006 implements |
+| `ime/src/main/java/com/gallopkeyboard/ime/audio/StubTranscriber.kt` | Logs session duration; bound via Hilt |
+| `ime/src/main/java/com/gallopkeyboard/ime/di/AudioModule.kt` | `@Binds Transcriber → StubTranscriber` |
+| `ime/src/main/java/com/gallopkeyboard/ime/panel/GestureFsm.kt` | Pure Kotlin ADR-0003 gesture state machine |
+| `ime/src/main/java/com/gallopkeyboard/ime/panel/SmartVoiceButton.kt` | Compose button + pointer gestures + recording wiring |
+| `ime/src/main/java/com/gallopkeyboard/ime/panel/PermissionRequester.kt` | IME-scoped `RECORD_AUDIO` request helper |
+| `ime/src/main/java/com/gallopkeyboard/ime/panel/PermissionProxyActivity.kt` | Translucent proxy activity for permission dialog |
+| `ime/src/test/java/com/gallopkeyboard/ime/audio/RingByteBufferTest.kt` | Ring buffer unit tests |
+| `ime/src/test/java/com/gallopkeyboard/ime/panel/GestureFsmTest.kt` | Gesture FSM unit tests (6 cases) |
+
+### Manifest
+
+- `RECORD_AUDIO` permission + `android.hardware.microphone` feature (`ime/src/main/AndroidManifest.xml`)
+- `PermissionProxyActivity` registered (translucent, `noHistory`)
+
+### IME wiring
+
+| Class | Change |
+|-------|--------|
+| `DictusImeEntryPoint` | Exposes `audioRecorderEngine()`, `transcriber()`, `permissionRequester()` |
+| `PanelHost` / `VoicePanel` | Replace placeholder button with `SmartVoiceButton` |
+| `DictusImeService` | Passes audio deps into `PanelHost` |
+
+### `strings.xml` keys added
+
+- `voice_panel_recording` — "Recording…"
+- `mic_permission_denied` — denied toast
+- `mic_permission_rationale` — settings hint (reserved for Plan 009)
+
+### Note on upstream `AudioCaptureManager`
+
+The `app` module still has `AudioCaptureManager` (Float32 via foreground `DictationService`). Plan 005 adds a separate **PCM16** pipeline in `:ime` for the voice panel per HANDOFF; interfaces differ — not reused.
+
