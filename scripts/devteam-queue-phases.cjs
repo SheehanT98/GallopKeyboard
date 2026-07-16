@@ -190,7 +190,7 @@ function main() {
 			['planning', 'coding', 'testing', 'reviewing', 'double_checking'].includes(m.status),
 		);
 		console.log('');
-		console.log(`Active now: ${active.length}/3`);
+		console.log(`Active now: ${active.length}`);
 		console.log('Run pipelines for coding jobs — see devteam/PHASE-ORCHESTRATION.md');
 	}
 

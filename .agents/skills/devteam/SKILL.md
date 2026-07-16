@@ -9,7 +9,7 @@ metadata:
 
 # Devteam
 
-Orchestrate multi-stage agent jobs for GallopKeyboard. Up to **3** active jobs; human verbs: **approve**, **revise**, **cancel**.
+Orchestrate multi-stage agent jobs for GallopKeyboard. No active-job cap; human verbs: **approve**, **revise**, **cancel**.
 
 ## Hard rules
 
@@ -107,7 +107,7 @@ On approve/cancel, jobs move to `devteam/archive/` (see `devteam/archive/README.
 
 > Read `devteam/phase-queue.json` and job `meta.json`.
 > For each job in `coding`/`planning`/etc.: run the full pipeline to `awaiting_review`.
-> Max 3 active jobs — poll `npm run devteam:status -- --fetch` when capped.
+> Jobs queue only for dependency or planned-file conflicts — poll `npm run devteam:status -- --fetch` when waiting on holds.
 > Use model slugs from `meta.models` for every stage Task launch.
 
 ## Utilities
