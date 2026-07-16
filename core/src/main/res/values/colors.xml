@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gallop_background">#FF0A1628</color>
+    <color name="gallop_accent">#FF3D7EFF</color>
+    <color name="gallop_surface">#FF161C2C</color>
+</resources>

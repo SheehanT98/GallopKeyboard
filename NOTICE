@@ -1,0 +1,11 @@
+GallopKeyboard
+Copyright (c) 2026 GallopKeyboard contributors
+
+This product includes software developed by the Dictus authors:
+  Dictus Android — https://github.com/getdictus/dictus-android
+  Copyright (c) Dictus contributors, licensed under the MIT License.
+
+This product includes third-party software distributed under separate
+licenses. See LICENSE and the files under third_party/ for details.
+Notable dependencies:
+  - whisper.cpp — MIT License — https://github.com/ggml-org/whisper.cpp
