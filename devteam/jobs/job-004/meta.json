@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:11.465Z",
-  "lastStatusAt": "2026-07-16T17:07:12.855Z",
+  "lastStatusAt": "2026-07-16T17:12:58.377Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -42,7 +42,6 @@
   ],
   "touchedFiles": [],
   "blockedBy": [
-    "job-001",
     "job-003"
   ],
   "dependsOn": [

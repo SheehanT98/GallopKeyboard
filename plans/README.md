@@ -23,7 +23,7 @@ ever out of sync.
 
 | Plan | Title | Phase | Priority | Effort | Depends on | Status |
 |------|-------|-------|----------|--------|------------|--------|
-| 001 | Repo hygiene + AGENTS.md + supporting ADRs | 0 | P1 | S | — | TODO |
+| 001 | Repo hygiene + AGENTS.md + supporting ADRs | 0 | P1 | S | — | DONE |
 | 002 | Fork Dictus into this repo (import + rename + attribution) | 0 | P1 | L | 001 | TODO |
 | 003 | Android CI baseline + Galaxy S22 sideload docs | 0 | P1 | S | 002 | TODO |
 | 004 | PanelController + VoicePanel scaffold + typing-panel toggle | 1 | P1 | M | 003 | TODO |

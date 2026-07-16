@@ -1,0 +1,49 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/**/build/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Android build outputs
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# NDK
+obj/
+
+# Keystores (never commit)
+*.jks
+*.keystore
+
+# Kotlin
+.kotlin/
+
+# Logs / OS
+*.log
+.DS_Store
+Thumbs.db
+
+# Model files (managed by first-launch downloader, see plans/008)
+/models/
+*.gguf
+*.onnx
+*.bin
+!third_party/**/*.bin
+
+# Env / secrets
+.env
+.env.local
+
+# Test / coverage
+coverage/
