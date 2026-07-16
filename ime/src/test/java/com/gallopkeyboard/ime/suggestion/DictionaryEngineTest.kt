@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.suggestion
+package com.gallopkeyboard.ime.suggestion
 
 import android.content.Context
 import androidx.datastore.core.DataStore

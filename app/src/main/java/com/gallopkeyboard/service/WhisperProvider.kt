@@ -1,7 +1,7 @@
-package dev.pivisolutions.dictus.service
+package com.gallopkeyboard.service
 
-import dev.pivisolutions.dictus.core.stt.SttProvider
-import dev.pivisolutions.dictus.whisper.WhisperContext
+import com.gallopkeyboard.core.stt.SttProvider
+import com.gallopkeyboard.whisper.WhisperContext
 import timber.log.Timber
 
 /**

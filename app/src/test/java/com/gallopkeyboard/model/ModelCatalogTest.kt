@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.model
+package com.gallopkeyboard.model
 
 import org.junit.Assert.*
 import org.junit.Test

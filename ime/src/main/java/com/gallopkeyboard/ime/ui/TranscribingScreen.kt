@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.ui
+package com.gallopkeyboard.ime.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,11 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.core.ui.WaveformBars
-import dev.pivisolutions.dictus.core.ui.WaveformDriver
+import com.gallopkeyboard.core.ui.WaveformBars
+import com.gallopkeyboard.core.ui.WaveformDriver
 
 /**
  * Transcribing overlay shown while whisper.cpp processes audio.
@@ -90,7 +90,7 @@ fun TranscribingScreen(
 
             // "Transcription..." label
             Text(
-                text = stringResource(dev.pivisolutions.dictus.ime.R.string.ime_transcribing),
+                text = stringResource(com.gallopkeyboard.ime.R.string.ime_transcribing),
                 color = LocalDictusColors.current.keyText.copy(alpha = 0.6f),
                 fontSize = 13.sp,
                 modifier = Modifier.padding(top = 16.dp),

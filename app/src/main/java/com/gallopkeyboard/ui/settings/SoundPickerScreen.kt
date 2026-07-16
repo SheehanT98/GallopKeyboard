@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.settings
+package com.gallopkeyboard.ui.settings
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -38,9 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 
 /**
  * Sound picker list screen — shows all available WAV files grouped by family.

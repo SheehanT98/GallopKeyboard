@@ -1,9 +1,9 @@
-package dev.pivisolutions.dictus.ime.suggestion
+package com.gallopkeyboard.ime.suggestion
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
+import com.gallopkeyboard.core.preferences.PreferenceKeys
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

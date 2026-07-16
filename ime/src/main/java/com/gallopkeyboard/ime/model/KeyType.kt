@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.model
+package com.gallopkeyboard.ime.model
 
 /**
  * Enumerates the types of keys on the Dictus keyboard.

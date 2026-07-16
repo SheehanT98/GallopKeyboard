@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.onboarding
+package com.gallopkeyboard.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,11 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.ui.onboarding.OnboardingStepScaffold
+import com.gallopkeyboard.ui.onboarding.OnboardingStepScaffold
 
 /**
  * Onboarding Step 5 — Model download.

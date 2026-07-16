@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.di
+package com.gallopkeyboard.di
 
 import android.content.Context
 import dagger.Module
@@ -6,8 +6,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dev.pivisolutions.dictus.model.ModelManager
-import dev.pivisolutions.dictus.service.ModelDownloader
+import com.gallopkeyboard.model.ModelManager
+import com.gallopkeyboard.service.ModelDownloader
 import javax.inject.Singleton
 
 /**

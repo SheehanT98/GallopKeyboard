@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime
+package com.gallopkeyboard.ime
 
 import android.content.ComponentName
 import android.content.Context
@@ -12,18 +12,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import dagger.hilt.android.EntryPointAccessors
-import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
-import dev.pivisolutions.dictus.core.service.DictationController
-import dev.pivisolutions.dictus.core.service.DictationState
-import dev.pivisolutions.dictus.core.theme.DictusTheme
-import dev.pivisolutions.dictus.core.theme.ThemeMode
-import dev.pivisolutions.dictus.core.ui.WaveformDriver
-import dev.pivisolutions.dictus.ime.di.DictusImeEntryPoint
-import dev.pivisolutions.dictus.ime.suggestion.DictionaryEngine
-import dev.pivisolutions.dictus.ime.suggestion.SuggestionEngine
-import dev.pivisolutions.dictus.ime.ui.KeyboardScreen
-import dev.pivisolutions.dictus.ime.ui.RecordingScreen
-import dev.pivisolutions.dictus.ime.ui.TranscribingScreen
+import com.gallopkeyboard.core.preferences.PreferenceKeys
+import com.gallopkeyboard.core.service.DictationController
+import com.gallopkeyboard.core.service.DictationState
+import com.gallopkeyboard.core.theme.DictusTheme
+import com.gallopkeyboard.core.theme.ThemeMode
+import com.gallopkeyboard.core.ui.WaveformDriver
+import com.gallopkeyboard.ime.di.DictusImeEntryPoint
+import com.gallopkeyboard.ime.suggestion.DictionaryEngine
+import com.gallopkeyboard.ime.suggestion.SuggestionEngine
+import com.gallopkeyboard.ime.ui.KeyboardScreen
+import com.gallopkeyboard.ime.ui.RecordingScreen
+import com.gallopkeyboard.ime.ui.TranscribingScreen
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import dev.pivisolutions.dictus.ime.model.KeyboardLayer
+import com.gallopkeyboard.ime.model.KeyboardLayer
 
 /**
  * Main IME service for Dictus keyboard.
@@ -56,7 +56,7 @@ class DictusImeService : LifecycleInputMethodService() {
     companion object {
         /** Fully-qualified class name of DictationService in the app module. */
         private const val DICTATION_SERVICE_CLASS =
-            "dev.pivisolutions.dictus.service.DictationService"
+            "com.gallopkeyboard.service.DictationService"
     }
 
     private val entryPoint: DictusImeEntryPoint by lazy {

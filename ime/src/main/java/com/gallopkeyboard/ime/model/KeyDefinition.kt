@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.model
+package com.gallopkeyboard.ime.model
 
 /**
  * Defines a single key on the keyboard.

@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.preferences
+package com.gallopkeyboard.core.preferences
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey

@@ -1,6 +1,6 @@
-package dev.pivisolutions.dictus.core.ui
+package com.gallopkeyboard.core.ui
 
-import dev.pivisolutions.dictus.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.DictusColors
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test

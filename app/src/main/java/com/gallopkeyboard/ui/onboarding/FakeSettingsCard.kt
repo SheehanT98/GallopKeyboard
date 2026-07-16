@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.onboarding
+package com.gallopkeyboard.ui.onboarding
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -35,8 +35,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
 import kotlinx.coroutines.delay
 
@@ -107,7 +107,7 @@ fun FakeSettingsCard(
         // Dictus entry (toggle 2 — animates on second)
         KeyboardEntryRow(
             name = "Dictus Keyboard",
-            subtitle = stringResource(R.string.fake_settings_dictus_subtitle),
+            subtitle = stringResource(R.string.fake_settings_keyboard_subtitle),
             isOn = toggle2On,
             icon = {
                 Image(

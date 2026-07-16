@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.whisper
+package com.gallopkeyboard.core.whisper
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

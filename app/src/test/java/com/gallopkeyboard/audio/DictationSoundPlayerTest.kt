@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.audio
+package com.gallopkeyboard.audio
 
 import org.junit.Assert.assertNotNull
 import org.junit.Test

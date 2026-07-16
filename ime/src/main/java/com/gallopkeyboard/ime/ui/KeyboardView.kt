@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.ui
+package com.gallopkeyboard.ime.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -8,9 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.ime.model.KeyDefinition
-import dev.pivisolutions.dictus.ime.model.KeyboardLayer
-import dev.pivisolutions.dictus.ime.model.KeyboardLayouts
+import com.gallopkeyboard.ime.model.KeyDefinition
+import com.gallopkeyboard.ime.model.KeyboardLayer
+import com.gallopkeyboard.ime.model.KeyboardLayouts
 
 /**
  * Renders the keyboard rows for the currently active layer.

@@ -1,8 +1,9 @@
-package dev.pivisolutions.dictus
+package com.gallopkeyboard
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
-import dev.pivisolutions.dictus.core.logging.TimberSetup
+import com.gallopkeyboard.app.BuildConfig
+import com.gallopkeyboard.core.logging.TimberSetup
 import timber.log.Timber
 
 /**

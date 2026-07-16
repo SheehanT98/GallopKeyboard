@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.di
+package com.gallopkeyboard.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore

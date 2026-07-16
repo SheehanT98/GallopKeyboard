@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.recording
+package com.gallopkeyboard.recording
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -40,15 +40,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.service.DictationController
-import dev.pivisolutions.dictus.core.service.DictationState
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.service.DictationController
+import com.gallopkeyboard.core.service.DictationState
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.core.ui.GlassCard
-import dev.pivisolutions.dictus.core.ui.WaveformBars
-import dev.pivisolutions.dictus.core.ui.WaveformDriver
+import com.gallopkeyboard.core.ui.GlassCard
+import com.gallopkeyboard.core.ui.WaveformBars
+import com.gallopkeyboard.core.ui.WaveformDriver
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.launch
 
@@ -303,7 +303,7 @@ fun RecordingScreen(
                                     // Persist last transcription to DataStore for HomeScreen
                                     if (result != null) {
                                         dataStore?.edit { prefs ->
-                                            prefs[dev.pivisolutions.dictus.core.preferences.PreferenceKeys.LAST_TRANSCRIPTION] = result
+                                            prefs[com.gallopkeyboard.core.preferences.PreferenceKeys.LAST_TRANSCRIPTION] = result
                                         }
                                     }
                                 }

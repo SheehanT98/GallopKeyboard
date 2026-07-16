@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.model
+package com.gallopkeyboard.ime.model
 
 /**
  * Complete keyboard layout data for all layers, ported from the iOS Dictus app.

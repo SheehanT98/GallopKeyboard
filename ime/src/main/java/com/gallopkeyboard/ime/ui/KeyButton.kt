@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.ui
+package com.gallopkeyboard.ime.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -33,11 +33,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
-import dev.pivisolutions.dictus.ime.haptics.HapticHelper
-import dev.pivisolutions.dictus.ime.model.KeyDefinition
-import dev.pivisolutions.dictus.ime.model.KeyType
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
+import com.gallopkeyboard.ime.haptics.HapticHelper
+import com.gallopkeyboard.ime.model.KeyDefinition
+import com.gallopkeyboard.ime.model.KeyType
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive

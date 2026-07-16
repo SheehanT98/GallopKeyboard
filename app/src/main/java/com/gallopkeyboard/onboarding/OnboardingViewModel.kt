@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.onboarding
+package com.gallopkeyboard.onboarding
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -9,11 +9,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
-import dev.pivisolutions.dictus.model.ModelCatalog
-import dev.pivisolutions.dictus.model.ModelInfo
-import dev.pivisolutions.dictus.service.DownloadProgress
-import dev.pivisolutions.dictus.service.ModelDownloader
+import com.gallopkeyboard.core.preferences.PreferenceKeys
+import com.gallopkeyboard.model.ModelCatalog
+import com.gallopkeyboard.model.ModelInfo
+import com.gallopkeyboard.service.DownloadProgress
+import com.gallopkeyboard.service.ModelDownloader
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

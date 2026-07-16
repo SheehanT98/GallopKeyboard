@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.navigation
+package com.gallopkeyboard.navigation
 
 /**
  * Type-safe navigation route definitions for the Dictus app.

@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.settings
+package com.gallopkeyboard.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,9 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 
 /**
  * Sound settings screen matching the iOS SoundSettingsView.

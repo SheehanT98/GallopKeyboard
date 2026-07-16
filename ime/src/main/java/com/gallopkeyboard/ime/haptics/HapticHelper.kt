@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.haptics
+package com.gallopkeyboard.ime.haptics
 
 import android.view.HapticFeedbackConstants
 import android.view.View

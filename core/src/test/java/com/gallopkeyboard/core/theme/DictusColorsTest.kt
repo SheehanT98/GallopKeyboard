@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.theme
+package com.gallopkeyboard.core.theme
 
 import androidx.compose.ui.graphics.Color
 import org.junit.Assert.assertEquals

@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.ui
+package com.gallopkeyboard.ime.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.pivisolutions.dictus.ime.model.AccentMap
-import dev.pivisolutions.dictus.ime.model.KeyDefinition
-import dev.pivisolutions.dictus.ime.model.KeyType
+import com.gallopkeyboard.ime.model.AccentMap
+import com.gallopkeyboard.ime.model.KeyDefinition
+import com.gallopkeyboard.ime.model.KeyType
 
 /**
  * Renders a single horizontal row of keyboard keys.

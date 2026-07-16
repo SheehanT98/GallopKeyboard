@@ -1,7 +1,7 @@
-package dev.pivisolutions.dictus.model
+package com.gallopkeyboard.model
 
 import android.content.Context
-import dev.pivisolutions.dictus.model.ModelCatalog.isDirectoryModel
+import com.gallopkeyboard.model.ModelCatalog.isDirectoryModel
 import java.io.File
 
 /**

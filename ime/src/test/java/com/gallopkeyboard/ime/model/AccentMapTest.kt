@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.model
+package com.gallopkeyboard.ime.model
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

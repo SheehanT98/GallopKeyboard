@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.onboarding
+package com.gallopkeyboard.ui.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import dev.pivisolutions.dictus.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.DictusColors
 
 /**
  * Row of 6 progress dots for the onboarding flow.

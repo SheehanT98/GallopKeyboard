@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.permission
+package com.gallopkeyboard.permission
 
 import android.Manifest
 import org.junit.Assert.assertFalse

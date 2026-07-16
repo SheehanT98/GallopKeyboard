@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.ui
+package com.gallopkeyboard.ime.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,11 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.ime.R
-import dev.pivisolutions.dictus.ime.haptics.HapticHelper
+import com.gallopkeyboard.ime.R
+import com.gallopkeyboard.ime.haptics.HapticHelper
 
 /**
  * Recording overlay that replaces the keyboard during active dictation.
@@ -143,7 +143,7 @@ fun RecordingScreen(
 
             // "En ecoute..." label
             Text(
-                text = stringResource(dev.pivisolutions.dictus.ime.R.string.ime_recording_listening),
+                text = stringResource(com.gallopkeyboard.ime.R.string.ime_recording_listening),
                 color = LocalDictusColors.current.keyText.copy(alpha = 0.6f),
                 fontSize = 13.sp,
                 modifier = Modifier.padding(top = 4.dp),

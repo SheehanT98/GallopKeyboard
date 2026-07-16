@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.settings
+package com.gallopkeyboard.ui.settings
 
 import android.content.Context
 import android.content.Intent

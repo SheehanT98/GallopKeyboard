@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.model
+package com.gallopkeyboard.ime.model
 
 /**
  * The three layers of the keyboard that the user can switch between.

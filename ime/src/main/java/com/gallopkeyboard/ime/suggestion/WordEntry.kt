@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.suggestion
+package com.gallopkeyboard.ime.suggestion
 
 /**
  * A single dictionary entry: a word, its AOSP frequency score, and its

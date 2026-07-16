@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.onboarding
+package com.gallopkeyboard.onboarding
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -39,18 +39,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.service.DictationController
-import dev.pivisolutions.dictus.core.service.DictationState
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.service.DictationController
+import com.gallopkeyboard.core.service.DictationState
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.core.ui.GlassCard
-import dev.pivisolutions.dictus.core.ui.WaveformBars
-import dev.pivisolutions.dictus.core.ui.WaveformDriver
-import dev.pivisolutions.dictus.ui.onboarding.OnboardingCTAButton
-import dev.pivisolutions.dictus.ui.onboarding.OnboardingProgressDots
-import dev.pivisolutions.dictus.ui.onboarding.accentGradient
+import com.gallopkeyboard.core.ui.GlassCard
+import com.gallopkeyboard.core.ui.WaveformBars
+import com.gallopkeyboard.core.ui.WaveformDriver
+import com.gallopkeyboard.ui.onboarding.OnboardingCTAButton
+import com.gallopkeyboard.ui.onboarding.OnboardingProgressDots
+import com.gallopkeyboard.ui.onboarding.accentGradient
 import kotlinx.coroutines.launch
 
 /**

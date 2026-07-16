@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.service
+package com.gallopkeyboard.service
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -17,12 +17,12 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.audio.DictationSoundPlayer
-import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
-import dev.pivisolutions.dictus.core.service.DictationController
-import dev.pivisolutions.dictus.core.service.DictationState
-import dev.pivisolutions.dictus.model.ModelCatalog
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.audio.DictationSoundPlayer
+import com.gallopkeyboard.core.preferences.PreferenceKeys
+import com.gallopkeyboard.core.service.DictationController
+import com.gallopkeyboard.core.service.DictationState
+import com.gallopkeyboard.model.ModelCatalog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -37,11 +37,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import dev.pivisolutions.dictus.asr.ParakeetProvider
-import dev.pivisolutions.dictus.core.stt.SttProvider
-import dev.pivisolutions.dictus.core.whisper.TextPostProcessor
-import dev.pivisolutions.dictus.model.AiProvider
-import dev.pivisolutions.dictus.model.ModelManager
+import com.gallopkeyboard.asr.ParakeetProvider
+import com.gallopkeyboard.core.stt.SttProvider
+import com.gallopkeyboard.core.whisper.TextPostProcessor
+import com.gallopkeyboard.model.AiProvider
+import com.gallopkeyboard.model.ModelManager
 import timber.log.Timber
 
 /**
@@ -80,8 +80,8 @@ class DictationService : Service(), DictationController {
     companion object {
         const val CHANNEL_ID = "dictus_recording"
         const val NOTIFICATION_ID = 1
-        const val ACTION_START = "dev.pivisolutions.dictus.action.START"
-        const val ACTION_STOP = "dev.pivisolutions.dictus.action.STOP"
+        const val ACTION_START = "com.gallopkeyboard.action.START"
+        const val ACTION_STOP = "com.gallopkeyboard.action.STOP"
         private const val TRANSCRIPTION_TIMEOUT_MS = 120_000L
     }
 

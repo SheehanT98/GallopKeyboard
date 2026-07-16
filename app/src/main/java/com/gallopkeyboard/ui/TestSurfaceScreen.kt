@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui
+package com.gallopkeyboard.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -21,11 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import dev.pivisolutions.dictus.core.service.DictationController
-import dev.pivisolutions.dictus.core.service.DictationState
+import com.gallopkeyboard.core.service.DictationController
+import com.gallopkeyboard.core.service.DictationState
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.permission.buildPermissionsToRequest
-import dev.pivisolutions.dictus.permission.rememberPermissionState
+import com.gallopkeyboard.permission.buildPermissionsToRequest
+import com.gallopkeyboard.permission.rememberPermissionState
 import kotlinx.coroutines.launch
 
 /**

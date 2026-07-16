@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "dev.pivisolutions.dictus.asr"
+    namespace = "com.gallopkeyboard.asr"
     compileSdk = 35
 
     defaultConfig {

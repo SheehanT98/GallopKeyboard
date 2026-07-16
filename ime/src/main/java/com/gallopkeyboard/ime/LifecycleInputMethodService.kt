@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime
+package com.gallopkeyboard.ime
 
 import android.graphics.Color
 import android.inputmethodservice.InputMethodService

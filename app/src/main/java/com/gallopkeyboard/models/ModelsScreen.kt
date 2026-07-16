@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.models
+package com.gallopkeyboard.models
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
@@ -48,12 +48,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.core.ui.GlassCard
-import dev.pivisolutions.dictus.ui.models.ModelCard
+import com.gallopkeyboard.core.ui.GlassCard
+import com.gallopkeyboard.ui.models.ModelCard
 import kotlinx.coroutines.launch
 
 /**
@@ -190,7 +190,7 @@ fun ModelsScreen(
 
         // Storage footer
         val storageUsedMb = storageUsedBytes / 1_000_000
-        val totalCatalogMb = dev.pivisolutions.dictus.model.ModelCatalog.ALL
+        val totalCatalogMb = com.gallopkeyboard.model.ModelCatalog.ALL
             .sumOf { it.expectedSizeBytes } / 1_000_000
         Text(
             text = stringResource(R.string.models_storage_used, storageUsedMb, totalCatalogMb),

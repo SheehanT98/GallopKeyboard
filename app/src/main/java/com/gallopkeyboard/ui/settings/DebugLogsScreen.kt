@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.settings
+package com.gallopkeyboard.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -34,9 +34,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.logging.TimberSetup
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.logging.TimberSetup
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

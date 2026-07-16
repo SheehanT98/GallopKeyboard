@@ -1,11 +1,11 @@
-package dev.pivisolutions.dictus.asr
+package com.gallopkeyboard.asr
 
 import com.k2fsa.sherpa.onnx.OfflineModelConfig
 import com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig
 import com.k2fsa.sherpa.onnx.OfflineRecognizer
 import com.k2fsa.sherpa.onnx.OfflineRecognizerConfig
 import com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig
-import dev.pivisolutions.dictus.core.stt.SttProvider
+import com.gallopkeyboard.core.stt.SttProvider
 import timber.log.Timber
 import java.io.File
 

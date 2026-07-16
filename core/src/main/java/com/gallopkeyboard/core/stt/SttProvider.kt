@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.stt
+package com.gallopkeyboard.core.stt
 
 /**
  * Contract for all speech-to-text engines in Dictus.

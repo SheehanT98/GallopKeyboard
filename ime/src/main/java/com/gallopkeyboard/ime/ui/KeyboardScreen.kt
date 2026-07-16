@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.ui
+package com.gallopkeyboard.ime.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,11 +11,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.isSystemInDarkTheme
-import dev.pivisolutions.dictus.core.theme.DictusTheme
-import dev.pivisolutions.dictus.core.theme.ThemeMode
-import dev.pivisolutions.dictus.ime.model.KeyDefinition
-import dev.pivisolutions.dictus.ime.model.KeyboardLayer
-import dev.pivisolutions.dictus.ime.model.KeyType
+import com.gallopkeyboard.core.theme.DictusTheme
+import com.gallopkeyboard.core.theme.ThemeMode
+import com.gallopkeyboard.ime.model.KeyDefinition
+import com.gallopkeyboard.ime.model.KeyboardLayer
+import com.gallopkeyboard.ime.model.KeyType
 import timber.log.Timber
 
 /**

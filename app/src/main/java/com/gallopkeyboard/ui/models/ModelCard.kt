@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.models
+package com.gallopkeyboard.ui.models
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -44,12 +44,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.model.AiProvider
-import dev.pivisolutions.dictus.model.ModelInfo
+import com.gallopkeyboard.model.AiProvider
+import com.gallopkeyboard.model.ModelInfo
 import kotlin.math.roundToInt
 
 /**

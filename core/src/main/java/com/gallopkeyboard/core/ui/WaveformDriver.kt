@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.ui
+package com.gallopkeyboard.core.ui
 
 import androidx.compose.animation.core.withInfiniteAnimationFrameNanos
 import kotlinx.coroutines.flow.MutableStateFlow

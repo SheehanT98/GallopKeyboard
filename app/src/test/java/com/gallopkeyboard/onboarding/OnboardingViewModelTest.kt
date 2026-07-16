@@ -1,13 +1,13 @@
-package dev.pivisolutions.dictus.onboarding
+package com.gallopkeyboard.onboarding
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.lifecycle.SavedStateHandle
-import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
-import dev.pivisolutions.dictus.model.ModelManager
-import dev.pivisolutions.dictus.service.DownloadProgress
-import dev.pivisolutions.dictus.service.ModelDownloader
+import com.gallopkeyboard.core.preferences.PreferenceKeys
+import com.gallopkeyboard.model.ModelManager
+import com.gallopkeyboard.service.DownloadProgress
+import com.gallopkeyboard.service.ModelDownloader
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

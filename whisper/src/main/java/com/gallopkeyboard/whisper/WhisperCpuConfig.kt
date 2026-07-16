@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.whisper
+package com.gallopkeyboard.whisper
 
 import timber.log.Timber
 import java.io.BufferedReader

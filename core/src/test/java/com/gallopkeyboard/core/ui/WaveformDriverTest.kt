@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.ui
+package com.gallopkeyboard.core.ui
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

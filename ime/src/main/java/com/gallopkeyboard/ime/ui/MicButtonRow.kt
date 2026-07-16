@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.ui
+package com.gallopkeyboard.ime.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,10 +21,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import dev.pivisolutions.dictus.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.DictusColors
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.ime.R
-import dev.pivisolutions.dictus.ime.haptics.HapticHelper
+import com.gallopkeyboard.ime.R
+import com.gallopkeyboard.ime.haptics.HapticHelper
 
 /**
  * Top bar above the keyboard: settings gear on the left, mic pill button on the right.

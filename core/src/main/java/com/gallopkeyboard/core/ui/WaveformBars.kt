@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.ui
+package com.gallopkeyboard.core.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -10,7 +10,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import dev.pivisolutions.dictus.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.DictusColors
 import kotlin.math.abs
 
 /**

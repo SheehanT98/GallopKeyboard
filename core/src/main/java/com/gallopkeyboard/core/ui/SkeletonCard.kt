@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.ui
+package com.gallopkeyboard.core.ui
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.DictusColors
 
 /**
  * Animated shimmer loading placeholder for model list cards.

@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.ui
+package com.gallopkeyboard.core.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.DictusColors
 
 /**
  * Glass-morphism card used across all Phase 4 screens.

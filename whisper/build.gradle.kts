@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "dev.pivisolutions.dictus.whisper"
+    namespace = "com.gallopkeyboard.whisper"
     compileSdk = 35
 
     defaultConfig {

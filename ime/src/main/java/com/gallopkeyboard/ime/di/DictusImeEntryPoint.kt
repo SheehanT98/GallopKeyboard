@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.di
+package com.gallopkeyboard.ime.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

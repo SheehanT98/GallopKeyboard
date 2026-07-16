@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.whisper
+package com.gallopkeyboard.whisper
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher

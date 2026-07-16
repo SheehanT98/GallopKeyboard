@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.suggestion
+package com.gallopkeyboard.ime.suggestion
 
 /**
  * Interface for word prediction/suggestion.

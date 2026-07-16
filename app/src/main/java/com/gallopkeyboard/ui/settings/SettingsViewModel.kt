@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.settings
+package com.gallopkeyboard.ui.settings
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
@@ -8,9 +8,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
-import dev.pivisolutions.dictus.model.ModelCatalog
-import dev.pivisolutions.dictus.model.ModelManager
+import com.gallopkeyboard.core.preferences.PreferenceKeys
+import com.gallopkeyboard.model.ModelCatalog
+import com.gallopkeyboard.model.ModelManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

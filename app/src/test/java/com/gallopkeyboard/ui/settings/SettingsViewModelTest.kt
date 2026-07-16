@@ -1,11 +1,11 @@
-package dev.pivisolutions.dictus.ui.settings
+package com.gallopkeyboard.ui.settings
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.test.core.app.ApplicationProvider
-import dev.pivisolutions.dictus.model.ModelCatalog
-import dev.pivisolutions.dictus.model.ModelManager
+import com.gallopkeyboard.model.ModelCatalog
+import com.gallopkeyboard.model.ModelManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.onboarding
+package com.gallopkeyboard.ui.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

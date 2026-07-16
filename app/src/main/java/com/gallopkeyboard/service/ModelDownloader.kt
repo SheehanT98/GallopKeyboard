@@ -1,10 +1,10 @@
-package dev.pivisolutions.dictus.service
+package com.gallopkeyboard.service
 
-import dev.pivisolutions.dictus.model.AiProvider
-import dev.pivisolutions.dictus.model.ModelCatalog
-import dev.pivisolutions.dictus.model.ModelCatalog.isDirectoryModel
-import dev.pivisolutions.dictus.model.ModelInfo
-import dev.pivisolutions.dictus.model.ModelManager
+import com.gallopkeyboard.model.AiProvider
+import com.gallopkeyboard.model.ModelCatalog
+import com.gallopkeyboard.model.ModelCatalog.isDirectoryModel
+import com.gallopkeyboard.model.ModelInfo
+import com.gallopkeyboard.model.ModelManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow

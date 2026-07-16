@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.service
+package com.gallopkeyboard.service
 
 import android.media.AudioFormat
 import android.media.AudioRecord

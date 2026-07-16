@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.service
+package com.gallopkeyboard.core.service
 
 /**
  * Sealed class representing the dictation state machine.

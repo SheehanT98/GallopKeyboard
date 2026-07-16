@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.navigation
+package com.gallopkeyboard.ui.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,10 +27,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.theme.DictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.theme.DictusColors
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.navigation.AppDestination
+import com.gallopkeyboard.navigation.AppDestination
 
 /**
  * Pill-style bottom navigation bar with 3 tabs: Accueil, Modèles, Réglages.

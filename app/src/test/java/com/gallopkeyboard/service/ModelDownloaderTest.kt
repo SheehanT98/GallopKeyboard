@@ -1,6 +1,6 @@
-package dev.pivisolutions.dictus.service
+package com.gallopkeyboard.service
 
-import dev.pivisolutions.dictus.model.ModelManager
+import com.gallopkeyboard.model.ModelManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest

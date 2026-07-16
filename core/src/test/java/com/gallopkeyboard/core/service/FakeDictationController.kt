@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.service
+package com.gallopkeyboard.core.service
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

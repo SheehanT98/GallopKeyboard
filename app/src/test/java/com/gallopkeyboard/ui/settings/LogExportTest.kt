@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.settings
+package com.gallopkeyboard.ui.settings
 
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertNotNull

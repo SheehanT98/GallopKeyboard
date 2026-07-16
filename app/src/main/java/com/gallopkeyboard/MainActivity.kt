@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus
+package com.gallopkeyboard
 
 import android.content.ComponentName
 import android.content.Context
@@ -19,12 +19,12 @@ import androidx.compose.runtime.setValue
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import dagger.hilt.android.AndroidEntryPoint
-import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
-import dev.pivisolutions.dictus.core.service.DictationController
-import dev.pivisolutions.dictus.core.theme.DictusTheme
-import dev.pivisolutions.dictus.core.theme.ThemeMode
-import dev.pivisolutions.dictus.navigation.AppNavHost
-import dev.pivisolutions.dictus.service.DictationService
+import com.gallopkeyboard.core.preferences.PreferenceKeys
+import com.gallopkeyboard.core.service.DictationController
+import com.gallopkeyboard.core.theme.DictusTheme
+import com.gallopkeyboard.core.theme.ThemeMode
+import com.gallopkeyboard.navigation.AppNavHost
+import com.gallopkeyboard.service.DictationService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber

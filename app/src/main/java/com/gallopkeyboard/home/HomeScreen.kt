@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.home
+package com.gallopkeyboard.home
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -40,13 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.preferences.PreferenceKeys
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.core.ui.GlassCard
-import dev.pivisolutions.dictus.model.ModelCatalog
+import com.gallopkeyboard.core.ui.GlassCard
+import com.gallopkeyboard.model.ModelCatalog
 import kotlinx.coroutines.flow.map
 
 /**

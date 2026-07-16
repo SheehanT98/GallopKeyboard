@@ -1,6 +1,6 @@
-package dev.pivisolutions.dictus.service
+package com.gallopkeyboard.service
 
-import dev.pivisolutions.dictus.core.service.DictationState
+import com.gallopkeyboard.core.service.DictationState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -74,7 +74,7 @@ class DictationServiceTest {
         // Verify the constants that external code (IME, notification) depends on
         assertEquals("dictus_recording", DictationService.CHANNEL_ID)
         assertEquals(1, DictationService.NOTIFICATION_ID)
-        assertEquals("dev.pivisolutions.dictus.action.START", DictationService.ACTION_START)
-        assertEquals("dev.pivisolutions.dictus.action.STOP", DictationService.ACTION_STOP)
+        assertEquals("com.gallopkeyboard.action.START", DictationService.ACTION_START)
+        assertEquals("com.gallopkeyboard.action.STOP", DictationService.ACTION_STOP)
     }
 }

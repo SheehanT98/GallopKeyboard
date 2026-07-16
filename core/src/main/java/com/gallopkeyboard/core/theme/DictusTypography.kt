@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.theme
+package com.gallopkeyboard.core.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import dev.pivisolutions.dictus.core.R
+import com.gallopkeyboard.core.R
 
 /**
  * DM Sans font family for Dictus.

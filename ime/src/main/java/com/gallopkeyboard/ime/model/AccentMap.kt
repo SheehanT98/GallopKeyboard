@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.model
+package com.gallopkeyboard.ime.model
 
 /**
  * Maps characters to their accented variants for long-press accent selection.

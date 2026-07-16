@@ -1,6 +1,6 @@
-package dev.pivisolutions.dictus.ime.ui
+package com.gallopkeyboard.ime.ui
 
-import dev.pivisolutions.dictus.ime.suggestion.StubSuggestionEngine
+import com.gallopkeyboard.ime.suggestion.StubSuggestionEngine
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test

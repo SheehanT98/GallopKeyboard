@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.logging
+package com.gallopkeyboard.core.logging
 
 import timber.log.Timber
 import java.io.File

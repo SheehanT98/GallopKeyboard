@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.models
+package com.gallopkeyboard.models
 
 import android.app.ActivityManager
 import android.content.Context
@@ -9,14 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
-import dev.pivisolutions.dictus.model.AiProvider
-import dev.pivisolutions.dictus.model.ModelCatalog
-import dev.pivisolutions.dictus.model.ModelInfo
-import dev.pivisolutions.dictus.model.ModelManager
-import dev.pivisolutions.dictus.service.DownloadProgress
-import dev.pivisolutions.dictus.service.ModelDownloader
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.preferences.PreferenceKeys
+import com.gallopkeyboard.model.AiProvider
+import com.gallopkeyboard.model.ModelCatalog
+import com.gallopkeyboard.model.ModelInfo
+import com.gallopkeyboard.model.ModelManager
+import com.gallopkeyboard.service.DownloadProgress
+import com.gallopkeyboard.service.ModelDownloader
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow

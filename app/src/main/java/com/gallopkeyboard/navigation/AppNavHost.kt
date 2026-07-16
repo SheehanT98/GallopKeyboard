@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.navigation
+package com.gallopkeyboard.navigation
 
 import android.content.Context
 import android.provider.Settings
@@ -23,26 +23,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
-import dev.pivisolutions.dictus.core.service.DictationController
+import com.gallopkeyboard.core.preferences.PreferenceKeys
+import com.gallopkeyboard.core.service.DictationController
 import androidx.compose.material3.MaterialTheme
-import dev.pivisolutions.dictus.home.HomeScreen
-import dev.pivisolutions.dictus.models.ModelsScreen
-import dev.pivisolutions.dictus.onboarding.OnboardingKeyboardSetupScreen
-import dev.pivisolutions.dictus.recording.RecordingScreen
-import dev.pivisolutions.dictus.onboarding.OnboardingMicPermissionScreen
-import dev.pivisolutions.dictus.onboarding.OnboardingModeSelectionScreen
-import dev.pivisolutions.dictus.onboarding.OnboardingModelDownloadScreen
-import dev.pivisolutions.dictus.onboarding.OnboardingSuccessScreen
-import dev.pivisolutions.dictus.onboarding.OnboardingTestRecordingScreen
-import dev.pivisolutions.dictus.onboarding.OnboardingViewModel
-import dev.pivisolutions.dictus.onboarding.OnboardingWelcomeScreen
-import dev.pivisolutions.dictus.ui.navigation.DictusBottomNavBar
-import dev.pivisolutions.dictus.ui.settings.DebugLogsScreen
-import dev.pivisolutions.dictus.ui.settings.LicencesScreen
-import dev.pivisolutions.dictus.ui.settings.SettingsScreen
-import dev.pivisolutions.dictus.ui.settings.SoundPickerScreen
-import dev.pivisolutions.dictus.ui.settings.SoundSettingsScreen
+import com.gallopkeyboard.home.HomeScreen
+import com.gallopkeyboard.models.ModelsScreen
+import com.gallopkeyboard.onboarding.OnboardingKeyboardSetupScreen
+import com.gallopkeyboard.recording.RecordingScreen
+import com.gallopkeyboard.onboarding.OnboardingMicPermissionScreen
+import com.gallopkeyboard.onboarding.OnboardingModeSelectionScreen
+import com.gallopkeyboard.onboarding.OnboardingModelDownloadScreen
+import com.gallopkeyboard.onboarding.OnboardingSuccessScreen
+import com.gallopkeyboard.onboarding.OnboardingTestRecordingScreen
+import com.gallopkeyboard.onboarding.OnboardingViewModel
+import com.gallopkeyboard.onboarding.OnboardingWelcomeScreen
+import com.gallopkeyboard.ui.navigation.DictusBottomNavBar
+import com.gallopkeyboard.ui.settings.DebugLogsScreen
+import com.gallopkeyboard.ui.settings.LicencesScreen
+import com.gallopkeyboard.ui.settings.SettingsScreen
+import com.gallopkeyboard.ui.settings.SoundPickerScreen
+import com.gallopkeyboard.ui.settings.SoundSettingsScreen
 import kotlinx.coroutines.flow.map
 
 /**

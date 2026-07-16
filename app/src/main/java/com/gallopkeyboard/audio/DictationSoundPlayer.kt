@@ -1,9 +1,9 @@
-package dev.pivisolutions.dictus.audio
+package com.gallopkeyboard.audio
 
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.SoundPool
-import dev.pivisolutions.dictus.R
+import com.gallopkeyboard.app.R
 
 /**
  * Low-latency sound player for recording lifecycle events.

@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ui.settings
+package com.gallopkeyboard.ui.settings
 
 import android.content.Intent
 import android.net.Uri
@@ -51,11 +51,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.pivisolutions.dictus.BuildConfig
-import dev.pivisolutions.dictus.R
-import dev.pivisolutions.dictus.core.logging.TimberSetup
-import dev.pivisolutions.dictus.core.theme.DictusColors
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.app.BuildConfig
+import com.gallopkeyboard.app.R
+import com.gallopkeyboard.core.logging.TimberSetup
+import com.gallopkeyboard.core.theme.DictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 import androidx.compose.material3.MaterialTheme
 
 /**
@@ -182,7 +182,7 @@ fun SettingsScreen(
         SettingsCard {
             SettingInfoRow(
                 label = stringResource(R.string.settings_version),
-                value = "Dictus ${BuildConfig.VERSION_NAME} (build ${BuildConfig.VERSION_CODE})",
+                value = "GallopKeyboard ${BuildConfig.VERSION_NAME} (build ${BuildConfig.VERSION_CODE})",
             )
             SettingDivider()
             SettingNavRow(

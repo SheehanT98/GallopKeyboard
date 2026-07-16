@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.core.whisper
+package com.gallopkeyboard.core.whisper
 
 /**
  * Post-processes transcribed text before insertion into the text field.

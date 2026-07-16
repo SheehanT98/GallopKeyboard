@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "dev.pivisolutions.dictus.ime"
+    namespace = "com.gallopkeyboard.ime"
     compileSdk = 35
 
     defaultConfig {

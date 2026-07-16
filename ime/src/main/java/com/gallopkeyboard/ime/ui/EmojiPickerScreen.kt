@@ -1,4 +1,4 @@
-package dev.pivisolutions.dictus.ime.ui
+package com.gallopkeyboard.ime.ui
 
 import android.view.ContextThemeWrapper
 import androidx.compose.foundation.background
@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.emoji2.emojipicker.EmojiPickerView
-import dev.pivisolutions.dictus.core.theme.LocalDictusColors
+import com.gallopkeyboard.core.theme.LocalDictusColors
 
 /**
  * Emoji picker screen that replaces the keyboard area.
@@ -123,7 +123,7 @@ fun EmojiPickerScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = stringResource(dev.pivisolutions.dictus.ime.R.string.ime_emoji_return_keyboard),
+                    text = stringResource(com.gallopkeyboard.ime.R.string.ime_emoji_return_keyboard),
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,

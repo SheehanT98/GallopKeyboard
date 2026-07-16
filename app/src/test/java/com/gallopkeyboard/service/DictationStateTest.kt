@@ -1,6 +1,6 @@
-package dev.pivisolutions.dictus.service
+package com.gallopkeyboard.service
 
-import dev.pivisolutions.dictus.core.service.DictationState
+import com.gallopkeyboard.core.service.DictationState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
