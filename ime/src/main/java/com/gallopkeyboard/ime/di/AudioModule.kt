@@ -1,6 +1,6 @@
 package com.gallopkeyboard.ime.di
 
-import com.gallopkeyboard.ime.audio.StubTranscriber
+import com.gallopkeyboard.ime.asr.StreamingTranscriber
 import com.gallopkeyboard.ime.audio.Transcriber
 import dagger.Binds
 import dagger.Module
@@ -14,5 +14,5 @@ abstract class AudioModule {
 
     @Binds
     @Singleton
-    abstract fun bindTranscriber(impl: StubTranscriber): Transcriber
+    abstract fun bindTranscriber(impl: StreamingTranscriber): Transcriber
 }

@@ -153,3 +153,51 @@ Smart voice button gesture FSM + 16 kHz mono PCM recorder for the voice panel (P
 
 The `app` module still has `AudioCaptureManager` (Float32 via foreground `DictationService`). Plan 005 adds a separate **PCM16** pipeline in `:ime` for the voice panel per HANDOFF; interfaces differ — not reused.
 
+## Plan 006 additions
+
+Streaming Parakeet partial transcripts via `InputConnection` composing text (Plan 007 adds Whisper polish).
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `asr/src/main/java/com/k2fsa/sherpa/onnx/OnlineRecognizer.kt` | Vendored sherpa-onnx streaming JNI bindings |
+| `asr/src/main/java/com/k2fsa/sherpa/onnx/OnlineStream.kt` | Streaming audio buffer for online recognizer |
+| `asr/src/main/java/com/gallopkeyboard/asr/parakeet/StreamingAsrEngine.kt` | Minimal streaming ASR interface |
+| `asr/src/main/java/com/gallopkeyboard/asr/parakeet/ParakeetConfig.kt` | Model paths + validation |
+| `asr/src/main/java/com/gallopkeyboard/asr/parakeet/ParakeetEngine.kt` | `OnlineRecognizer` wrapper for transducer models |
+| `asr/src/main/java/com/gallopkeyboard/asr/parakeet/AsrModelMissingException.kt` | Missing-model error type |
+| `ime/src/main/java/com/gallopkeyboard/ime/asr/ImeTextCommitter.kt` | `setComposingText` / `finishComposingText` helper + `InputConnectionSupplier` |
+| `ime/src/main/java/com/gallopkeyboard/ime/asr/StreamingTranscriber.kt` | `Transcriber` impl — partials every 500 ms |
+| `ime/src/main/java/com/gallopkeyboard/ime/di/AsrModule.kt` | Hilt bindings for engine + committer |
+| `core/src/main/java/com/gallopkeyboard/core/flags/Flags.kt` | `polishEnabled` flag (default `false`) |
+| `docs/models.md` | On-device model directory layout |
+| `asr/src/androidTest/.../ParakeetSmokeTest.kt` | Optional smoke test (`RUN_ASR_SMOKE=1`) |
+| `ime/src/test/.../StreamingTranscriberTest.kt` | Unit tests with fake engine (8 cases) |
+| `ime/src/test/.../ImeTextCommitterTest.kt` | Null-safe committer tests |
+
+### Model layout (streaming)
+
+Expected under `context.filesDir/models/parakeet/`:
+
+- `encoder.onnx`, `decoder.onnx`, `joiner.onnx`, `tokens.txt`
+
+See `docs/models.md` for sizes, download links, and `adb push` sideload steps.
+
+### DI / IME wiring
+
+| Class | Change |
+|-------|--------|
+| `AudioModule` | `@Binds Transcriber → StreamingTranscriber` (stub kept `@VisibleForTesting`) |
+| `DictusImeService` | Sets `InputConnectionSupplier` in `onStartInputView` / clears in `onFinishInputView` |
+| `DictusImeEntryPoint` | Exposes `inputConnectionSupplier()` |
+
+### `strings.xml` keys added
+
+- `asr_models_missing` — toast when Parakeet files absent
+- `asr_recognition_failed` — toast on JNI / runtime ASR failure
+
+### Note on Case A (sherpa-onnx present)
+
+Plan 006 skipped the Case B submodule path. Streaming uses vendored `OnlineRecognizer` bindings alongside existing offline `OfflineRecognizer` JNI libs in `:asr`.
+

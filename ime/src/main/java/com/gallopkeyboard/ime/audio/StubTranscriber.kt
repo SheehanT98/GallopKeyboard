@@ -1,9 +1,11 @@
 package com.gallopkeyboard.ime.audio
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@VisibleForTesting
 @Singleton
 class StubTranscriber @Inject constructor() : Transcriber {
     override fun onSessionStart(session: AudioSession) {

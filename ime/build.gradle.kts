@@ -40,6 +40,7 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":asr"))
     implementation(libs.datastore.preferences)
 
     implementation(platform(libs.compose.bom))
