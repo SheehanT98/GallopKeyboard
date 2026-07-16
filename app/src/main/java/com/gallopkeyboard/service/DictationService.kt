@@ -466,7 +466,7 @@ class DictationService : Service(), DictationController {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Dictus Recording",
+            "GallopKeyboard Recording",
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
             description = "Active recording notification"
@@ -479,7 +479,7 @@ class DictationService : Service(), DictationController {
     /**
      * Build the foreground notification shown during recording.
      *
-     * Shows "Dictus - Recording" with a Stop action button.
+     * Shows "GallopKeyboard — Recording" with a Stop action button.
      * Body tap is a no-op (per user decision -- the IME is already visible).
      */
     private fun buildNotification(): Notification {
@@ -494,7 +494,7 @@ class DictationService : Service(), DictationController {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Dictus - Recording")
+            .setContentTitle("GallopKeyboard — Recording")
             .setSmallIcon(R.drawable.ic_mic)
             .setOngoing(true)
             .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent)

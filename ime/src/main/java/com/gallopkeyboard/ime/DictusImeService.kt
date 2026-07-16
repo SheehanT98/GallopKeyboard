@@ -191,11 +191,22 @@ class DictusImeService : LifecycleInputMethodService() {
     override fun onStartInputView(info: android.view.inputmethod.EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         entryPoint.inputConnectionSupplier().supplier = { currentInputConnection }
-        if (::clipboardWatcher.isInitialized) {
-            clipboardWatcher.refreshFromPrimaryClip()
-        }
+        refreshClipboardStrip()
         if (!restarting) {
             panelController.reset()
+        }
+    }
+
+    override fun onWindowShown() {
+        super.onWindowShown()
+        // Android 12+ often skips OnPrimaryClipChangedListener in the IME process.
+        // Refresh whenever the keyboard window appears so the strip stays current.
+        refreshClipboardStrip()
+    }
+
+    private fun refreshClipboardStrip() {
+        if (::clipboardWatcher.isInitialized) {
+            clipboardWatcher.refreshFromPrimaryClip()
         }
     }
 

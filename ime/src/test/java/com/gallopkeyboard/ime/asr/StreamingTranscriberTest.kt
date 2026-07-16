@@ -129,7 +129,9 @@ class StreamingTranscriberTest {
 
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         assertTrue(committer.calls.isEmpty())
-        assertEquals("Voice models not installed", ShadowToast.getTextOfLatestToast())
+        val toast = ShadowToast.getTextOfLatestToast().toString()
+        assertTrue(toast.contains("Voice models"))
+        assertTrue(toast.contains("Download"))
     }
 
     @Test

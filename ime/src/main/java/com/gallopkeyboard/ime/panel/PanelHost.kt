@@ -9,6 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
+import com.gallopkeyboard.core.models.ModelInstaller
+import com.gallopkeyboard.core.models.ModelRegistry
 import com.gallopkeyboard.core.models.VoiceSetupIntents
 import com.gallopkeyboard.core.theme.ThemeMode
 import com.gallopkeyboard.ime.asr.ModelLifecycleController
@@ -19,7 +21,7 @@ import com.gallopkeyboard.ime.audio.Transcriber
 /**
  * Root panel switcher for the IME keyboard view.
  *
- * [typingContent] wraps the existing Dictus typing keyboard (Compose).
+ * [typingContent] wraps the existing typing keyboard (Compose).
  * [VoicePanel] is shown when [PanelController] state is [PanelState.VOICE].
  */
 @Composable
@@ -42,6 +44,13 @@ fun PanelHost(
     LaunchedEffect(state) {
         if (state == PanelState.VOICE) {
             modelLifecycleManager.onVoicePanelShown()
+            // Re-check on every open so returning from download clears/shows the prompt.
+            val installer = ModelInstaller(context)
+            if (installer.isInstalled(ModelRegistry.defaultVoiceBundle)) {
+                promptState.dismissBanner()
+            } else {
+                promptState.showBanner()
+            }
         }
         if (previousState == PanelState.VOICE && state == PanelState.TYPING) {
             modelLifecycleManager.onVoicePanelHidden()

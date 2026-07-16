@@ -1,8 +1,12 @@
 package com.gallopkeyboard.ime.panel
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -10,29 +14,48 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.gallopkeyboard.core.models.ModelRegistry
 import com.gallopkeyboard.ime.R
 
 /**
- * Persistent banner shown in the voice panel when on-device models are missing.
- * Tapping opens the launcher app onboarding flow (user-initiated; required on Android 12+).
+ * Shown in the voice panel when on-device voice models are missing or corrupt.
+ *
+ * Explains that voice needs a one-time download (~220 MB) and opens the in-app
+ * download screen. User-initiated start is required on Android 12+.
  */
 @Composable
 fun VoicePanelPromptBanner(
     onSetupVoiceModels: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val sizeMb = (ModelRegistry.defaultBundleSizeBytes() / (1024L * 1024L)).toInt()
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onSetupVoiceModels),
-        color = MaterialTheme.colorScheme.errorContainer,
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceVariant,
         tonalElevation = 2.dp,
+        shape = MaterialTheme.shapes.medium,
     ) {
-        Text(
-            text = stringResource(R.string.voice_panel_setup_models),
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onErrorContainer,
-        )
+        Column(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.voice_panel_setup_title),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = stringResource(R.string.voice_panel_setup_body, sizeMb),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Button(
+                onClick = onSetupVoiceModels,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(text = stringResource(R.string.voice_panel_setup_cta))
+            }
+        }
     }
 }
