@@ -1,6 +1,10 @@
 {
   "id": "job-005",
+<<<<<<< HEAD
   "status": "double_checking",
+=======
+  "status": "coding",
+>>>>>>> origin/main
   "mode": "quick",
   "originalAsk": "Execute plan 005: Smart button + AudioRecorder",
   "planRef": "plans/005-smart-button-and-audio-recorder.md",
@@ -18,7 +22,11 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:11.658Z",
+<<<<<<< HEAD
   "lastStatusAt": "2026-07-16T18:05:51.093Z",
+=======
+  "lastStatusAt": "2026-07-16T17:56:28.196Z",
+>>>>>>> origin/main
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -45,10 +53,7 @@
     "scripts/verify.sh"
   ],
   "touchedFiles": [],
-  "blockedBy": [
-    "job-004",
-    "job-004"
-  ],
+  "blockedBy": [],
   "dependsOn": [
     "job-004"
   ],
@@ -60,9 +65,16 @@
   "notifiedAt": null,
   "stages": {
     "plan": "skipped",
+<<<<<<< HEAD
     "code": "pending",
     "test": "done",
     "review": "done",
     "doubleCheck": "in_progress"
+=======
+    "code": "in_progress",
+    "test": "pending",
+    "review": "pending",
+    "doubleCheck": "pending"
+>>>>>>> origin/main
   }
 }
