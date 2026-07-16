@@ -95,3 +95,36 @@ Plan acceptance tests require Galaxy S22 sideload per `docs/manual-test-matrix.m
 ## Advance
 
 Automated verification passed → `npm run devteam:advance -- job-010 --to reviewing`
+
+---
+
+## Re-test after revise (cancel → lifecycle unload fix)
+
+| Field | Value |
+|-------|-------|
+| **Trigger** | Review revise — `PolishingTranscriber.onSessionCancel` must call `lifecycleManager.onSessionStopped()` so cancel does not leave models loaded |
+| **Tested at** | 2026-07-16T19:50:13Z |
+| **SHA tested** | `efe8fa28113498e372145a7d88db2130d22438c6` |
+| **Verdict** | **PASS** |
+
+### Commands run
+
+| Check | Command | Result |
+|-------|---------|--------|
+| Drift guard | `source scripts/android-env.sh && bash scripts/verify.sh` | exit 0, printed `OK` |
+| Cancel/lifecycle unit tests | `./gradlew :ime:testDebugUnitTest --tests 'com.gallopkeyboard.ime.asr.PolishingTranscriberTest' --tests 'com.gallopkeyboard.ime.asr.StreamingTranscriberTest'` | BUILD SUCCESSFUL |
+
+### Targeted unit tests
+
+| Suite | Tests | Failures | Notes |
+|-------|-------|----------|-------|
+| `PolishingTranscriberTest` | 7 | 0 | `cancel during recording…` asserts `lifecycle.sessionStoppedCount >= 1`; `session start and stop notify lifecycle manager` asserts cancel increments `sessionStoppedCount` |
+| `StreamingTranscriberTest` | 8 | 0 | baseline cancel behavior unchanged |
+
+### Fix confirmed
+
+`PolishingTranscriber.onSessionCancel` now delegates to `streaming.onSessionCancel(session)` then calls `lifecycleManager.onSessionStopped()`, matching stop-path lifecycle semantics.
+
+### Job status
+
+Left at `double_checking` — orchestrator will run double-check next.
