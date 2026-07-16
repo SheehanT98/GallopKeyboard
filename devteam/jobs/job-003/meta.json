@@ -1,6 +1,6 @@
 {
   "id": "job-003",
-  "status": "reviewing",
+  "status": "double_checking",
   "mode": "quick",
   "originalAsk": "Execute plan 003: Android CI + sideload baseline",
   "planRef": "plans/003-android-ci-and-sideload-baseline.md",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:11.265Z",
-  "lastStatusAt": "2026-07-16T17:37:49.126Z",
+  "lastStatusAt": "2026-07-16T17:38:30.652Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -45,7 +45,7 @@
     "plan": "skipped",
     "code": "done",
     "test": "done",
-    "review": "in_progress",
-    "doubleCheck": "pending"
+    "review": "done",
+    "doubleCheck": "in_progress"
   }
 }
