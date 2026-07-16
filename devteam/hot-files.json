@@ -3,6 +3,7 @@
   "files": [
     "plans/README.md",
     "devteam/README.md",
+    "package.json",
     "devteam/phase-queue.json",
     "devteam/registry.json",
     "settings.gradle.kts",

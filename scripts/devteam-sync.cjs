@@ -9,7 +9,7 @@ function printHelp() {
 	console.log(`Usage: node scripts/devteam-sync.cjs <job-id> [options]
        node scripts/devteam-sync.cjs --all-open [options]
 
-Merge origin/master into a devteam feature branch and push.
+Merge origin/main into a devteam feature branch and push.
 Auto-resolves trivial devteam/README.md merge conflicts by regenerating the dashboard.
 
 Options:
