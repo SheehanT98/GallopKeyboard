@@ -4,9 +4,9 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 
 ## Dashboard
 
-**Active agent jobs:** 0
+**Active agent jobs:** 1
 **Queued:** 0
-**Awaiting your review:** 1
+**Awaiting your review:** 0
 | Job | Status | Feature | Branch | PR | Review |
 |-----|--------|---------|--------|-----|--------|
 | job-010 | conflict_hold | Execute plan 010: Hardening battery crashes release | `cursor/devteam-job-010-execute-plan-010-hardening-battery-crashes-relea-c1fc` | — | — |
@@ -17,12 +17,11 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 | job-005 | conflict_hold | Execute plan 005: Smart button + AudioRecorder | `cursor/devteam-job-005-execute-plan-005-smart-button-audiorecorder-c1fc` | — | — |
 | job-004 | conflict_hold | Execute plan 004: PanelController + VoicePanel scaffold | `cursor/devteam-job-004-execute-plan-004-panelcontroller-voicepanel-scaf-c1fc` | — | — |
 | job-003 | conflict_hold | Execute plan 003: Android CI + sideload baseline | `cursor/devteam-job-003-execute-plan-003-android-ci-sideload-baseline-c1fc` | — | — |
-| job-002 | conflict_hold | Execute plan 002: fork Dictus into repo | `cursor/devteam-job-002-execute-plan-002-fork-dictus-into-repo-c1fc` | — | — |
-| job-001 | awaiting_review | Execute plan 001: repo hygiene + AGENTS.md + ADRs | `cursor/devteam-job-001-execute-plan-001-repo-hygiene-agents-md-adrs-c1fc` | #8 | [04-review.md](jobs/job-001/04-review.md) |
+| job-002 | coding | Execute plan 002: fork Dictus into repo | `cursor/devteam-job-002-execute-plan-002-fork-dictus-into-repo-c1fc` | — | — |
 
 ## Ready for review
 
-- **job-001** — Execute plan 001: repo hygiene + AGENTS.md + ADRs · PR 8
+_No jobs awaiting review._
 
 ## Commands
 

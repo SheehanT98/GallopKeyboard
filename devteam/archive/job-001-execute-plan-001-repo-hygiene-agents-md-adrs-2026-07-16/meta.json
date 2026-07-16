@@ -1,6 +1,6 @@
 {
   "id": "job-001",
-  "status": "awaiting_review",
+  "status": "archived",
   "mode": "quick",
   "originalAsk": "Execute plan 001: repo hygiene + AGENTS.md + ADRs",
   "planRef": "plans/001-repo-hygiene-and-agents-md.md",
@@ -18,8 +18,8 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:10.873Z",
-  "lastStatusAt": "2026-07-16T17:12:58.155Z",
-  "completedAt": "2026-07-16T17:12:58.154Z",
+  "lastStatusAt": "2026-07-16T17:13:37.182Z",
+  "completedAt": "2026-07-16T17:13:37.182Z",
   "plannedFiles": [
     "plans/README.md",
     "docs/adr/0001-fork-dictus.md",
@@ -46,5 +46,7 @@
     "test": "done",
     "review": "done",
     "doubleCheck": "done"
-  }
+  },
+  "archivedAt": "2026-07-16T17:13:37.183Z",
+  "archiveReason": "approved"
 }
