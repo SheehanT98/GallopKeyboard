@@ -17,12 +17,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +38,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
@@ -47,6 +52,7 @@ import com.gallopkeyboard.ime.audio.AudioSession
 import com.gallopkeyboard.ime.audio.RING_BUFFER_CAPACITY_BYTES
 import com.gallopkeyboard.ime.audio.RingByteBuffer
 import com.gallopkeyboard.ime.audio.Transcriber
+import com.gallopkeyboard.ime.theme.GallopColors
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -144,11 +150,14 @@ fun SmartVoiceButton(
 
     val buttonColors = if (isRecordingVisual) {
         ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.error,
-            contentColor = MaterialTheme.colorScheme.onError,
+            containerColor = GallopColors.RecordingAccent,
+            contentColor = GallopColors.AccentOn,
         )
     } else {
-        ButtonDefaults.buttonColors()
+        ButtonDefaults.buttonColors(
+            containerColor = GallopColors.Accent,
+            contentColor = GallopColors.AccentOn,
+        )
     }
 
     val label = if (isRecordingVisual) {
@@ -157,17 +166,41 @@ fun SmartVoiceButton(
         stringResource(R.string.voice_panel_placeholder_button)
     }
 
+    val pulseTransition = rememberInfiniteTransition(label = "recording-pulse")
+    val pulseRadius by pulseTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "pulse-radius",
+    )
+    val pulseAlpha = if (isRecordingVisual) 0.15f + pulseRadius * 0.25f else 0f
+
     Box(
         modifier = modifier
-            .fillMaxWidth(0.8f)
-            .height(64.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(72.dp),
         contentAlignment = Alignment.Center,
     ) {
         Button(
             onClick = {},
             modifier = Modifier
                 .fillMaxWidth()
-                .height(64.dp)
+                .height(72.dp)
+                .drawBehind {
+                    if (isRecordingVisual) {
+                        val baseRadius = size.minDimension / 2f
+                        val extra = pulseRadius * 24.dp.toPx()
+                        drawCircle(
+                            color = GallopColors.RecordingAccent.copy(alpha = pulseAlpha),
+                            radius = baseRadius + extra,
+                            center = center,
+                        )
+                    }
+                }
                 .pointerInput(cancelSlopPx) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
@@ -221,11 +254,23 @@ fun SmartVoiceButton(
                         }
                     }
                 },
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(36.dp),
             colors = buttonColors,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = label)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Mic,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.titleMedium,
+                )
                 if (isRecordingVisual) {
                     Spacer(modifier = Modifier.width(8.dp))
                     RecordingDot()
@@ -251,7 +296,7 @@ private fun RecordingDot() {
         modifier = Modifier
             .size(8.dp)
             .graphicsLayer { this.alpha = alpha }
-            .background(MaterialTheme.colorScheme.onError, CircleShape),
+            .background(GallopColors.AccentOn, CircleShape),
     )
 }
 

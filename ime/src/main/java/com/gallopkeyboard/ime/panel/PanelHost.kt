@@ -39,7 +39,6 @@ fun PanelHost(
             transcriber = transcriber,
             permissionRequester = permissionRequester,
             keyboardHeight = keyboardHeight,
-            themeMode = themeMode,
             showSetupBanner = showSetupBanner,
             onSetupVoiceModels = {
                 context.startActivity(VoiceSetupIntents.onboardingIntent(context))

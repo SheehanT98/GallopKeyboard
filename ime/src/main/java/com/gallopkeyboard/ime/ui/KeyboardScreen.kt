@@ -25,8 +25,10 @@ import com.gallopkeyboard.core.theme.DictusTheme
 import com.gallopkeyboard.core.theme.ThemeMode
 import com.gallopkeyboard.ime.R
 import com.gallopkeyboard.ime.model.KeyDefinition
+import com.gallopkeyboard.ime.clipboard.ClipboardStore
 import com.gallopkeyboard.ime.model.KeyboardLayer
 import com.gallopkeyboard.ime.model.KeyType
+import com.gallopkeyboard.ime.panel.ClipboardStrip
 import timber.log.Timber
 
 /**
@@ -62,6 +64,8 @@ fun KeyboardScreen(
     initialLayer: KeyboardLayer = KeyboardLayer.LETTERS,
     hapticsEnabled: Boolean = true,
     keyboardLayout: String = "azerty",  // NEW — AZERTY/QWERTY from DataStore
+    clipboardItems: List<String> = emptyList(),
+    clipboardStore: ClipboardStore? = null,
 ) {
     // Keyboard state — initialLayer drives the starting layer from the KEYBOARD_MODE preference.
     // remember(initialLayer) ensures recomposition resets the layer if the preference changes.
@@ -112,50 +116,59 @@ fun KeyboardScreen(
                     )
 
                     // Keyboard area (264.dp) for 48.dp keys with existing row spacing.
-                    KeyboardView(
-                        layer = currentLayer,
-                        isShifted = isShifted,
-                        isCapsLock = isCapsLock,
-                        layout = currentLayout,
-                        hapticsEnabled = hapticsEnabled,
-                        onKeyPress = { key ->
-                            handleKeyPress(
-                                key = key,
-                                isShifted = isShifted,
-                                isCapsLock = isCapsLock,
-                                currentLayer = currentLayer,
-                                lastShiftTapTime = lastShiftTapTime,
-                                onCommitText = onCommitText,
-                                onDeleteBackward = onDeleteBackward,
-                                onSendReturn = onSendReturn,
-                                onEmojiToggle = onEmojiToggle,
-                                onShiftChanged = { shifted, caps, tapTime ->
-                                    isShifted = shifted
-                                    isCapsLock = caps
-                                    lastShiftTapTime = tapTime
-                                    Timber.d("Shift toggled: %s, CapsLock: %s", shifted, caps)
-                                },
-                                onLayerChanged = { layer ->
-                                    currentLayer = layer
-                                    Timber.d("Layer switched to: %s", layer)
-                                },
-                                onAutoUnshift = {
-                                    // Turn off shift after typing a character (unless caps lock)
-                                    if (isShifted && !isCapsLock) {
-                                        isShifted = false
-                                    }
-                                },
+                    Column(modifier = Modifier.height(264.dp)) {
+                        if (clipboardStore != null && clipboardItems.isNotEmpty()) {
+                            ClipboardStrip(
+                                items = clipboardItems,
+                                store = clipboardStore,
+                                onInsert = onCommitText,
                             )
-                        },
-                        onAccentSelected = { accent ->
-                            onCommitText(accent)
-                            if (isShifted && !isCapsLock) {
-                                isShifted = false
-                            }
-                            Timber.d("Accent selected: %s", accent)
-                        },
-                        modifier = Modifier.height(264.dp),
-                    )
+                        }
+                        KeyboardView(
+                            layer = currentLayer,
+                            isShifted = isShifted,
+                            isCapsLock = isCapsLock,
+                            layout = currentLayout,
+                            hapticsEnabled = hapticsEnabled,
+                            onKeyPress = { key ->
+                                handleKeyPress(
+                                    key = key,
+                                    isShifted = isShifted,
+                                    isCapsLock = isCapsLock,
+                                    currentLayer = currentLayer,
+                                    lastShiftTapTime = lastShiftTapTime,
+                                    onCommitText = onCommitText,
+                                    onDeleteBackward = onDeleteBackward,
+                                    onSendReturn = onSendReturn,
+                                    onEmojiToggle = onEmojiToggle,
+                                    onShiftChanged = { shifted, caps, tapTime ->
+                                        isShifted = shifted
+                                        isCapsLock = caps
+                                        lastShiftTapTime = tapTime
+                                        Timber.d("Shift toggled: %s, CapsLock: %s", shifted, caps)
+                                    },
+                                    onLayerChanged = { layer ->
+                                        currentLayer = layer
+                                        Timber.d("Layer switched to: %s", layer)
+                                    },
+                                    onAutoUnshift = {
+                                        // Turn off shift after typing a character (unless caps lock)
+                                        if (isShifted && !isCapsLock) {
+                                            isShifted = false
+                                        }
+                                    },
+                                )
+                            },
+                            onAccentSelected = { accent ->
+                                onCommitText(accent)
+                                if (isShifted && !isCapsLock) {
+                                    isShifted = false
+                                }
+                                Timber.d("Accent selected: %s", accent)
+                            },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
                 }
 
                 // Bottom-right voice panel toggle — overlays empty key corner (HANDOFF UX).

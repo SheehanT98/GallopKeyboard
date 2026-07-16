@@ -1,5 +1,6 @@
 package com.gallopkeyboard.ime.panel
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,18 +16,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.gallopkeyboard.core.theme.DictusTheme
-import com.gallopkeyboard.core.theme.ThemeMode
 import com.gallopkeyboard.ime.R
 import com.gallopkeyboard.ime.audio.AudioRecorderEngine
 import com.gallopkeyboard.ime.audio.Transcriber
+import com.gallopkeyboard.ime.theme.GallopColors
+import com.gallopkeyboard.ime.theme.GallopVoiceTheme
 
 /** Matches [com.gallopkeyboard.ime.ui.KeyboardScreen] max height (suggestion + mic row + keys). */
 val KEYBOARD_PANEL_HEIGHT_DP: Dp = 346.dp
@@ -38,17 +38,17 @@ fun VoicePanel(
     transcriber: Transcriber,
     permissionRequester: PermissionRequester,
     keyboardHeight: Dp = KEYBOARD_PANEL_HEIGHT_DP,
-    themeMode: ThemeMode = ThemeMode.DARK,
     showSetupBanner: Boolean = false,
     onSetupVoiceModels: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    DictusTheme(themeMode = themeMode) {
+    GallopVoiceTheme {
         Box(
             modifier = modifier
                 .fillMaxWidth()
                 .height(keyboardHeight)
-                .padding(horizontal = 8.dp),
+                .background(GallopColors.Surface)
+                .padding(horizontal = 16.dp),
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -60,7 +60,8 @@ fun VoicePanel(
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     SmartVoiceButton(
@@ -73,17 +74,21 @@ fun VoicePanel(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                        .padding(bottom = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        TextButton(onClick = {}, enabled = false) {
-                            Text("Think?")
-                        }
-                        TextButton(onClick = {}, enabled = false) {
-                            Text("Search?")
-                        }
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Text(
+                            text = "Think?",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = GallopColors.Placeholder,
+                        )
+                        Text(
+                            text = "Search?",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = GallopColors.Placeholder,
+                        )
                     }
                     IconButton(
                         onClick = onSwitchToTyping,
