@@ -1,19 +1,15 @@
 {
   "id": "job-005",
-<<<<<<< HEAD
-  "status": "double_checking",
-=======
-  "status": "coding",
->>>>>>> origin/main
+  "status": "awaiting_review",
   "mode": "quick",
   "originalAsk": "Execute plan 005: Smart button + AudioRecorder",
   "planRef": "plans/005-smart-button-and-audio-recorder.md",
   "feature": "Execute plan 005: Smart button + AudioRecorder",
   "slug": "execute-plan-005-smart-button-audiorecorder",
   "branch": "cursor/devteam-job-005-execute-plan-005-smart-button-audiorecorder-c1fc",
-  "pr": null,
-  "prNumber": null,
-  "chatTitle": null,
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/16",
+  "prNumber": 16,
+  "chatTitle": "devteam pr16",
   "models": {
     "plan": "cursor-grok-4.5-high",
     "code": "composer-2.5",
@@ -22,12 +18,8 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:11.658Z",
-<<<<<<< HEAD
-  "lastStatusAt": "2026-07-16T18:05:51.093Z",
-=======
-  "lastStatusAt": "2026-07-16T17:56:28.196Z",
->>>>>>> origin/main
-  "completedAt": null,
+  "lastStatusAt": "2026-07-16T18:07:45.361Z",
+  "completedAt": "2026-07-16T18:07:45.360Z",
   "plannedFiles": [
     "plans/README.md",
     "plans/004-panel-controller-and-voice-panel-scaffold.md",
@@ -65,16 +57,9 @@
   "notifiedAt": null,
   "stages": {
     "plan": "skipped",
-<<<<<<< HEAD
-    "code": "pending",
+    "code": "done",
     "test": "done",
     "review": "done",
-    "doubleCheck": "in_progress"
-=======
-    "code": "in_progress",
-    "test": "pending",
-    "review": "pending",
-    "doubleCheck": "pending"
->>>>>>> origin/main
+    "doubleCheck": "done"
   }
 }
