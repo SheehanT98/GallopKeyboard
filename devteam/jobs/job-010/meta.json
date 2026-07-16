@@ -1,6 +1,6 @@
 {
   "id": "job-010",
-  "status": "conflict_hold",
+  "status": "coding",
   "mode": "quick",
   "originalAsk": "Execute plan 010: Hardening battery crashes release",
   "planRef": "plans/010-hardening-battery-crashes-release.md",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:12.654Z",
-  "lastStatusAt": "2026-07-16T19:20:02.591Z",
+  "lastStatusAt": "2026-07-16T19:22:59.063Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -36,9 +36,7 @@
     "app/build/outputs/apk/release/app-release.apk"
   ],
   "touchedFiles": [],
-  "blockedBy": [
-    "job-009"
-  ],
+  "blockedBy": [],
   "dependsOn": [
     "job-009"
   ],
@@ -50,7 +48,7 @@
   "notifiedAt": null,
   "stages": {
     "plan": "skipped",
-    "code": "pending",
+    "code": "in_progress",
     "test": "pending",
     "review": "pending",
     "doubleCheck": "pending"
