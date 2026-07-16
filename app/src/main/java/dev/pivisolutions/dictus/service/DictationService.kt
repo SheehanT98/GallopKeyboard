@@ -1,0 +1,513 @@
+package dev.pivisolutions.dictus.service
+
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.os.Binder
+import android.os.IBinder
+import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dev.pivisolutions.dictus.R
+import dev.pivisolutions.dictus.audio.DictationSoundPlayer
+import dev.pivisolutions.dictus.core.preferences.PreferenceKeys
+import dev.pivisolutions.dictus.core.service.DictationController
+import dev.pivisolutions.dictus.core.service.DictationState
+import dev.pivisolutions.dictus.model.ModelCatalog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import dev.pivisolutions.dictus.asr.ParakeetProvider
+import dev.pivisolutions.dictus.core.stt.SttProvider
+import dev.pivisolutions.dictus.core.whisper.TextPostProcessor
+import dev.pivisolutions.dictus.model.AiProvider
+import dev.pivisolutions.dictus.model.ModelManager
+import timber.log.Timber
+
+/**
+ * Foreground service that manages audio recording for voice dictation.
+ *
+ * WHY a foreground service: Android kills background audio capture aggressively.
+ * A foreground service with microphone type keeps the process alive and shows a
+ * notification so the user knows recording is active. This is mandatory since
+ * Android 14 (API 34) for microphone access from a service.
+ *
+ * HOW the IME uses this: DictusImeService binds to DictationService via
+ * [LocalBinder] (same-process, zero overhead). It observes [state] with
+ * collectAsState() to switch between keyboard and recording UI, and calls
+ * [startRecording]/[stopRecording]/[cancelRecording] via the binder reference.
+ *
+ * WHY LocalBinder (not AIDL): The IME and this service run in the same process.
+ * Local binding gives direct object access without IPC serialization overhead.
+ */
+/**
+ * Hilt entry point for DictationService.
+ *
+ * WHY EntryPointAccessors (not @AndroidEntryPoint): DictationService uses a
+ * LocalBinder pattern — the IME holds a direct reference to the service instance.
+ * @AndroidEntryPoint wraps the service class via code generation and can interfere
+ * with the LocalBinder pattern. EntryPointAccessors gives us Hilt-managed
+ * singletons without changing the service's class hierarchy.
+ */
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface DictationServiceEntryPoint {
+    fun dataStore(): DataStore<Preferences>
+}
+
+class DictationService : Service(), DictationController {
+
+    companion object {
+        const val CHANNEL_ID = "dictus_recording"
+        const val NOTIFICATION_ID = 1
+        const val ACTION_START = "dev.pivisolutions.dictus.action.START"
+        const val ACTION_STOP = "dev.pivisolutions.dictus.action.STOP"
+        private const val TRANSCRIPTION_TIMEOUT_MS = 120_000L
+    }
+
+    /**
+     * DataStore accessed via EntryPoint so that DictationService can read
+     * preferences without being an @AndroidEntryPoint component itself.
+     */
+    private val dataStore: DataStore<Preferences> by lazy {
+        EntryPointAccessors.fromApplication(
+            applicationContext,
+            DictationServiceEntryPoint::class.java,
+        ).dataStore()
+    }
+
+    private var currentProvider: SttProvider? = null
+    private val modelManager by lazy { ModelManager(applicationContext) }
+    private val modelDownloader by lazy { ModelDownloader(modelManager) }
+
+    /**
+     * Local binder for same-process binding.
+     *
+     * The IME gets a direct reference to DictationService through this binder,
+     * allowing it to call methods and observe StateFlow without any IPC overhead.
+     */
+    inner class LocalBinder : Binder() {
+        fun getService(): DictationService = this@DictationService
+    }
+
+    private val binder = LocalBinder()
+
+    // Coroutine scope tied to service lifecycle.
+    // SupervisorJob ensures one child failure doesn't cancel others.
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    private var audioCaptureManager: AudioCaptureManager? = null
+    private var timerJob: Job? = null
+    private var elapsedMs: Long = 0L
+
+    // Sound feedback for recording lifecycle events.
+    // Initialized in onCreate(); conditionally played based on SOUND_ENABLED preference.
+    // Sound names and volume are reactively observed from DataStore so changes in
+    // SoundSettingsScreen take effect without a service restart.
+    private lateinit var soundPlayer: DictationSoundPlayer
+    private var soundEnabled: Boolean = false
+    private var soundVolume: Float = 0.5f
+
+    // State machine exposed to the IME via the binder.
+    // MutableStateFlow is thread-safe; updates from any coroutine are fine.
+    private val _state = MutableStateFlow<DictationState>(DictationState.Idle)
+
+    /** Observable state for the IME to collect. */
+    override val state: StateFlow<DictationState> = _state.asStateFlow()
+
+    override fun onBind(intent: Intent): IBinder = binder
+
+    override fun onCreate() {
+        super.onCreate()
+        soundPlayer = DictationSoundPlayer(applicationContext)
+
+        // Load sounds with user-selected names from DataStore on first launch.
+        // Subsequent preference changes are handled by the reactive observers below.
+        serviceScope.launch {
+            val prefs = dataStore.data.first()
+            val startSound = prefs[PreferenceKeys.RECORD_START_SOUND] ?: "electronic_01f"
+            val stopSound = prefs[PreferenceKeys.RECORD_STOP_SOUND] ?: "electronic_02b"
+            val cancelSound = prefs[PreferenceKeys.RECORD_CANCEL_SOUND] ?: "electronic_03c"
+            soundPlayer.loadSounds(startSound, stopSound, cancelSound)
+
+            soundPlayer.volume = prefs[PreferenceKeys.SOUND_VOLUME] ?: 0.5f
+        }
+
+        // Reactively observe the SOUND_ENABLED preference so changes take effect
+        // without a service restart. Runs on the service scope (Main dispatcher).
+        serviceScope.launch {
+            dataStore.data
+                .map { it[PreferenceKeys.SOUND_ENABLED] ?: false }
+                .collect { soundEnabled = it }
+        }
+
+        // Reactively observe volume changes.
+        serviceScope.launch {
+            dataStore.data
+                .map { it[PreferenceKeys.SOUND_VOLUME] ?: 0.5f }
+                .collect { volume ->
+                    soundVolume = volume
+                    soundPlayer.volume = volume
+                }
+        }
+
+        // Reactively observe sound name changes and reload the affected slot.
+        serviceScope.launch {
+            dataStore.data
+                .map { it[PreferenceKeys.RECORD_START_SOUND] ?: "electronic_01f" }
+                .collect { soundPlayer.reloadSound("start", it) }
+        }
+        serviceScope.launch {
+            dataStore.data
+                .map { it[PreferenceKeys.RECORD_STOP_SOUND] ?: "electronic_02b" }
+                .collect { soundPlayer.reloadSound("stop", it) }
+        }
+        serviceScope.launch {
+            dataStore.data
+                .map { it[PreferenceKeys.RECORD_CANCEL_SOUND] ?: "electronic_03c" }
+                .collect { soundPlayer.reloadSound("cancel", it) }
+        }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_START -> {
+                // CRITICAL: call startForeground() FIRST, before AudioRecord setup.
+                // Android gives us ~10 seconds after startForegroundService() to call
+                // startForeground(). AudioRecord init can be slow on some devices.
+                createNotificationChannel()
+                ServiceCompat.startForeground(
+                    this,
+                    NOTIFICATION_ID,
+                    buildNotification(),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE,
+                )
+                startAudioCapture()
+                Timber.d("DictationService started foreground with ACTION_START")
+            }
+            ACTION_STOP -> {
+                stopRecordingInternal(discard = true)
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+                Timber.d("DictationService stopped via ACTION_STOP")
+            }
+        }
+        // START_NOT_STICKY: don't restart automatically if the system kills us.
+        // Recording state is transient; the user will re-tap mic if needed.
+        return START_NOT_STICKY
+    }
+
+    /**
+     * Start recording via foreground service promotion.
+     *
+     * Sends ACTION_START to self, which triggers onStartCommand to call
+     * startForeground() (required for microphone access) then startAudioCapture().
+     */
+    override fun startRecording() {
+        val intent = Intent(this, DictationService::class.java).apply {
+            action = ACTION_START
+        }
+        startForegroundService(intent)
+    }
+
+    /**
+     * Stop recording and return the captured audio buffer.
+     *
+     * The audio data is returned as a FloatArray of 16kHz mono samples,
+     * ready to be passed to whisper.cpp for transcription (Phase 3).
+     *
+     * @return FloatArray of captured audio samples, or empty array if not recording.
+     */
+    override fun stopRecording(): FloatArray {
+        val samples = audioCaptureManager?.stop() ?: FloatArray(0)
+        timerJob?.cancel()
+        timerJob = null
+        elapsedMs = 0L
+        if (soundEnabled) soundPlayer.playStop()
+        _state.value = DictationState.Idle
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+        Timber.d("Recording stopped, ${samples.size} samples captured")
+        return samples
+    }
+
+    /**
+     * Cancel recording and discard all audio data.
+     *
+     * Used when the user taps the X button during recording.
+     * Returns to idle state without producing any audio output.
+     */
+    override fun cancelRecording() {
+        if (soundEnabled) soundPlayer.playCancel()
+        stopRecordingInternal(discard = true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+        Timber.d("Recording cancelled, samples discarded")
+    }
+
+    /**
+     * Stop recording, transcribe audio, and return processed text.
+     *
+     * Full pipeline: stop recording -> ensure model downloaded -> init engine ->
+     * transcribe with 30s timeout -> post-process -> return text.
+     *
+     * WHY 30s timeout: On Pixel 4 with tiny model, transcription takes 2-5s for
+     * typical dictation (5-30s audio). 30s covers worst-case long recordings.
+     * A stuck JNI call should not block the UI indefinitely.
+     */
+    override suspend fun confirmAndTranscribe(): String? {
+        // 1. Stop recording and get audio samples
+        val samples = audioCaptureManager?.stop() ?: FloatArray(0)
+        timerJob?.cancel()
+        timerJob = null
+        elapsedMs = 0L
+        audioCaptureManager = null
+
+        if (samples.isEmpty()) {
+            Timber.w("confirmAndTranscribe: no audio samples captured")
+            _state.value = DictationState.Idle
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+            return null
+        }
+
+        // Play stop cue when audio capture ends and transcription begins.
+        if (soundEnabled) soundPlayer.playStop()
+
+        Timber.d("confirmAndTranscribe: %d samples captured, transitioning to Transcribing", samples.size)
+        _state.value = DictationState.Transcribing
+
+        return try {
+            // 2. Read user preferences at transcription time so changes take effect
+            //    without needing a service restart.
+            val prefs = dataStore.data.first()
+            val activeModelKey = prefs[PreferenceKeys.ACTIVE_MODEL] ?: ModelCatalog.DEFAULT_KEY
+            val languagePref = prefs[PreferenceKeys.TRANSCRIPTION_LANGUAGE] ?: "auto"
+            // "auto" maps to null for whisper.cpp which triggers its own language detection.
+            val whisperLanguage = if (languagePref == "auto") null else languagePref
+
+            Timber.d(
+                "confirmAndTranscribe: model=%s, language=%s",
+                activeModelKey,
+                whisperLanguage ?: "auto",
+            )
+
+            // 3. Ensure model is available (download on first use)
+            val modelPath = modelDownloader.ensureModelAvailable(activeModelKey)
+            if (modelPath == null) {
+                Timber.e("Model not available, cannot transcribe")
+                _state.value = DictationState.Idle
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+                return null
+            }
+
+            // 4. Get or initialize the correct provider (handles engine switching)
+            val provider = getOrInitProvider(activeModelKey, modelPath)
+            if (provider == null) {
+                Timber.e("Failed to get STT provider for model '%s'", activeModelKey)
+                _state.value = DictationState.Idle
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+                return null
+            }
+
+            // 5. Transcribe with timeout
+            val rawText = withTimeoutOrNull(TRANSCRIPTION_TIMEOUT_MS) {
+                provider.transcribe(samples, whisperLanguage ?: "fr")
+            }
+
+            if (rawText == null) {
+                Timber.e("Transcription timed out after %d ms", TRANSCRIPTION_TIMEOUT_MS)
+                _state.value = DictationState.Idle
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+                return null
+            }
+
+            // 6. Post-process (trim + punctuation)
+            val processedText = TextPostProcessor.process(rawText)
+            Timber.d("Transcription result: raw='%s', processed='%s'", rawText, processedText)
+
+            _state.value = DictationState.Idle
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+
+            if (processedText.isEmpty()) null else processedText
+        } catch (e: Exception) {
+            Timber.e(e, "Transcription failed")
+            _state.value = DictationState.Idle
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+            null
+        }
+    }
+
+    /**
+     * Get or initialize the correct STT provider based on the active model's provider type.
+     *
+     * WHY dynamic dispatch: Phase 9 adds Parakeet as a second engine. The provider is
+     * determined by the active model's AiProvider enum, not a separate setting.
+     * Strict single-engine policy: if the provider type changes, release() the current
+     * one before initialize() on the new one — prevents OOM from dual engine loading.
+     */
+    private suspend fun getOrInitProvider(modelKey: String, modelPath: String): SttProvider? {
+        val info = ModelCatalog.findByKey(modelKey) ?: return null
+        val neededProviderClass = when (info.provider) {
+            AiProvider.WHISPER -> WhisperProvider::class
+            AiProvider.PARAKEET -> ParakeetProvider::class
+        }
+
+        val current = currentProvider
+        // If provider type changed, release current before creating new
+        if (current != null && current::class != neededProviderClass) {
+            Timber.d("Switching provider: %s -> %s", current.providerId, info.provider)
+            current.release()
+            currentProvider = null
+        }
+
+        // Reuse existing provider if same type and ready
+        if (currentProvider?.isReady == true) return currentProvider
+
+        // Create and initialize new provider
+        val newProvider = when (info.provider) {
+            AiProvider.WHISPER -> WhisperProvider()
+            AiProvider.PARAKEET -> ParakeetProvider()
+        }
+        val initialized = newProvider.initialize(modelPath)
+        if (!initialized) {
+            Timber.e("Failed to initialize %s provider", info.provider)
+            return null
+        }
+        currentProvider = newProvider
+        return newProvider
+    }
+
+    /**
+     * Internal helper to stop recording, optionally discarding samples.
+     */
+    private fun stopRecordingInternal(discard: Boolean) {
+        if (discard) {
+            audioCaptureManager?.cancel()
+        } else {
+            audioCaptureManager?.stop()
+        }
+        audioCaptureManager = null
+        timerJob?.cancel()
+        timerJob = null
+        elapsedMs = 0L
+        _state.value = DictationState.Idle
+    }
+
+    /**
+     * Initialize AudioCaptureManager and start the read loop + timer.
+     */
+    private fun startAudioCapture() {
+        val manager = AudioCaptureManager()
+        audioCaptureManager = manager
+
+        // Energy updates come from the capture read loop (Dispatchers.Default).
+        // We update the state flow with the latest energy history each time.
+        manager.onEnergyUpdate = { _ ->
+            _state.value = DictationState.Recording(
+                elapsedMs = elapsedMs,
+                energy = manager.getEnergyHistory(),
+            )
+        }
+
+        manager.start(serviceScope)
+
+        // Timer coroutine: increments elapsed time every second.
+        // Runs on Main dispatcher since it only updates the state flow.
+        elapsedMs = 0L
+        timerJob = serviceScope.launch {
+            while (isActive) {
+                delay(1000L)
+                elapsedMs += 1000L
+                _state.value = DictationState.Recording(
+                    elapsedMs = elapsedMs,
+                    energy = manager.getEnergyHistory(),
+                )
+            }
+        }
+
+        _state.value = DictationState.Recording(elapsedMs = 0L, energy = emptyList())
+
+        // Play start cue after transitioning to Recording state.
+        if (soundEnabled) soundPlayer.playStart()
+    }
+
+    /**
+     * Create the notification channel for recording notifications.
+     *
+     * IMPORTANCE_LOW: no sound or vibration, just a persistent icon in the
+     * status bar. This is appropriate for an ongoing recording indicator.
+     */
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Dictus Recording",
+            NotificationManager.IMPORTANCE_LOW,
+        ).apply {
+            description = "Active recording notification"
+            setShowBadge(false)
+        }
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(channel)
+    }
+
+    /**
+     * Build the foreground notification shown during recording.
+     *
+     * Shows "Dictus - Recording" with a Stop action button.
+     * Body tap is a no-op (per user decision -- the IME is already visible).
+     */
+    private fun buildNotification(): Notification {
+        val stopIntent = Intent(this, DictationService::class.java).apply {
+            action = ACTION_STOP
+        }
+        val stopPendingIntent = PendingIntent.getService(
+            this,
+            0,
+            stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Dictus - Recording")
+            .setSmallIcon(R.drawable.ic_mic)
+            .setOngoing(true)
+            .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent)
+            .build()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceScope.launch {
+            currentProvider?.release()
+        }
+        if (::soundPlayer.isInitialized) soundPlayer.release()
+        serviceScope.cancel()
+        Timber.d("DictationService destroyed")
+    }
+}
