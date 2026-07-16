@@ -1,6 +1,6 @@
 {
   "id": "job-006",
-  "status": "conflict_hold",
+  "status": "coding",
   "mode": "quick",
   "originalAsk": "Execute plan 006: Parakeet streaming pass",
   "planRef": "plans/006-parakeet-streaming-pass.md",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-16T17:07:11.855Z",
-  "lastStatusAt": "2026-07-16T18:07:45.629Z",
+  "lastStatusAt": "2026-07-16T18:10:51.802Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -47,9 +47,7 @@
     "app/build/outputs/apk/debug/app-debug.apk"
   ],
   "touchedFiles": [],
-  "blockedBy": [
-    "job-005"
-  ],
+  "blockedBy": [],
   "dependsOn": [
     "job-005"
   ],
@@ -61,7 +59,7 @@
   "notifiedAt": null,
   "stages": {
     "plan": "skipped",
-    "code": "pending",
+    "code": "in_progress",
     "test": "pending",
     "review": "pending",
     "doubleCheck": "pending"
