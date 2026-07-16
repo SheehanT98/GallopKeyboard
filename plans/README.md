@@ -32,7 +32,7 @@ ever out of sync.
 | 007 | Whisper polish pass on stop | 3 | P1 | M | 006 | DONE |
 | 008 | First-launch model download UX + storage settings | 3 | P2 | M | 007 | DONE |
 | 009 | Keyboard polish — clipboard + emoji + DeepSeek look | 4 | P2 | M | 008 | DONE |
-| 010 | Hardening — battery, crashes, ANR guards, release APK | 5 | P1 | L | 009 | TODO |
+| 010 | Hardening — battery, crashes, ANR guards, release APK | 5 | P1 | L | 009 | DONE |
 
 **Status values**: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` (with
 one-line reason) | `REJECTED` (with one-line rationale).

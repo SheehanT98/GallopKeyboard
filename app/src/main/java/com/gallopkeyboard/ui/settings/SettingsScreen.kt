@@ -77,6 +77,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
     onNavigateToLicences: () -> Unit = {},
     onNavigateToDebugLogs: () -> Unit = {},
+    onNavigateToCrashLogs: () -> Unit = {},
     onNavigateToSoundSettings: () -> Unit = {},
 ) {
     val language by viewModel.language.collectAsState()
@@ -86,6 +87,7 @@ fun SettingsScreen(
     val keyboardMode by viewModel.keyboardMode.collectAsState()
     val theme by viewModel.theme.collectAsState()
     val uiLanguage by viewModel.uiLanguage.collectAsState()
+    val modelsKeepLoaded by viewModel.modelsKeepLoaded.collectAsState()
 
     val context = LocalContext.current
 
@@ -113,6 +115,12 @@ fun SettingsScreen(
                     else -> stringResource(R.string.settings_language_auto)
                 },
                 onClick = { showLanguagePicker = true },
+            )
+            SettingDivider()
+            SettingToggleRow(
+                label = stringResource(R.string.settings_models_keep_loaded),
+                checked = modelsKeepLoaded,
+                onToggle = { viewModel.toggleModelsKeepLoaded() },
             )
         }
 
@@ -188,6 +196,11 @@ fun SettingsScreen(
             SettingNavRow(
                 label = stringResource(R.string.settings_debug_logs),
                 onClick = onNavigateToDebugLogs,
+            )
+            SettingDivider()
+            SettingNavRow(
+                label = stringResource(R.string.settings_crash_logs),
+                onClick = onNavigateToCrashLogs,
             )
             SettingDivider()
             SettingActionRow(

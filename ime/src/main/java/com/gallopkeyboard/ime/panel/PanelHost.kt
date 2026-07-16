@@ -1,12 +1,17 @@
 package com.gallopkeyboard.ime.panel
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import com.gallopkeyboard.core.models.VoiceSetupIntents
 import com.gallopkeyboard.core.theme.ThemeMode
+import com.gallopkeyboard.ime.asr.ModelLifecycleController
 import com.gallopkeyboard.ime.asr.VoiceModelPromptState
 import com.gallopkeyboard.ime.audio.AudioRecorderEngine
 import com.gallopkeyboard.ime.audio.Transcriber
@@ -25,12 +30,25 @@ fun PanelHost(
     transcriber: Transcriber,
     permissionRequester: PermissionRequester,
     promptState: VoiceModelPromptState,
+    modelLifecycleManager: ModelLifecycleController,
     keyboardHeight: Dp = KEYBOARD_PANEL_HEIGHT_DP,
     typingContent: @Composable () -> Unit,
 ) {
     val state by controller.state.collectAsState()
     val showSetupBanner by promptState.showSetupBanner.collectAsState()
     val context = LocalContext.current
+
+    var previousState by remember { mutableStateOf(state) }
+    LaunchedEffect(state) {
+        if (state == PanelState.VOICE) {
+            modelLifecycleManager.onVoicePanelShown()
+        }
+        if (previousState == PanelState.VOICE && state == PanelState.TYPING) {
+            modelLifecycleManager.onVoicePanelHidden()
+        }
+        previousState = state
+    }
+
     when (state) {
         PanelState.TYPING -> typingContent()
         PanelState.VOICE -> VoicePanel(

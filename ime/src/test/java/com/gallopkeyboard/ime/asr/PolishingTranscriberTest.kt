@@ -33,6 +33,7 @@ class PolishingTranscriberTest {
     private lateinit var polishEngine: FakeAsrPolishEngine
     private lateinit var committer: RecordingImeTextCommitter
     private lateinit var streaming: StreamingTranscriber
+    private lateinit var lifecycle: RecordingModelLifecycleController
     private lateinit var transcriber: PolishingTranscriber
 
     @Before
@@ -40,10 +41,11 @@ class PolishingTranscriberTest {
         streamingEngine = PolishFakeStreamingAsrEngine()
         polishEngine = FakeAsrPolishEngine()
         committer = RecordingImeTextCommitter()
+        lifecycle = RecordingModelLifecycleController()
         val dispatcher = RecorderCoroutineDispatcher()
         val context: Context = androidx.test.core.app.ApplicationProvider.getApplicationContext()
         streaming = StreamingTranscriber(streamingEngine, committer, dispatcher, VoiceModelPromptState(), context)
-        transcriber = PolishingTranscriber(streaming, polishEngine, committer)
+        transcriber = PolishingTranscriber(streaming, polishEngine, committer, lifecycle)
         Flags.polishEnabled = true
     }
 
@@ -108,6 +110,17 @@ class PolishingTranscriberTest {
 
         assertTrue(streamingEngine.cancelCalled)
         assertFalse(polishEngine.transcribeCalled)
+        assertTrue(lifecycle.sessionStoppedCount >= 1)
+    }
+
+    @Test
+    fun `session start and stop notify lifecycle manager`() {
+        val session = sessionWithPcm()
+        transcriber.onSessionStart(session)
+        assertEquals(1, lifecycle.sessionStartedCount)
+
+        transcriber.onSessionCancel(session)
+        assertEquals(1, lifecycle.sessionStoppedCount)
     }
 
     @Test
@@ -166,6 +179,22 @@ class FakeAsrPolishEngine : AsrPolishEngine {
     override fun cancel() = Unit
 
     override fun close() = Unit
+}
+
+class RecordingModelLifecycleController : ModelLifecycleController {
+    var sessionStartedCount = 0
+    var sessionStoppedCount = 0
+
+    override fun onSessionStarted() {
+        sessionStartedCount++
+    }
+
+    override fun onSessionStopped() {
+        sessionStoppedCount++
+    }
+
+    override fun onVoicePanelHidden() = Unit
+    override fun onVoicePanelShown() = Unit
 }
 
 class PolishFakeStreamingAsrEngine : StreamingAsrEngine {

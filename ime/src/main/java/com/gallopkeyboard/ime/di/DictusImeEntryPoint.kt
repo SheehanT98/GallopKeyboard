@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.Preferences
 import com.gallopkeyboard.ime.audio.AudioRecorderEngine
 import com.gallopkeyboard.ime.audio.Transcriber
 import com.gallopkeyboard.ime.asr.InputConnectionSupplier
+import com.gallopkeyboard.ime.asr.ModelLifecycleController
+import com.gallopkeyboard.ime.asr.ModelLifecycleManager
 import com.gallopkeyboard.ime.asr.VoiceModelPromptState
 import com.gallopkeyboard.ime.panel.PermissionRequester
 import dagger.hilt.EntryPoint
@@ -31,4 +33,5 @@ interface DictusImeEntryPoint {
     fun permissionRequester(): PermissionRequester
     fun inputConnectionSupplier(): InputConnectionSupplier
     fun voiceModelPromptState(): VoiceModelPromptState
+    fun modelLifecycleManager(): ModelLifecycleController
 }

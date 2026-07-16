@@ -23,4 +23,14 @@ if git ls-files | grep -E '\.(gguf|onnx|bin)$' | grep -v third_party; then
   echo "FAIL: model binary committed"; exit 1
 fi
 
+echo "==> no System.out.println in production sources"
+if grep -rn "System\.out\.println" --include='*.kt' app ime core asr whisper 2>/dev/null; then
+  echo "FAIL: System.out.println found"; exit 1
+fi
+
+echo "==> no Log.d without BuildConfig.DEBUG guard in release-only paths"
+if grep -rn "Log\.d(" --include='*.kt' ime/src/main 2>/dev/null | grep -v "BuildConfig.DEBUG" | grep -E "for|while|onAudioFrame|onPartial"; then
+  echo "WARN: Log.d in hot path without guard"
+fi
+
 echo "OK"
