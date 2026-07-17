@@ -51,8 +51,8 @@ android {
         applicationId = "com.gallopkeyboard.ime"
         minSdk = 29
         targetSdk = 35
-        versionCode = 6
-        versionName = "0.2.0"
+        versionCode = 7
+        versionName = "0.2.1"
         val ciVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
         val ciVersionName = System.getenv("VERSION_NAME")
         if (ciVersionCode != null) versionCode = ciVersionCode

@@ -14,13 +14,10 @@ import androidx.compose.ui.unit.dp
 import com.gallopkeyboard.core.theme.DictusTheme
 import com.gallopkeyboard.core.theme.ThemeMode
 import com.gallopkeyboard.ime.clipboard.ClipboardStore
-import com.gallopkeyboard.ime.audio.AudioRecorderEngine
-import com.gallopkeyboard.ime.audio.Transcriber
 import com.gallopkeyboard.ime.model.KeyDefinition
 import com.gallopkeyboard.ime.model.KeyType
 import com.gallopkeyboard.ime.model.KeyboardLayer
 import com.gallopkeyboard.ime.panel.ClipboardStrip
-import com.gallopkeyboard.ime.panel.PermissionRequester
 import timber.log.Timber
 
 /**
@@ -36,9 +33,7 @@ fun KeyboardScreen(
     onSendReturn: () -> Unit,
     onVoicePanelToggle: () -> Unit,
     onClipboardPanelToggle: () -> Unit = {},
-    audioRecorderEngine: AudioRecorderEngine,
-    transcriber: Transcriber,
-    permissionRequester: PermissionRequester,
+    onMicTap: () -> Unit = {},
     isEmojiPickerOpen: Boolean = false,
     onEmojiToggle: () -> Unit = {},
     onEmojiSelected: (String) -> Unit = {},
@@ -74,9 +69,6 @@ fun KeyboardScreen(
             Column(modifier = Modifier.fillMaxWidth()) {
                 MicButtonRow(
                     onVoicePanelToggle = onVoicePanelToggle,
-                    audioRecorderEngine = audioRecorderEngine,
-                    transcriber = transcriber,
-                    permissionRequester = permissionRequester,
                 )
 
                 Column(modifier = Modifier.height(310.dp)) {

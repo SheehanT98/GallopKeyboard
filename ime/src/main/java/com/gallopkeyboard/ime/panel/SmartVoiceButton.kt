@@ -61,12 +61,10 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 enum class SmartVoiceButtonStyle {
-    /** Full-width bar in the dedicated voice panel (legacy height). */
+    /** Full-width bar in a tall dedicated voice panel. */
     Panel,
-    /** Compact bar inside the thin voice panel. */
+    /** Full-width speak button in the thin voice panel. */
     PanelCompact,
-    /** Inline toolbar control on the typing keyboard. */
-    Toolbar,
 }
 
 @Composable
@@ -171,25 +169,23 @@ fun SmartVoiceButton(
 
     val label = when {
         isRecordingVisual -> stringResource(R.string.voice_panel_recording)
-        style == SmartVoiceButtonStyle.Toolbar -> stringResource(R.string.toolbar_voice)
         else -> stringResource(R.string.voice_panel_placeholder_button)
     }
 
     val boxHeight = when (style) {
         SmartVoiceButtonStyle.Panel -> 72.dp
-        SmartVoiceButtonStyle.PanelCompact -> 48.dp
-        SmartVoiceButtonStyle.Toolbar -> 36.dp
+        // Solid speak control — reads as one full-width button in the thin panel.
+        SmartVoiceButtonStyle.PanelCompact -> 56.dp
     }
 
     val cornerRadius = when (style) {
         SmartVoiceButtonStyle.Panel -> 36.dp
-        SmartVoiceButtonStyle.PanelCompact -> 24.dp
-        SmartVoiceButtonStyle.Toolbar -> 18.dp
+        SmartVoiceButtonStyle.PanelCompact -> 14.dp
     }
 
     val horizontalPadding = when (style) {
-        SmartVoiceButtonStyle.Toolbar -> 8.dp
-        else -> 16.dp
+        SmartVoiceButtonStyle.PanelCompact -> 0.dp
+        SmartVoiceButtonStyle.Panel -> 16.dp
     }
 
     val pulseTransition = rememberInfiniteTransition(label = "recording-pulse")
@@ -258,11 +254,9 @@ fun SmartVoiceButton(
         }
     }
 
-    val fillWidth = style != SmartVoiceButtonStyle.Toolbar
-
     Box(
         modifier = modifier
-            .then(if (fillWidth) Modifier.fillMaxWidth() else Modifier)
+            .fillMaxWidth()
             .padding(horizontal = horizontalPadding)
             .height(boxHeight),
         contentAlignment = Alignment.Center,
@@ -270,10 +264,10 @@ fun SmartVoiceButton(
         Button(
             onClick = {},
             modifier = Modifier
-                .then(if (fillWidth) Modifier.fillMaxWidth() else Modifier)
+                .fillMaxWidth()
                 .height(boxHeight)
                 .drawBehind {
-                    if (isRecordingVisual && style != SmartVoiceButtonStyle.Toolbar) {
+                    if (isRecordingVisual) {
                         val baseRadius = size.minDimension / 2f
                         val extra = pulseRadius * 24.dp.toPx()
                         drawCircle(
@@ -287,26 +281,30 @@ fun SmartVoiceButton(
             shape = RoundedCornerShape(cornerRadius),
             colors = buttonColors,
             contentPadding = ButtonDefaults.ContentPadding,
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = if (style == SmartVoiceButtonStyle.PanelCompact) 2.dp else 0.dp,
+                pressedElevation = if (style == SmartVoiceButtonStyle.PanelCompact) 4.dp else 0.dp,
+            ),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = if (style == SmartVoiceButtonStyle.Toolbar) 4.dp else 8.dp),
+                modifier = Modifier.padding(horizontal = 12.dp),
             ) {
-                if (style != SmartVoiceButtonStyle.Toolbar) {
-                    Icon(
-                        imageVector = Icons.Filled.Mic,
-                        contentDescription = null,
-                        modifier = Modifier.size(if (style == SmartVoiceButtonStyle.PanelCompact) 20.dp else 24.dp),
-                    )
-                    Spacer(modifier = Modifier.width(if (style == SmartVoiceButtonStyle.PanelCompact) 8.dp else 12.dp))
-                }
+                Icon(
+                    imageVector = Icons.Filled.Mic,
+                    contentDescription = null,
+                    modifier = Modifier.size(
+                        if (style == SmartVoiceButtonStyle.PanelCompact) 22.dp else 24.dp,
+                    ),
+                )
+                Spacer(
+                    modifier = Modifier.width(
+                        if (style == SmartVoiceButtonStyle.PanelCompact) 10.dp else 12.dp,
+                    ),
+                )
                 Text(
                     text = label,
-                    style = if (style == SmartVoiceButtonStyle.Toolbar) {
-                        MaterialTheme.typography.labelLarge
-                    } else {
-                        MaterialTheme.typography.titleMedium
-                    },
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 if (isRecordingVisual) {
                     Spacer(modifier = Modifier.width(8.dp))

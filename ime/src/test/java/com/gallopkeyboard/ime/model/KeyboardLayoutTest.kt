@@ -39,14 +39,23 @@ class KeyboardLayoutTest {
     }
 
     @Test
-    fun `row 4 has layer switch, emoji, mic, space, and return`() {
+    fun `row 4 has layer switch, emoji, clipboard, space, and return`() {
         val row4 = KeyboardLayouts.azertyLetters[3]
         val types = row4.map { it.type }
         assertTrue(types.contains(KeyType.LAYER_SWITCH))
         assertTrue(types.contains(KeyType.EMOJI))
-        assertTrue(types.contains(KeyType.MIC))
+        assertTrue(types.contains(KeyType.CLIPBOARD))
         assertTrue(types.contains(KeyType.SPACE))
         assertTrue(types.contains(KeyType.RETURN))
+    }
+
+    @Test
+    fun `QWERTY row 4 has clipboard key`() {
+        val row4 = KeyboardLayouts.qwertyLetters[3]
+        val types = row4.map { it.type }
+        assertTrue(types.contains(KeyType.CLIPBOARD))
+        assertTrue(types.contains(KeyType.EMOJI))
+        assertTrue(types.contains(KeyType.LAYER_SWITCH))
     }
 
     @Test
@@ -110,12 +119,12 @@ class KeyboardLayoutTest {
     }
 
     @Test
-    fun `symbols row 4 has clipboard key`() {
+    fun `symbols row 4 has clipboard and emoji keys`() {
         val row4 = KeyboardLayouts.symbolsRows[3]
         val types = row4.map { it.type }
         assertTrue(types.contains(KeyType.CLIPBOARD))
+        assertTrue(types.contains(KeyType.EMOJI))
         assertTrue(types.contains(KeyType.LAYER_SWITCH))
-        assertTrue(types.contains(KeyType.MIC))
         assertTrue(types.contains(KeyType.SPACE))
         assertTrue(types.contains(KeyType.RETURN))
     }

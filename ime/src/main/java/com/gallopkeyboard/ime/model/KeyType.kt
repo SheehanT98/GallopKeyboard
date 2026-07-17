@@ -14,8 +14,8 @@ enum class KeyType {
     RETURN,
     LAYER_SWITCH,       // ?123 / ABC / #+= -- switches between letter/number/symbol layers
     EMOJI,
-    MIC,                // Placeholder, non-functional in Phase 1
-    CLIPBOARD,          // Opens clipboard panel (symbols layer)
+    MIC,                // Legacy; layouts use clipboard + toolbar Voice panel
+    CLIPBOARD,          // Opens clipboard panel (letters, numbers, symbols)
     ACCENT_ADAPTIVE,    // Apostrophe key that adapts to show accent popup
     KEYBOARD_SWITCH,    // Globe/language icon to trigger system InputMethodPicker
 }

@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import dagger.hilt.android.EntryPointAccessors
 import com.gallopkeyboard.core.log.CrashHandler
 import com.gallopkeyboard.core.models.ModelInstaller
@@ -339,10 +338,6 @@ class DictusImeService : LifecycleInputMethodService() {
         val dictationState by _serviceState.collectAsState()
         val isEmojiPickerOpen by _isEmojiPickerOpen.collectAsState()
 
-        val audioRecorderEngine = remember { entryPoint.audioRecorderEngine() }
-        val transcriber = remember { entryPoint.transcriber() }
-        val permissionRequester = remember { entryPoint.permissionRequester() }
-
         // Read theme preference from DataStore and map to ThemeMode.
         // The entryPoint provides DataStore access via Hilt SingletonComponent.
         val themeKey by entryPoint.dataStore().data
@@ -410,9 +405,7 @@ class DictusImeService : LifecycleInputMethodService() {
                         onSendReturn = { sendReturnKey() },
                         onVoicePanelToggle = panelController::showVoice,
                         onClipboardPanelToggle = panelController::showClipboard,
-                        audioRecorderEngine = audioRecorderEngine,
-                        transcriber = transcriber,
-                        permissionRequester = permissionRequester,
+                        onMicTap = panelController::showVoice,
                         isEmojiPickerOpen = isEmojiPickerOpen,
                         onEmojiToggle = { _isEmojiPickerOpen.value = !_isEmojiPickerOpen.value },
                         onEmojiSelected = { emoji -> commitText(emoji) },
