@@ -12,54 +12,43 @@
 
 ## Summary
 
-Plan 013 product intent is met: on the LETTERS layer, dragging across letter keys collects an ordered path, dedupes consecutive duplicates, and commits the resulting word with a trailing space on finger up. Short taps and long-press accent selection are preserved via `SwipeTypingController` resolution order. Automated verification passed (110 unit tests); STOP conditions not hit. Manual on-device swipe UX remains deferred — acceptable residual risk for human sideload.
+Plan 013 scope is met. LETTERS-layer swipe typing is coordinated at `KeyboardView`, path letters are deduped via `SwipePathHelper`, and finger-up commits word + trailing space. Short taps and long-press accent resolution remain in `SwipeTypingController`. Automated verification passed (110 unit tests, assembleDebug). STOP conditions not hit. Residual UX risks (device swipe, accent hit-test geometry) are documented for human sideload — not plan blockers.
 
 ## Scope compliance
 
 | Done criterion | Status | Evidence |
 |----------------|--------|----------|
-| Swipe across letters commits a word | Met (code) | `KeyboardView` parent `pointerInput`; `SwipeTypingController` path + `SwipePathHelper.pathToWord`; `commitSwipeResult` → `onSwipeWord("$word ")` |
-| Tap typing and accents still work | Met | `SwipeTypingResult.Tap` / `Accent`; `SwipeTypingControllerTest` short-tap and accent-selection cases |
-| Tests for path helper pass | Met | `SwipePathHelperTest` (4 tests); `SwipeTypingControllerTest` (3 tests) |
-| README updated | Met | `plans/README.md` 013 → DONE; plan checklist marked |
+| Swipe across letters commits a word | Met (code) | Parent `pointerInput` on LETTERS; path in `SwipeTypingController`; `onSwipeWord("$word ")` from `KeyboardScreen` |
+| Tap typing and accents still work | Met | `SwipeTypingResult.Tap` / `Accent`; controller unit tests for tap + accent selection |
+| Tests for path helper pass | Met | `SwipePathHelperTest` (4); `SwipeTypingControllerTest` (3); full suite 110/0 fail |
+| README updated | Met | `plans/README.md` 013 → DONE; plan checklist checked |
 
 ### Diff scope
 
-Touched files align with the plan: new `SwipePathHelper` + `SwipeTypingController`, `KeyboardView` cross-key gesture handler, `KeyRow`/`KeyButton` bounds + external gesture mode, `KeyboardScreen` swipe commit, unit tests, plan docs. No neural decoder, no network dependency, no theme changes.
-
-## Implementation notes
-
-- **Path helper** (`SwipePathHelper.kt`): filters non-letters, dedupes consecutive duplicates, joins — matches plan v1 pragmatic strategy.
-- **Controller** (`SwipeTypingController.kt`): slop-gated swipe activation; accent popup takes precedence over swipe; consecutive duplicate keys suppressed in `appendKey`.
-- **KeyboardView**: LETTERS-only `pointerInput` at column level; optional `SuggestionEngine` prefix assist when length ≥ 2.
-- **KeyboardScreen**: `onSwipeWord` commits via `onCommitText` and auto-unshifts when appropriate.
-
-## STOP conditions
-
-| Condition | Outcome |
-|-----------|---------|
-| On-device neural swipe model / large binary | Not hit |
-| Breaking delete key-repeat or shift double-tap | Not hit — non-character keys unchanged |
-| Requiring network for decoding | Not hit |
+In scope: `SwipePathHelper`, `SwipeTypingController`, `KeyboardView` / `KeyRow` / `KeyButton` / `KeyboardScreen`, unit tests, plan docs. No neural model, no network decode, no light-theme edits. Non-character keys keep local gestures (delete repeat / shift double-tap preserved by isolation).
 
 ## Verification evidence
 
-From `03-test-report.md` (SHA `26f62f0`):
+From `03-test-report.md` (SHA `26f62f0`) and reviewer re-check:
 
-- `./gradlew :ime:testDebugUnitTest :app:assembleDebug` — BUILD SUCCESSFUL
-- Fresh `:ime:testDebugUnitTest --rerun-tasks` — 110 tests, 0 failures
-- New swipe tests: `SwipePathHelperTest`, `SwipeTypingControllerTest`
+| Check | Result |
+|-------|--------|
+| `./gradlew :ime:testDebugUnitTest :app:assembleDebug` | BUILD SUCCESSFUL |
+| Fresh `:ime:testDebugUnitTest --rerun-tasks` | 110 tests, 0 failures |
+| Focused `SwipePathHelperTest` + `SwipeTypingControllerTest` | BUILD SUCCESSFUL |
+| Manual on-device swipe / accent UX | Deferred (no adb device) |
 
 ## Risks for the human reviewer
 
-1. **No on-device run** — cross-key swipe highlight, slop threshold, and tap-vs-swipe discrimination not exercised on hardware.
-2. **No Compose UI test for `KeyboardView` pointer loop** — gesture wiring covered by controller unit tests only.
-3. **`SuggestionEngine` not wired from `KeyboardScreen` in v1** — dictionary assist path exists but is inactive until engine is passed; raw path letters commit as designed.
-4. **Accent vs swipe race** — if user moves past slop before long-press fires, swipe wins (by design); verify on device for accented keys.
+1. **No on-device run** — cross-key swipe, slop, and tap-vs-swipe feel not exercised on hardware.
+2. **Accent hit-test vs popup layout** — `SwipeTypingController.resolveAccentIndex` maps finger X across the **key** width; `KeyButton` accent popup uses fixed 44.dp cells centered (and clamped). Highlight/selection may drift from the visual popup on multi-accent keys. Worth a quick sideload check on `e` / `a` long-press.
+3. **Same-key drag past slop** — movement ≥ 12.dp on one letter activates swipe and commits that letter **with a trailing space** (not a bare tap).
+4. **`SuggestionEngine` not wired from `KeyboardScreen`** — optional dictionary assist is inactive in v1; raw path commits as designed.
+5. **No Compose UI test** for the parent `pointerInput` loop — gesture wiring covered by controller unit tests only.
 
 ## Findings
 
-None that require REQUEST CHANGES. Residual items above are human-sideload / follow-up polish, not plan blockers.
+None that require **REQUEST CHANGES**. Item 2 is the strongest residual risk; accents still open and select via the controller path and unit tests, so plan “must not break accents” is satisfied for merge with human device follow-up.
 
 ## Advance
 
