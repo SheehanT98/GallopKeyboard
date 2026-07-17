@@ -60,12 +60,22 @@ import kotlinx.coroutines.runBlocking
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
+enum class SmartVoiceButtonStyle {
+    /** Full-width bar in the dedicated voice panel (legacy height). */
+    Panel,
+    /** Compact bar inside the thin voice panel. */
+    PanelCompact,
+    /** Inline toolbar control on the typing keyboard. */
+    Toolbar,
+}
+
 @Composable
 fun SmartVoiceButton(
     audioRecorderEngine: AudioRecorderEngine,
     transcriber: Transcriber,
     permissionRequester: PermissionRequester,
     modifier: Modifier = Modifier,
+    style: SmartVoiceButtonStyle = SmartVoiceButtonStyle.Panel,
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -160,10 +170,27 @@ fun SmartVoiceButton(
         )
     }
 
-    val label = if (isRecordingVisual) {
-        stringResource(R.string.voice_panel_recording)
-    } else {
-        stringResource(R.string.voice_panel_placeholder_button)
+    val label = when {
+        isRecordingVisual -> stringResource(R.string.voice_panel_recording)
+        style == SmartVoiceButtonStyle.Toolbar -> stringResource(R.string.toolbar_voice)
+        else -> stringResource(R.string.voice_panel_placeholder_button)
+    }
+
+    val boxHeight = when (style) {
+        SmartVoiceButtonStyle.Panel -> 72.dp
+        SmartVoiceButtonStyle.PanelCompact -> 48.dp
+        SmartVoiceButtonStyle.Toolbar -> 36.dp
+    }
+
+    val cornerRadius = when (style) {
+        SmartVoiceButtonStyle.Panel -> 36.dp
+        SmartVoiceButtonStyle.PanelCompact -> 24.dp
+        SmartVoiceButtonStyle.Toolbar -> 18.dp
+    }
+
+    val horizontalPadding = when (style) {
+        SmartVoiceButtonStyle.Toolbar -> 8.dp
+        else -> 16.dp
     }
 
     val pulseTransition = rememberInfiniteTransition(label = "recording-pulse")
@@ -178,20 +205,76 @@ fun SmartVoiceButton(
     )
     val pulseAlpha = if (isRecordingVisual) 0.15f + pulseRadius * 0.25f else 0f
 
+    val gestureModifier = Modifier.pointerInput(cancelSlopPx) {
+        awaitEachGesture {
+            val down = awaitFirstDown(requireUnconsumed = false)
+            pointerPressed = true
+            holdTimerJob?.cancel()
+
+            if (!AudioRecorderEngine.checkPermission(context)) {
+                val granted = runBlocking {
+                    permissionRequester.request(context)
+                }
+                if (!granted) {
+                    context.showToast(R.string.mic_permission_denied)
+                    pointerPressed = false
+                    return@awaitEachGesture
+                }
+            }
+
+            val downMs = SystemClock.elapsedRealtime()
+            val downPos = down.position
+            fsm.onEvent(GestureEvent.Down(downMs, downPos.x, downPos.y))
+
+            holdTimerJob = scope.launch {
+                delay(HOLD_THRESHOLD_MS)
+                if (pointerPressed) {
+                    fsm.onEvent(
+                        GestureEvent.HoldThresholdElapsed(
+                            SystemClock.elapsedRealtime(),
+                        ),
+                    )
+                }
+            }
+
+            while (true) {
+                val event = awaitPointerEvent(PointerEventPass.Main)
+                val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                if (!change.pressed) {
+                    pointerPressed = false
+                    holdTimerJob?.cancel()
+                    fsm.onEvent(
+                        GestureEvent.Up(
+                            SystemClock.elapsedRealtime(),
+                            change.position.x,
+                            change.position.y,
+                        ),
+                    )
+                    break
+                }
+                fsm.onEvent(
+                    GestureEvent.Move(change.position.x, change.position.y),
+                )
+            }
+        }
+    }
+
+    val fillWidth = style != SmartVoiceButtonStyle.Toolbar
+
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .height(72.dp),
+            .then(if (fillWidth) Modifier.fillMaxWidth() else Modifier)
+            .padding(horizontal = horizontalPadding)
+            .height(boxHeight),
         contentAlignment = Alignment.Center,
     ) {
         Button(
             onClick = {},
             modifier = Modifier
-                .fillMaxWidth()
-                .height(72.dp)
+                .then(if (fillWidth) Modifier.fillMaxWidth() else Modifier)
+                .height(boxHeight)
                 .drawBehind {
-                    if (isRecordingVisual) {
+                    if (isRecordingVisual && style != SmartVoiceButtonStyle.Toolbar) {
                         val baseRadius = size.minDimension / 2f
                         val extra = pulseRadius * 24.dp.toPx()
                         drawCircle(
@@ -201,75 +284,30 @@ fun SmartVoiceButton(
                         )
                     }
                 }
-                .pointerInput(cancelSlopPx) {
-                    awaitEachGesture {
-                        val down = awaitFirstDown(requireUnconsumed = false)
-                        pointerPressed = true
-                        holdTimerJob?.cancel()
-
-                        if (!AudioRecorderEngine.checkPermission(context)) {
-                            val granted = runBlocking {
-                                permissionRequester.request(context)
-                            }
-                            if (!granted) {
-                                context.showToast(R.string.mic_permission_denied)
-                                pointerPressed = false
-                                return@awaitEachGesture
-                            }
-                        }
-
-                        val downMs = SystemClock.elapsedRealtime()
-                        val downPos = down.position
-                        fsm.onEvent(GestureEvent.Down(downMs, downPos.x, downPos.y))
-
-                        holdTimerJob = scope.launch {
-                            delay(HOLD_THRESHOLD_MS)
-                            if (pointerPressed) {
-                                fsm.onEvent(
-                                    GestureEvent.HoldThresholdElapsed(
-                                        SystemClock.elapsedRealtime(),
-                                    ),
-                                )
-                            }
-                        }
-
-                        while (true) {
-                            val event = awaitPointerEvent(PointerEventPass.Main)
-                            val change = event.changes.firstOrNull { it.id == down.id } ?: break
-                            if (!change.pressed) {
-                                pointerPressed = false
-                                holdTimerJob?.cancel()
-                                fsm.onEvent(
-                                    GestureEvent.Up(
-                                        SystemClock.elapsedRealtime(),
-                                        change.position.x,
-                                        change.position.y,
-                                    ),
-                                )
-                                break
-                            }
-                            fsm.onEvent(
-                                GestureEvent.Move(change.position.x, change.position.y),
-                            )
-                        }
-                    }
-                },
-            shape = RoundedCornerShape(36.dp),
+                .then(gestureModifier),
+            shape = RoundedCornerShape(cornerRadius),
             colors = buttonColors,
+            contentPadding = ButtonDefaults.ContentPadding,
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.padding(horizontal = if (style == SmartVoiceButtonStyle.Toolbar) 4.dp else 8.dp),
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Mic,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                )
-                Spacer(modifier = Modifier.width(12.dp))
+                if (style != SmartVoiceButtonStyle.Toolbar) {
+                    Icon(
+                        imageVector = Icons.Filled.Mic,
+                        contentDescription = null,
+                        modifier = Modifier.size(if (style == SmartVoiceButtonStyle.PanelCompact) 20.dp else 24.dp),
+                    )
+                    Spacer(modifier = Modifier.width(if (style == SmartVoiceButtonStyle.PanelCompact) 8.dp else 12.dp))
+                }
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = if (style == SmartVoiceButtonStyle.Toolbar) {
+                        MaterialTheme.typography.labelLarge
+                    } else {
+                        MaterialTheme.typography.titleMedium
+                    },
                 )
                 if (isRecordingVisual) {
                     Spacer(modifier = Modifier.width(8.dp))

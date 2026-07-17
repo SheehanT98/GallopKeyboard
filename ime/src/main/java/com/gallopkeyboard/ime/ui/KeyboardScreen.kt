@@ -14,10 +14,13 @@ import androidx.compose.ui.unit.dp
 import com.gallopkeyboard.core.theme.DictusTheme
 import com.gallopkeyboard.core.theme.ThemeMode
 import com.gallopkeyboard.ime.clipboard.ClipboardStore
+import com.gallopkeyboard.ime.audio.AudioRecorderEngine
+import com.gallopkeyboard.ime.audio.Transcriber
 import com.gallopkeyboard.ime.model.KeyDefinition
 import com.gallopkeyboard.ime.model.KeyType
 import com.gallopkeyboard.ime.model.KeyboardLayer
 import com.gallopkeyboard.ime.panel.ClipboardStrip
+import com.gallopkeyboard.ime.panel.PermissionRequester
 import timber.log.Timber
 
 /**
@@ -31,16 +34,14 @@ fun KeyboardScreen(
     onCommitText: (String) -> Unit,
     onDeleteBackward: () -> Unit,
     onSendReturn: () -> Unit,
-    onSwitchKeyboard: () -> Unit,
+    onVoicePanelToggle: () -> Unit,
+    audioRecorderEngine: AudioRecorderEngine,
+    transcriber: Transcriber,
+    permissionRequester: PermissionRequester,
     onMicTap: () -> Unit = {},
-    onVoicePanelToggle: (() -> Unit)? = null,
     isEmojiPickerOpen: Boolean = false,
     onEmojiToggle: () -> Unit = {},
     onEmojiSelected: (String) -> Unit = {},
-    currentWord: String = "",
-    suggestions: List<String> = emptyList(),
-    onSuggestionSelected: (String) -> Unit = {},
-    onCurrentWordSelected: () -> Unit = {},
     themeMode: ThemeMode = ThemeMode.LIGHT,
     initialLayer: KeyboardLayer = KeyboardLayer.LETTERS,
     hapticsEnabled: Boolean = true,
@@ -71,21 +72,14 @@ fun KeyboardScreen(
             )
         } else {
             Column(modifier = Modifier.fillMaxWidth()) {
-                SuggestionBar(
-                    currentWord = currentWord,
-                    suggestions = suggestions,
-                    onSuggestionSelected = onSuggestionSelected,
-                    onCurrentWordSelected = onCurrentWordSelected,
-                )
-
                 MicButtonRow(
-                    onSwitchKeyboard = onSwitchKeyboard,
-                    onMicTap = onMicTap,
                     onVoicePanelToggle = onVoicePanelToggle,
-                    isRecording = false,
+                    audioRecorderEngine = audioRecorderEngine,
+                    transcriber = transcriber,
+                    permissionRequester = permissionRequester,
                 )
 
-                Column(modifier = Modifier.height(274.dp)) {
+                Column(modifier = Modifier.height(310.dp)) {
                     if (clipboardStore != null && clipboardItems.isNotEmpty()) {
                         ClipboardStrip(
                             items = clipboardItems,

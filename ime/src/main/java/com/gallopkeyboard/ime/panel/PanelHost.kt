@@ -41,7 +41,7 @@ fun PanelHost(
     controller: PanelController,
     @Suppress("UNUSED_PARAMETER") themeMode: ThemeMode,
     voiceDependencies: () -> VoicePanelDependencies,
-    keyboardHeight: Dp = KEYBOARD_PANEL_HEIGHT_DP,
+    voicePanelHeight: Dp = VOICE_PANEL_HEIGHT_DP,
     typingContent: @Composable () -> Unit,
 ) {
     val state by controller.state.collectAsState()
@@ -89,7 +89,7 @@ fun PanelHost(
                     audioRecorderEngine = deps.audioRecorderEngine,
                     transcriber = deps.transcriber,
                     permissionRequester = deps.permissionRequester,
-                    keyboardHeight = keyboardHeight,
+                    keyboardHeight = voicePanelHeight,
                     showSetupBanner = showSetupBanner,
                     onSetupVoiceModels = {
                         context.startActivity(VoiceSetupIntents.onboardingIntent(context))

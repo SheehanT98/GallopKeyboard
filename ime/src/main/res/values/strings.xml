@@ -5,7 +5,9 @@
     <string name="ime_emoji_return_keyboard">ABC</string>
     <string name="panel_toggle_voice">Switch to voice panel</string>
     <string name="panel_toggle_typing">Switch to typing panel</string>
-    <string name="voice_panel_placeholder_button">Hold / Tap to speak</string>
+    <string name="toolbar_voice_panel">Voice panel</string>
+    <string name="toolbar_voice">Voice</string>
+    <string name="voice_panel_placeholder_button">Hold to speak</string>
     <string name="voice_panel_recording">Recording\u2026</string>
     <string name="mic_permission_denied">Microphone permission is required for voice input</string>
     <string name="mic_permission_rationale">Enable the microphone in Settings to use voice dictation</string>
