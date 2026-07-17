@@ -94,6 +94,13 @@ fun KeyboardScreen(
                         isCapsLock = isCapsLock,
                         layout = currentLayout,
                         hapticsEnabled = hapticsEnabled,
+                        onSwipeWord = { word ->
+                            onCommitText(word)
+                            if (isShifted && !isCapsLock) {
+                                isShifted = false
+                            }
+                            Timber.d("Swipe word committed: %s", word)
+                        },
                         onKeyPress = { key ->
                             handleKeyPress(
                                 key = key,

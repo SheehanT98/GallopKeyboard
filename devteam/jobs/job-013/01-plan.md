@@ -59,7 +59,7 @@ Unit-test the path → string helper (dedupe consecutive, ignore non-letter).
 
 ## Done when
 
-- [x] Swipe across letters commits a word
-- [x] Tap typing and accents still work
-- [x] Tests for path helper pass
-- [x] README updated
+- [ ] Swipe across letters commits a word
+- [ ] Tap typing and accents still work
+- [ ] Tests for path helper pass
+- [ ] README updated

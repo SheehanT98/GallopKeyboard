@@ -1,0 +1,45 @@
+{
+  "id": "job-013",
+  "status": "coding",
+  "mode": "quick",
+  "originalAsk": "Execute plan 013 swipe typing",
+  "planRef": "plans/013-swipe-typing-across-letters.md",
+  "feature": "Execute plan 013 swipe typing",
+  "slug": "execute-plan-013-swipe-typing",
+  "branch": "cursor/devteam-job-013-execute-plan-013-swipe-typing-c1fc",
+  "pr": null,
+  "prNumber": null,
+  "chatTitle": null,
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-17T12:58:16.349Z",
+  "lastStatusAt": "2026-07-17T13:17:20.667Z",
+  "completedAt": null,
+  "plannedFiles": [
+    "plans/README.md",
+    "plans/011-toolbar-voice-and-thin-voice-panel.md"
+  ],
+  "touchedFiles": [],
+  "blockedBy": [],
+  "dependsOn": [
+    "job-011"
+  ],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "in_progress",
+    "test": "pending",
+    "review": "pending",
+    "doubleCheck": "pending"
+  }
+}
