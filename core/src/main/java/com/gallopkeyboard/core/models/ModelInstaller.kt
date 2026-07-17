@@ -62,7 +62,7 @@ class ModelInstaller(
      *
      * Only checks that each file exists and matches the expected byte length —
      * no SHA-256. Full integrity stays on [isInstalled] / [verifyInstalledIfDue]
-     * (settings + daily IME startup).
+     * (settings + daily background verify scheduled from IME startup).
      */
     fun areFilesPresent(bundle: List<ModelSpec>): Boolean =
         bundle.all { spec ->
@@ -97,7 +97,8 @@ class ModelInstaller(
         }
 
     /**
-     * Re-verify installed files once per day (IME startup hook).
+     * Re-verify installed files once per day. Intended to run off the IME
+     * critical path (background coroutine), not synchronously on service create.
      * Returns true when a corrupt file was detected.
      */
     fun verifyInstalledIfDue(): Boolean {

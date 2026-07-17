@@ -344,6 +344,29 @@ Hardening: local crash logs, StrictMode (debug), model lifecycle unload, release
 Recorded in `docs/manual-test-matrix.md` — requires unplugged S22 device run
 (agent environment: pending owner measurement).
 
+## Plan 015 additions
+
+Defer daily model SHA-256 verify off IME `onCreate` critical path.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../DictusImeService.kt` | `verifyInstalledIfDue()` on `bindingScope` + `Dispatchers.IO`; corrupt → banner on Main |
+| `core/.../ModelInstaller.kt` | KDoc: daily verify is background-scheduled from IME startup |
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `core/src/test/.../ModelInstallerTest.kt` | `verifyInstalledIfDue` skips when recently verified |
+
+### Manual test
+
+Cold-start IME on a device with models installed on a verify-due day — keyboard
+chrome appears without multi-second freeze; logcat may show verify completing
+afterward.
+
 ## Plan 018 additions
 
 Docs-only reconciliation — no Kotlin or Gradle changes.
