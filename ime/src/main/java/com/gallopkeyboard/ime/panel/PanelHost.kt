@@ -49,15 +49,16 @@ fun PanelHost(
     var cachedVoiceDeps by remember { mutableStateOf<VoicePanelDependencies?>(null) }
     var previousState by remember { mutableStateOf(state) }
 
-    val voiceDeps = if (state == PanelState.VOICE) {
-        cachedVoiceDeps ?: voiceDependencies().also { cachedVoiceDeps = it }
-    } else {
-        null
+    // Resolve voice graph only while the voice panel is visible. Keep the same
+    // instance for the whole VOICE session so hide/show lifecycle match.
+    if (state == PanelState.VOICE && cachedVoiceDeps == null) {
+        cachedVoiceDeps = voiceDependencies()
     }
+    val voiceDeps = cachedVoiceDeps
 
     LaunchedEffect(state) {
         if (state == PanelState.VOICE) {
-            val deps = voiceDeps ?: return@LaunchedEffect
+            val deps = cachedVoiceDeps ?: return@LaunchedEffect
             deps.modelLifecycleManager.onVoicePanelShown()
             // Cheap presence check (exists + size). Full SHA is daily / settings only.
             val installer = ModelInstaller(context)
@@ -77,19 +78,24 @@ fun PanelHost(
     when (state) {
         PanelState.TYPING -> typingContent()
         PanelState.VOICE -> {
-            val deps = voiceDeps ?: return
-            val showSetupBanner by deps.promptState.showSetupBanner.collectAsState()
-            VoicePanel(
-                onSwitchToTyping = controller::showTyping,
-                audioRecorderEngine = deps.audioRecorderEngine,
-                transcriber = deps.transcriber,
-                permissionRequester = deps.permissionRequester,
-                keyboardHeight = keyboardHeight,
-                showSetupBanner = showSetupBanner,
-                onSetupVoiceModels = {
-                    context.startActivity(VoiceSetupIntents.onboardingIntent(context))
-                },
-            )
+            // Fallback to typing if deps failed to resolve — never leave a blank IME.
+            val deps = voiceDeps
+            if (deps == null) {
+                typingContent()
+            } else {
+                val showSetupBanner by deps.promptState.showSetupBanner.collectAsState()
+                VoicePanel(
+                    onSwitchToTyping = controller::showTyping,
+                    audioRecorderEngine = deps.audioRecorderEngine,
+                    transcriber = deps.transcriber,
+                    permissionRequester = deps.permissionRequester,
+                    keyboardHeight = keyboardHeight,
+                    showSetupBanner = showSetupBanner,
+                    onSetupVoiceModels = {
+                        context.startActivity(VoiceSetupIntents.onboardingIntent(context))
+                    },
+                )
+            }
         }
     }
 }

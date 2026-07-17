@@ -65,15 +65,14 @@ abstract class LifecycleInputMethodService : InputMethodService(),
             setContent { KeyboardContent() }
         }
 
-        window?.window?.decorView?.let { decorView ->
-            decorView.setViewTreeLifecycleOwner(this@LifecycleInputMethodService)
-            decorView.setViewTreeViewModelStoreOwner(this@LifecycleInputMethodService)
-            decorView.setViewTreeSavedStateRegistryOwner(this@LifecycleInputMethodService)
+        window?.window?.let { imeWindow ->
+            imeWindow.decorView.setViewTreeLifecycleOwner(this@LifecycleInputMethodService)
+            imeWindow.decorView.setViewTreeViewModelStoreOwner(this@LifecycleInputMethodService)
+            imeWindow.decorView.setViewTreeSavedStateRegistryOwner(this@LifecycleInputMethodService)
+            // Opaque fallback so a failed composition is still visible as a panel,
+            // not an invisible "nothing happened" keyboard window.
+            imeWindow.setBackgroundDrawable(ColorDrawable(Color.parseColor("#1C1C1E")))
         }
-
-        // Opaque fallback so a failed composition is still visible as a panel,
-        // not an invisible "nothing happened" keyboard window.
-        window?.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#1C1C1E")))
 
         Timber.d("IME input view created (lifecycle=%s)", lifecycle.currentState)
         return view
@@ -92,17 +91,20 @@ abstract class LifecycleInputMethodService : InputMethodService(),
 
     override fun onFinishInputView(finishingInput: Boolean) {
         super.onFinishInputView(finishingInput)
+        // RESUMED -> STARTED. Do not emit ON_STOP here: the input view may be
+        // shown again without recreating the ComposeView.
         if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         }
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        if (lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
-            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        }
+        // Wind down with legal transitions only. ON_DESTROY is only valid from CREATED;
+        // jumping from RESUMED/STARTED throws and can kill the IME process on teardown.
+        runCatching { moveLifecycleToDestroyed() }
+            .onFailure { Timber.e(it, "IME lifecycle teardown failed") }
         store.clear()
+        super.onDestroy()
     }
 
     /**
@@ -110,11 +112,30 @@ abstract class LifecycleInputMethodService : InputMethodService(),
      * already STARTED; blindly emitting ON_START would crash LifecycleRegistry.
      */
     private fun ensureLifecycleAtLeast(target: Lifecycle.State) {
-        while (lifecycle.currentState < target) {
+        while (lifecycle.currentState < target &&
+            lifecycle.currentState != Lifecycle.State.DESTROYED
+        ) {
             val event = when (lifecycle.currentState) {
                 Lifecycle.State.INITIALIZED -> Lifecycle.Event.ON_CREATE
                 Lifecycle.State.CREATED -> Lifecycle.Event.ON_START
                 Lifecycle.State.STARTED -> Lifecycle.Event.ON_RESUME
+                else -> return
+            }
+            lifecycleRegistry.handleLifecycleEvent(event)
+        }
+    }
+
+    private fun moveLifecycleToDestroyed() {
+        while (lifecycle.currentState != Lifecycle.State.DESTROYED &&
+            lifecycle.currentState != Lifecycle.State.INITIALIZED
+        ) {
+            val event = when {
+                lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) ->
+                    Lifecycle.Event.ON_PAUSE
+                lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) ->
+                    Lifecycle.Event.ON_STOP
+                lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED) ->
+                    Lifecycle.Event.ON_DESTROY
                 else -> return
             }
             lifecycleRegistry.handleLifecycleEvent(event)

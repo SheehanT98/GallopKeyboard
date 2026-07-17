@@ -135,11 +135,11 @@
     <string name="licences_back_cd">Back</string>
 
     <!-- ImeStatusCard -->
-    <string name="ime_status_active">Keyboard active</string>
-    <string name="ime_status_enabled_not_selected">Keyboard enabled but not selected</string>
-    <string name="ime_status_not_enabled">Keyboard not enabled</string>
-    <string name="ime_status_select_keyboard">Select Keyboard</string>
-    <string name="ime_status_enable_keyboard">Enable Keyboard</string>
+    <string name="ime_status_active">Gallop Keyboard active</string>
+    <string name="ime_status_enabled_not_selected">Gallop Keyboard enabled but not selected</string>
+    <string name="ime_status_not_enabled">Gallop Keyboard not enabled</string>
+    <string name="ime_status_select_keyboard">Select Gallop Keyboard</string>
+    <string name="ime_status_enable_keyboard">Enable Gallop Keyboard</string>
 
     <!-- RecordingTestArea -->
     <string name="recording_test_title">Recording Test</string>
@@ -153,7 +153,7 @@
     <!-- FakeSettingsCard (onboarding step 3 — mimics Android system UI, strings intentionally in English) -->
     <string name="fake_settings_manage_keyboards">Manage keyboards</string>
     <string name="fake_settings_gboard_subtitle">Multilingual typing</string>
-    <string name="fake_settings_keyboard_subtitle">QWERTY (English)</string>
+    <string name="fake_settings_keyboard_subtitle">Gallop Keyboard</string>
 
     <!-- ModelCard — Parakeet provider -->
     <string name="model_parakeet_language_warning">English only</string>
