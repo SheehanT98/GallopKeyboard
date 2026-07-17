@@ -413,7 +413,6 @@ class DictusImeService : LifecycleInputMethodService() {
                         audioRecorderEngine = audioRecorderEngine,
                         transcriber = transcriber,
                         permissionRequester = permissionRequester,
-                        onMicTap = { handleMicTap() },
                         isEmojiPickerOpen = isEmojiPickerOpen,
                         onEmojiToggle = { _isEmojiPickerOpen.value = !_isEmojiPickerOpen.value },
                         onEmojiSelected = { emoji -> commitText(emoji) },

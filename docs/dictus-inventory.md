@@ -381,6 +381,36 @@ Streaming ASR frame work off the IME/Compose main thread (ADR-0002).
 - **Tests** — `StreamingTranscriberTest` thread-affinity case asserts `acceptFrame` runs
   on `"AsrEngine"`.
 
+## Plan 016 additions
+
+Cancel ASR on SmartVoice dispose; unify IME mic entry to hybrid voice panel.
+
+### Product decision
+
+Bottom-row `KeyType.MIC` opens the **voice panel** (`PanelController.showVoice`) —
+same hybrid `SmartVoiceButton` / `Transcriber` path as the toolbar Voice control.
+`DictationService` recording remains for companion-app `RecordingScreen` only.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../panel/SmartVoiceButton.kt` | `DisposableEffect` calls `cancelActiveSession` before `fsm.reset()` |
+| `ime/.../panel/VoiceSessionCleanup.kt` | `cancelActiveSession(transcriber, session)` helper |
+| `ime/.../ui/KeyboardScreen.kt` | `KeyType.MIC` → `onVoicePanelToggle()` (not `DictationService`) |
+| `ime/.../DictusImeService.kt` | KeyboardScreen no longer passes `onMicTap` / `handleMicTap` |
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/src/test/.../panel/VoiceSessionCleanupTest.kt` | Cancel helper + idempotency |
+
+### Manual test
+
+Start toolbar Voice recording → switch to typing panel or hide IME → mic indicator
+off; no orphan partial commits in the editor.
+
 ## Plan 018 additions
 
 Docs-only reconciliation — no Kotlin or Gradle changes.

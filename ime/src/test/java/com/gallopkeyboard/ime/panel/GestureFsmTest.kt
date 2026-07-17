@@ -7,6 +7,9 @@ import org.junit.Test
 
 class GestureFsmTest {
 
+    // UI dispose (SmartVoiceButton DisposableEffect) must call cancelActiveSession on the
+    // transcriber — fsm.reset() alone does not invoke onSessionCancel. See VoiceSessionCleanupTest.
+
     private val callbacks = mutableListOf<String>()
     private lateinit var fsm: GestureFsm
 
