@@ -1,6 +1,6 @@
 {
   "id": "job-014",
-  "status": "double_checking",
+  "status": "awaiting_review",
   "mode": "quick",
   "originalAsk": "Execute plan 018 reconcile AGENTS docs",
   "planRef": "plans/018-reconcile-agents-docs-with-shipped-ux.md",
@@ -18,8 +18,8 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-17T15:38:12.686Z",
-  "lastStatusAt": "2026-07-17T15:43:30.961Z",
-  "completedAt": null,
+  "lastStatusAt": "2026-07-17T15:44:21.601Z",
+  "completedAt": "2026-07-17T15:44:21.601Z",
   "plannedFiles": [
     "plans/README.md",
     "ime/.../ui/SwipeTypingController.kt",
@@ -43,6 +43,6 @@
     "code": "done",
     "test": "done",
     "review": "done",
-    "doubleCheck": "in_progress"
+    "doubleCheck": "done"
   }
 }
