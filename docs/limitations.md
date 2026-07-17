@@ -14,7 +14,13 @@ active — not a full system clipboard archive.
 ("App pasted from your clipboard"). That is why we refresh on keyboard show
 rather than polling. Long-term clipboard sync is out of scope per `CONTEXT.md`.
 
-## 32-bit Android (armeabi-v7a)
+## Voice model check on panel open
+
+Opening the voice panel runs a **lightweight** presence check (file exists +
+expected size). It does **not** re-hash ~220 MB every time. Full SHA-256
+verification runs at most once per day on IME start (`verifyInstalledIfDue`)
+and in the Voice models settings screen.
+
 
 Release and debug APKs ship **arm64-v8a only** to keep the install size smaller.
 32-bit-only devices are not supported in v1. Galaxy S22 and other modern phones
