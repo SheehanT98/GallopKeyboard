@@ -1,0 +1,45 @@
+{
+  "id": "job-012",
+  "status": "reviewing",
+  "mode": "quick",
+  "originalAsk": "Execute plan 012 clipboard pins",
+  "planRef": "plans/012-clipboard-pins-and-symbols-entry.md",
+  "feature": "Execute plan 012 clipboard pins",
+  "slug": "execute-plan-012-clipboard-pins",
+  "branch": "cursor/devteam-job-012-execute-plan-012-clipboard-pins-c1fc",
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/33",
+  "prNumber": 33,
+  "chatTitle": "devteam pr33",
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-17T12:58:16.155Z",
+  "lastStatusAt": "2026-07-17T13:15:16.730Z",
+  "completedAt": null,
+  "plannedFiles": [
+    "plans/README.md",
+    "plans/011-toolbar-voice-and-thin-voice-panel.md"
+  ],
+  "touchedFiles": [],
+  "blockedBy": [],
+  "dependsOn": [
+    "job-011"
+  ],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "done",
+    "test": "done",
+    "review": "in_progress",
+    "doubleCheck": "pending"
+  }
+}
