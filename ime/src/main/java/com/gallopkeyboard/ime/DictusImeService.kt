@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.gallopkeyboard.ime.panel.PanelController
 import com.gallopkeyboard.ime.panel.PanelHost
+import com.gallopkeyboard.ime.panel.VoicePanelDependencies
 import com.gallopkeyboard.ime.asr.InputConnectionSupplier
 import com.gallopkeyboard.ime.clipboard.ClipboardStore
 import com.gallopkeyboard.ime.clipboard.ClipboardWatcher
@@ -362,11 +363,15 @@ class DictusImeService : LifecycleInputMethodService() {
         PanelHost(
             controller = panelController,
             themeMode = themeMode,
-            audioRecorderEngine = entryPoint.audioRecorderEngine(),
-            transcriber = entryPoint.transcriber(),
-            permissionRequester = entryPoint.permissionRequester(),
-            promptState = entryPoint.voiceModelPromptState(),
-            modelLifecycleManager = entryPoint.modelLifecycleManager(),
+            voiceDependencies = {
+                VoicePanelDependencies(
+                    audioRecorderEngine = entryPoint.audioRecorderEngine(),
+                    transcriber = entryPoint.transcriber(),
+                    permissionRequester = entryPoint.permissionRequester(),
+                    promptState = entryPoint.voiceModelPromptState(),
+                    modelLifecycleManager = entryPoint.modelLifecycleManager(),
+                )
+            },
         ) {
             when (dictationState) {
                 is DictationState.Idle -> {
