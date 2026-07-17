@@ -1,0 +1,45 @@
+{
+  "id": "job-013",
+  "status": "awaiting_review",
+  "mode": "quick",
+  "originalAsk": "Execute plan 013 swipe typing",
+  "planRef": "plans/013-swipe-typing-across-letters.md",
+  "feature": "Execute plan 013 swipe typing",
+  "slug": "execute-plan-013-swipe-typing",
+  "branch": "cursor/devteam-job-013-execute-plan-013-swipe-typing-c1fc",
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/34",
+  "prNumber": 34,
+  "chatTitle": "devteam pr34",
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-17T12:58:16.349Z",
+  "lastStatusAt": "2026-07-17T13:23:51.963Z",
+  "completedAt": "2026-07-17T13:23:51.962Z",
+  "plannedFiles": [
+    "plans/README.md",
+    "plans/011-toolbar-voice-and-thin-voice-panel.md"
+  ],
+  "touchedFiles": [],
+  "blockedBy": [],
+  "dependsOn": [
+    "job-011"
+  ],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "done",
+    "test": "done",
+    "review": "done",
+    "doubleCheck": "done"
+  }
+}

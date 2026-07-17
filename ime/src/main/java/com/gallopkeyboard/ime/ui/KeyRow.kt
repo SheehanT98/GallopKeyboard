@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import com.gallopkeyboard.ime.model.AccentMap
 import com.gallopkeyboard.ime.model.KeyDefinition
@@ -25,6 +28,10 @@ fun KeyRow(
     onKeyPress: (KeyDefinition) -> Unit,
     onAccentSelected: (String) -> Unit,
     hapticsEnabled: Boolean = true,
+    externalCharacterGestures: Boolean = false,
+    swipeController: SwipeTypingController? = null,
+    columnCoordinates: LayoutCoordinates? = null,
+    onCharacterBoundsChanged: (KeyDefinition, Rect) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -46,6 +53,7 @@ fun KeyRow(
                 else -> null
             }
             val accentChars = key.accents ?: displayChar?.let(AccentMap::accentsFor)
+            val useExternalGestures = externalCharacterGestures && key.type == KeyType.CHARACTER
 
             KeyButton(
                 key = key,
@@ -55,7 +63,24 @@ fun KeyRow(
                 accentChars = accentChars,
                 onAccentSelected = onAccentSelected,
                 hapticsEnabled = hapticsEnabled,
-                modifier = Modifier.weight(key.widthMultiplier),
+                externalGesturesEnabled = useExternalGestures,
+                isExternallyPressed = swipeController?.isPressedKey(key) == true,
+                isSwipeHighlighted = swipeController?.isKeyHighlighted(key) == true,
+                showAccentPopupOverride = swipeController?.accentPopupKey() == key,
+                highlightedAccentIndexOverride = swipeController?.highlightedAccentIndex(),
+                modifier = Modifier
+                    .weight(key.widthMultiplier)
+                    .then(
+                        if (useExternalGestures) {
+                            Modifier.onGloballyPositioned { coordinates ->
+                                boundsInColumn(coordinates, columnCoordinates)?.let { bounds ->
+                                    onCharacterBoundsChanged(key, bounds)
+                                }
+                            }
+                        } else {
+                            Modifier
+                        },
+                    ),
             )
         }
     }

@@ -35,7 +35,7 @@ ever out of sync.
 | 010 | Hardening — battery, crashes, ANR guards, release APK | 5 | P1 | L | 009 | DONE |
 | 011 | Toolbar Voice + thin voice panel + hide suggestions | 6 | P1 | M | 010 | DONE |
 | 012 | Symbols clipboard entry + pinned persistent clips | 6 | P1 | M | 011 | DONE |
-| 013 | Swipe typing across letters | 6 | P2 | L | 011 | TODO |
+| 013 | Swipe typing across letters | 6 | P2 | L | 011 | DONE |
 
 **Status values**: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` (with
 one-line reason) | `REJECTED` (with one-line rationale).
@@ -110,7 +110,8 @@ scope of this planning round, but may become plans later:
 - **Custom vocabulary / word replacement** — noted in Plan 007
   maintenance notes; only add if polish accuracy is insufficient.
 - **On-device dictionary + swipe typing** — `CONTEXT.md` rules them
-  out of v1.
+  out of v1. Plan 013 adds pragmatic path-based swipe typing on the
+  LETTERS layer only (not a neural decoder).
 - **Play Store release pipeline** — `CONTEXT.md` explicitly defers.
 - **A `docs/design-system.md`** — could formalize `GallopTheme` tokens
   after Plan 009 lands; add as a follow-up if a second panel or

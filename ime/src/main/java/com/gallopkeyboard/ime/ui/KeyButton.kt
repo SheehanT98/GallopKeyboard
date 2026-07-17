@@ -63,6 +63,11 @@ fun KeyButton(
     accentChars: List<String>? = null,
     onAccentSelected: ((String) -> Unit)? = null,
     hapticsEnabled: Boolean = true,
+    externalGesturesEnabled: Boolean = false,
+    isExternallyPressed: Boolean = false,
+    isSwipeHighlighted: Boolean = false,
+    showAccentPopupOverride: Boolean = false,
+    highlightedAccentIndexOverride: Int? = null,
     modifier: Modifier = Modifier,
 ) {
     val view = LocalView.current
@@ -72,7 +77,12 @@ fun KeyButton(
     var keyPositionXPx by remember { mutableStateOf(0f) }
     var showAccentPopup by remember { mutableStateOf(false) }
     var highlightedAccentIndex by remember { mutableStateOf<Int?>(null) }
-    val showPreviewPopup = isPressed && key.type == KeyType.CHARACTER && !showAccentPopup
+    val effectivePressed = if (externalGesturesEnabled) isExternallyPressed else isPressed
+    val effectiveShowAccentPopup = if (externalGesturesEnabled) showAccentPopupOverride else showAccentPopup
+    val effectiveHighlightedAccentIndex =
+        if (externalGesturesEnabled) highlightedAccentIndexOverride else highlightedAccentIndex
+    val showPreviewPopup =
+        effectivePressed && key.type == KeyType.CHARACTER && !effectiveShowAccentPopup && !isSwipeHighlighted
     val accentCellWidthPx = with(density) { 44.dp.toPx() }
     val selectionSlopPx = with(density) { 8.dp.toPx() }
 
@@ -132,9 +142,10 @@ fun KeyButton(
         return index.takeIf { it in accents.indices }
     }
 
-    // Choose the right gesture modifier based on key type.
-    // DELETE uses custom key-repeat logic; other keys use detectTapGestures.
-    val gestureModifier = if (key.type == KeyType.DELETE) {
+    // Character keys on the LETTERS layer delegate gestures to KeyboardView for swipe typing.
+    val gestureModifier = if (externalGesturesEnabled) {
+        Modifier
+    } else if (key.type == KeyType.DELETE) {
         Modifier.pointerInput(Unit) {
             coroutineScope {
                 while (isActive) {
@@ -256,6 +267,12 @@ fun KeyButton(
         Modifier
     }
 
+    val swipeHighlightColor = if (isSwipeHighlighted) {
+        DictusColors.Accent.copy(alpha = 0.35f)
+    } else {
+        backgroundColor
+    }
+
     Box(
         modifier = modifier
             .height(48.dp)
@@ -266,7 +283,7 @@ fun KeyButton(
             }
             .shadow(elevation = 1.dp, shape = shape)
             .clip(shape)
-            .background(backgroundColor)
+            .background(if (isSwipeHighlighted) swipeHighlightColor else backgroundColor)
             .then(capsLockUnderline)
             .then(gestureModifier),
         contentAlignment = Alignment.Center,
@@ -304,7 +321,7 @@ fun KeyButton(
             }
         }
 
-        if (showAccentPopup && !accentChars.isNullOrEmpty()) {
+        if (effectiveShowAccentPopup && !accentChars.isNullOrEmpty()) {
             Popup(
                 alignment = Alignment.TopCenter,
                 offset = IntOffset(accentShiftPx, -100),
@@ -312,7 +329,7 @@ fun KeyButton(
             ) {
                 AccentPopup(
                     accents = accentChars,
-                    highlightedIndex = highlightedAccentIndex,
+                    highlightedIndex = effectiveHighlightedAccentIndex,
                     onAccentSelected = { accent ->
                         showAccentPopup = false
                         isPressed = false
