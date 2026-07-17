@@ -28,12 +28,14 @@ import com.gallopkeyboard.ime.suggestion.SuggestionEngine
 import com.gallopkeyboard.ime.ui.KeyboardScreen
 import com.gallopkeyboard.ime.ui.RecordingScreen
 import com.gallopkeyboard.ime.ui.TranscribingScreen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import com.gallopkeyboard.ime.panel.PanelController
 import com.gallopkeyboard.ime.panel.PanelHost
@@ -169,9 +171,16 @@ class DictusImeService : LifecycleInputMethodService() {
         bindDictationService()
 
         val installer = ModelInstaller(applicationContext)
-        installer.verifyInstalledIfDue()
         if (!installer.areFilesPresent(ModelRegistry.defaultVoiceBundle)) {
             entryPoint.voiceModelPromptState().showBanner()
+        }
+        bindingScope.launch(Dispatchers.IO) {
+            val corrupt = installer.verifyInstalledIfDue()
+            if (corrupt) {
+                withContext(Dispatchers.Main) {
+                    entryPoint.voiceModelPromptState().showBanner()
+                }
+            }
         }
 
         // Observe suggestions toggle from DataStore (defaults to false — bar hidden in v1 UX)
