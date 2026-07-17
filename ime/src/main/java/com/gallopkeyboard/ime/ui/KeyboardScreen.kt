@@ -104,7 +104,7 @@ fun KeyboardScreen(
                                 onDeleteBackward = onDeleteBackward,
                                 onSendReturn = onSendReturn,
                                 onEmojiToggle = onEmojiToggle,
-                                onMicTap = onMicTap,
+                                onVoicePanelToggle = onVoicePanelToggle,
                                 onClipboardPanelToggle = onClipboardPanelToggle,
                                 onSpaceTapTime = { lastSpaceTapTime = it },
                                 onShiftChanged = { shifted, caps, tapTime ->
@@ -153,7 +153,7 @@ internal fun handleKeyPress(
     onDeleteBackward: () -> Unit,
     onSendReturn: () -> Unit,
     onEmojiToggle: () -> Unit = {},
-    onMicTap: () -> Unit = {},
+    onVoicePanelToggle: () -> Unit = {},
     onClipboardPanelToggle: () -> Unit = {},
     onSpaceTapTime: (Long) -> Unit = {},
     onShiftChanged: (shifted: Boolean, caps: Boolean, tapTime: Long) -> Unit,
@@ -211,8 +211,8 @@ internal fun handleKeyPress(
             Timber.d("Emoji picker toggled")
         }
         KeyType.MIC -> {
-            onMicTap()
-            Timber.d("Mic key tapped")
+            onVoicePanelToggle()
+            Timber.d("Mic key tapped — opening voice panel")
         }
         KeyType.CLIPBOARD -> {
             onClipboardPanelToggle()

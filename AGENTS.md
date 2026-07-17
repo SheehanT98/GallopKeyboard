@@ -4,7 +4,7 @@ Read this file first when working in this repository. It is the single source of
 
 ## What this repo is
 
-GallopKeyboard is a personal Android keyboard IME — a fork of [Dictus](https://github.com/getdictus/dictus-android) extended with a DeepSeek-style voice panel toggle, hybrid offline speech-to-text (streaming Parakeet + Whisper polish on stop), and Gboard-like typing basics. English only, 100% on-device STT, no cloud services. Target device is the owner's Samsung Galaxy S22 (8 GB RAM). v1 ships as a sideload APK; Play Store release is deferred. See `CONTEXT.md` for glossary and acceptance criteria.
+GallopKeyboard is a personal Android keyboard IME — a fork of [Dictus](https://github.com/getdictus/dictus-android) extended with a DeepSeek-style voice panel toggle, hybrid offline speech-to-text (streaming Parakeet + Whisper polish on stop), and Gboard-like typing basics. Post-v1 UX (Plans 011–013) adds a toolbar Voice entry, symbols clipboard with pinned clips, and swipe typing on the LETTERS layer. English only, 100% on-device STT, no cloud services. Target device is the owner's Samsung Galaxy S22 (8 GB RAM). v1 ships as a sideload APK; Play Store release is deferred. See `CONTEXT.md` for glossary and acceptance criteria.
 
 ## Build & verify commands
 
@@ -36,7 +36,8 @@ CI (GitHub Actions, `.github/workflows/ci.yml`) runs the same three Gradle tasks
 ## Do NOT
 
 - Do not add cloud STT, telemetry, analytics, or crash reporters — v1 is 100% offline (see `CONTEXT.md` "Out of scope").
-- Do not add swipe/gesture typing.
+- Swipe typing on the LETTERS layer is **in scope** (Plan 013). Do not remove it without an ADR.
+- Do not add cloud-backed swipe decoders or network lexicon services — swipe stays 100% on-device.
 - Do not add non-English keyboard layouts or locales in v1.
 - Do not commit `.env`, keystores, `local.properties`, or model binaries.
 - Do not edit `HANDOFF.md`, `CONTEXT.md`, or `BOOTSTRAP.md` — those are historical inputs.
@@ -49,9 +50,9 @@ Work is organized as sequential plans under `plans/`. Read `plans/README.md` for
 ## Where to find things
 
 - [`HANDOFF.md`](./HANDOFF.md) — full grilling spec: UX, smart button logic, phased delivery, model defaults.
-- [`CONTEXT.md`](./CONTEXT.md) — glossary, acceptance criteria, out-of-scope list, target device.
+- [`CONTEXT.md`](./CONTEXT.md) — glossary, acceptance criteria, out-of-scope list, target device. Note: `CONTEXT.md` "Out of scope → Swipe/gesture typing" is historical (pre–Plan 013). Swipe typing shipped in Plan 013; treat `AGENTS.md` + `plans/013-*.md` as authoritative over that CONTEXT bullet.
 - [`docs/adr/`](./docs/adr/) — architecture decision records (fork rationale, hybrid STT, gesture spec, package naming).
-- [`plans/`](./plans/README.md) — executor plans 001–010 with dependencies and status.
+- [`plans/`](./plans/README.md) — executor plans 001+ with dependencies and status (see index for 011–013 post-v1 UX and 014+ hardening).
 - [`docs/android-toolchain.md`](./docs/android-toolchain.md) — JDK 17 and Android SDK setup (relevant from Plan 002 onward).
 - **Upstream Dictus**: https://github.com/getdictus/dictus-android (MIT, `develop` branch).
 - **whisper.cpp**: imported as a Git submodule by Plan 002 for the Whisper polish pass (see ADR-0002).

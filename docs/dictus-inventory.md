@@ -344,3 +344,117 @@ Hardening: local crash logs, StrictMode (debug), model lifecycle unload, release
 Recorded in `docs/manual-test-matrix.md` — requires unplugged S22 device run
 (agent environment: pending owner measurement).
 
+## Plan 015 additions
+
+Defer daily model SHA-256 verify off IME `onCreate` critical path.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../DictusImeService.kt` | `verifyInstalledIfDue()` on `bindingScope` + `Dispatchers.IO`; corrupt → banner on Main |
+| `core/.../ModelInstaller.kt` | KDoc: daily verify is background-scheduled from IME startup |
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `core/src/test/.../ModelInstallerTest.kt` | `verifyInstalledIfDue` skips when recently verified |
+
+### Manual test
+
+Cold-start IME on a device with models installed on a verify-due day — keyboard
+chrome appears without multi-second freeze; logcat may show verify completing
+afterward.
+
+## Plan 014 additions
+
+Streaming ASR frame work off the IME/Compose main thread (ADR-0002).
+
+- **`AsrCoroutineDispatcher`** (`ime/.../audio/AsrCoroutineDispatcher.kt`) — single-thread
+  `"AsrEngine"` executor, separate from `RecorderCoroutineDispatcher` (`"AudioRecorder"`)
+  so AudioRecord I/O is not starved by ONNX decode.
+- **`StreamingTranscriber`** — `onSessionStart` / `onAudioFrame` enqueue work on
+  `AsrCoroutineDispatcher` via an internal `CoroutineScope` (non-blocking for callers);
+  `acceptFrame` / `currentPartial` / `beginStream` / `cancel` / `finalize` never run on
+  Main; composing updates post to Main via `Handler(Looper.getMainLooper())`.
+- **Tests** — `StreamingTranscriberTest` thread-affinity case asserts `acceptFrame` runs
+  on `"AsrEngine"`.
+
+## Plan 016 additions
+
+Cancel ASR on SmartVoice dispose; unify IME mic entry to hybrid voice panel.
+
+### Product decision
+
+Bottom-row `KeyType.MIC` opens the **voice panel** (`PanelController.showVoice`) —
+same hybrid `SmartVoiceButton` / `Transcriber` path as the toolbar Voice control.
+`DictationService` recording remains for companion-app `RecordingScreen` only.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../panel/SmartVoiceButton.kt` | `DisposableEffect` calls `cancelActiveSession` before `fsm.reset()` |
+| `ime/.../panel/VoiceSessionCleanup.kt` | `cancelActiveSession(transcriber, session)` helper |
+| `ime/.../ui/KeyboardScreen.kt` | `KeyType.MIC` → `onVoicePanelToggle()` (not `DictationService`) |
+| `ime/.../DictusImeService.kt` | KeyboardScreen no longer passes `onMicTap` / `handleMicTap` |
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/src/test/.../panel/VoiceSessionCleanupTest.kt` | Cancel helper + idempotency |
+
+### Manual test
+
+Start toolbar Voice recording → switch to typing panel or hide IME → mic indicator
+off; no orphan partial commits in the editor.
+
+## Plan 018 additions
+
+Docs-only reconciliation — no Kotlin or Gradle changes.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `AGENTS.md` | Remove swipe ban; document Plan 013 in-scope swipe; CONTEXT supersession note; plans index pointer 001+ |
+| `plans/README.md` | Intro prose for 001–010 / 011–013 / 014–018 waves; Plan 018 status DONE |
+
+### Agent rules (authoritative over historical CONTEXT)
+
+- Swipe typing on LETTERS is in scope (Plan 013); do not remove without ADR.
+- Cloud-backed swipe decoders / network lexicon remain out of scope.
+- `CONTEXT.md` swipe out-of-scope bullet is historical — see `AGENTS.md`.
+
+## Plan 017 additions
+
+Single accent commit channel and shared popup hit-test geometry for swipe typing.
+
+### Product decision
+
+Accent selection commits on pointer release only (KeyButton non-swipe path and
+`SwipeTypingController` swipe path). `AccentPopup` cells are display-only — no
+per-cell `clickable` commit.
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/.../ui/AccentPopupGeometry.kt` | Shared `44.dp` cell width, clamp shift, `resolveAccentIndex` |
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../ui/AccentPopup.kt` | Remove `clickable` / `onAccentSelected` — visual + highlight only |
+| `ime/.../ui/KeyButton.kt` | Shared geometry; release-only accent commit |
+| `ime/.../ui/SwipeTypingController.kt` | `44.dp` popup cells + parent-width clamp (not key-width fractions) |
+| `ime/.../ui/KeyboardView.kt` | Pass `accentCellWidthPx` and column width into controller |
+| `ime/src/test/.../ui/SwipeTypingControllerTest.kt` | Geometry + swipe-before-long-press regression |
+
+### Constant
+
+- `ACCENT_CELL_WIDTH_DP = 44.dp` — must stay in sync with `AccentPopup` cell `size`.
+

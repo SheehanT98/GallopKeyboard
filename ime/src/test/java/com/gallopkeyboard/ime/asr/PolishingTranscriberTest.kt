@@ -5,11 +5,11 @@ import com.gallopkeyboard.asr.parakeet.ParakeetConfig
 import com.gallopkeyboard.asr.parakeet.StreamingAsrEngine
 import com.gallopkeyboard.core.flags.Flags
 import com.gallopkeyboard.ime.audio.AudioSession
-import com.gallopkeyboard.ime.audio.RecorderCoroutineDispatcher
+import com.gallopkeyboard.ime.audio.AsrCoroutineDispatcher
 import com.gallopkeyboard.ime.audio.RingByteBuffer
 import com.gallopkeyboard.whisper.AsrPolishEngine
 import com.gallopkeyboard.whisper.WhisperConfig
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -32,6 +32,7 @@ class PolishingTranscriberTest {
     private lateinit var streamingEngine: PolishFakeStreamingAsrEngine
     private lateinit var polishEngine: FakeAsrPolishEngine
     private lateinit var committer: RecordingImeTextCommitter
+    private lateinit var asrDispatcher: AsrCoroutineDispatcher
     private lateinit var streaming: StreamingTranscriber
     private lateinit var lifecycle: RecordingModelLifecycleController
     private lateinit var transcriber: PolishingTranscriber
@@ -42,9 +43,9 @@ class PolishingTranscriberTest {
         polishEngine = FakeAsrPolishEngine()
         committer = RecordingImeTextCommitter()
         lifecycle = RecordingModelLifecycleController()
-        val dispatcher = RecorderCoroutineDispatcher()
+        asrDispatcher = AsrCoroutineDispatcher()
         val context: Context = androidx.test.core.app.ApplicationProvider.getApplicationContext()
-        streaming = StreamingTranscriber(streamingEngine, committer, dispatcher, VoiceModelPromptState(), context)
+        streaming = StreamingTranscriber(streamingEngine, committer, asrDispatcher, VoiceModelPromptState(), context)
         transcriber = PolishingTranscriber(streaming, polishEngine, committer, lifecycle)
         Flags.polishEnabled = true
     }
@@ -146,8 +147,14 @@ class PolishingTranscriberTest {
         val frame = ShortArray(1600) { 0 }
         transcriber.onAudioFrame(session, frame)
         transcriber.onAudioFrame(session, frame)
+        drainAsrAndMain()
 
         assertEquals(2, streamingEngine.acceptFrameCount)
+    }
+
+    private fun drainAsrAndMain() {
+        runBlocking(asrDispatcher.dispatcher) { }
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
     }
 
     private fun sessionWithPcm(): AudioSession {
@@ -172,7 +179,7 @@ class FakeAsrPolishEngine : AsrPolishEngine {
     override suspend fun transcribe(pcm16k: ShortArray): String {
         transcribeCalled = true
         throwOnTranscribe?.let { throw it }
-        if (blockMs > 0) delay(blockMs)
+        if (blockMs > 0) kotlinx.coroutines.delay(blockMs)
         return result
     }
 

@@ -9,11 +9,14 @@ import com.gallopkeyboard.asr.parakeet.AsrModelMissingException
 import com.gallopkeyboard.asr.parakeet.StreamingAsrEngine
 import com.gallopkeyboard.core.flags.Flags
 import com.gallopkeyboard.ime.R
+import com.gallopkeyboard.ime.audio.AsrCoroutineDispatcher
 import com.gallopkeyboard.ime.audio.AudioSession
-import com.gallopkeyboard.ime.audio.RecorderCoroutineDispatcher
 import com.gallopkeyboard.ime.audio.Transcriber
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -23,7 +26,7 @@ import javax.inject.Singleton
 class StreamingTranscriber @Inject constructor(
     private val engine: StreamingAsrEngine,
     private val committer: ImeTextCommitter,
-    private val dispatcher: RecorderCoroutineDispatcher,
+    private val asrDispatcher: AsrCoroutineDispatcher,
     private val promptState: VoiceModelPromptState,
     @ApplicationContext private val context: Context,
 ) : Transcriber {
@@ -34,55 +37,60 @@ class StreamingTranscriber @Inject constructor(
         private const val POLISH_DEFER_MS = 50L
     }
 
+    private val asrScope = CoroutineScope(SupervisorJob() + asrDispatcher.dispatcher)
+
     private var frameCount = 0
     private var lastPartial = ""
 
     override fun onSessionStart(session: AudioSession) {
         frameCount = 0
         lastPartial = ""
-        runBlocking(dispatcher.dispatcher) {
+        asrScope.launch {
             try {
                 engine.beginStream()
                 promptState.dismissBanner()
-                committer.setComposing("")
+                setComposingOnMain("")
             } catch (e: AsrModelMissingException) {
                 Log.w(TAG, "models missing: ${e.files}")
                 promptState.showBanner()
                 showToast(R.string.asr_models_missing)
             } catch (e: Exception) {
                 Log.e(TAG, "session start failed", e)
-                committer.clearComposing()
+                clearComposingOnMain()
                 showToast(R.string.asr_recognition_failed)
             }
         }
     }
 
     override fun onAudioFrame(session: AudioSession, frame: ShortArray) {
-        try {
-            engine.acceptFrame(frame)
-            frameCount++
-            if (frameCount % PARTIAL_POLL_INTERVAL_FRAMES == 0) {
-                val partial = engine.currentPartial()
-                if (partial != lastPartial) {
-                    lastPartial = partial
-                    committer.setComposing(partial)
+        val frameCopy = frame.copyOf()
+        asrScope.launch {
+            try {
+                engine.acceptFrame(frameCopy)
+                frameCount++
+                if (frameCount % PARTIAL_POLL_INTERVAL_FRAMES == 0) {
+                    val partial = engine.currentPartial()
+                    if (partial != lastPartial) {
+                        lastPartial = partial
+                        setComposingOnMain(partial)
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "frame processing failed", e)
+                clearComposingOnMain()
+                showToast(R.string.asr_recognition_failed)
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "frame processing failed", e)
-            committer.clearComposing()
-            showToast(R.string.asr_recognition_failed)
         }
     }
 
     override suspend fun onSessionStop(session: AudioSession) {
-        withContext(dispatcher.dispatcher) {
+        withContext(asrDispatcher.dispatcher) {
             try {
                 val finalText = engine.finalize()
-                committer.setComposing(finalText)
+                setComposingOnMain(finalText)
             } catch (e: Exception) {
                 Log.e(TAG, "session stop failed", e)
-                committer.clearComposing()
+                clearComposingOnMain()
                 showToast(R.string.asr_recognition_failed)
                 return@withContext
             }
@@ -94,7 +102,7 @@ class StreamingTranscriber @Inject constructor(
     }
 
     override fun onSessionCancel(session: AudioSession) {
-        runBlocking(dispatcher.dispatcher) {
+        runBlocking(asrDispatcher.dispatcher) {
             try {
                 engine.cancel()
             } catch (e: Exception) {
@@ -105,6 +113,14 @@ class StreamingTranscriber @Inject constructor(
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
+
+    private fun setComposingOnMain(text: String) {
+        mainHandler.post { committer.setComposing(text) }
+    }
+
+    private fun clearComposingOnMain() {
+        mainHandler.post { committer.clearComposing() }
+    }
 
     private fun showToast(messageRes: Int) {
         mainHandler.post {

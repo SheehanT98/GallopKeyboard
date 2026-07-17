@@ -13,6 +13,9 @@ class SwipeTypingControllerTest {
 
     private lateinit var controller: SwipeTypingController
 
+    private val accentCellWidthPx = 44f
+    private val parentWidthPx = 200f
+
     private val keyH = KeyDefinition(label = "H", output = "h", type = KeyType.CHARACTER)
     private val keyE = KeyDefinition(label = "E", output = "e", type = KeyType.CHARACTER)
     private val keyL = KeyDefinition(label = "L", output = "l", type = KeyType.CHARACTER)
@@ -20,7 +23,8 @@ class SwipeTypingControllerTest {
 
     @Before
     fun setUp() {
-        controller = SwipeTypingController(swipeSlopPx = 10f)
+        controller = SwipeTypingController(swipeSlopPx = 10f, accentCellWidthPx = accentCellWidthPx)
+        controller.parentWidthPx = parentWidthPx
         controller.updateKeyBounds(
             listOf(
                 CharacterKeyBounds(keyH, Rect(0f, 0f, 40f, 40f)),
@@ -57,5 +61,73 @@ class SwipeTypingControllerTest {
         controller.onPointerMove(Offset(75f, 20f))
         val result = controller.onPointerUp()
         assertEquals(SwipeTypingResult.Accent("è"), result)
+    }
+
+    @Test
+    fun `long press accent at rightmost 44dp cell selects last accent`() {
+        controller.onPointerDown(Offset(60f, 20f), keyE, accents = listOf("é", "è", "ê"))
+        controller.onLongPressThreshold()
+        // Popup left for key E (50–90): natural 4px; cells at 4, 48, 92
+        controller.onPointerMove(Offset(110f, 20f))
+        val result = controller.onPointerUp()
+        assertEquals(SwipeTypingResult.Accent("ê"), result)
+    }
+
+    @Test
+    fun `movement beyond slop before long press yields swipe not accent`() {
+        controller.onPointerDown(Offset(60f, 20f), keyE, accents = listOf("é", "è", "ê"))
+        controller.onPointerMove(Offset(120f, 20f))
+        controller.onLongPressThreshold()
+        val result = controller.onPointerUp()
+        assertTrue(result is SwipeTypingResult.SwipeWord)
+    }
+
+    @Test
+    fun `resolveAccentIndex maps left middle and right cells`() {
+        val accents = listOf("é", "è", "ê")
+        val keyLeft = 50f
+        val keyWidth = 40f
+        val shift = computeAccentShiftPx(
+            keyLeftPx = keyLeft,
+            keyWidthPx = keyWidth,
+            accentCount = accents.size,
+            accentCellWidthPx = accentCellWidthPx,
+            parentWidthPx = parentWidthPx,
+        )
+        val popupLeft = keyLeft + (keyWidth - accents.size * accentCellWidthPx) / 2f + shift
+
+        assertEquals(
+            0,
+            resolveAccentIndex(
+                pointerX = popupLeft + accentCellWidthPx / 2f,
+                keyLeftPx = keyLeft,
+                keyWidthPx = keyWidth,
+                accentCount = accents.size,
+                accentCellWidthPx = accentCellWidthPx,
+                accentShiftPx = shift,
+            ),
+        )
+        assertEquals(
+            1,
+            resolveAccentIndex(
+                pointerX = popupLeft + accentCellWidthPx * 1.5f,
+                keyLeftPx = keyLeft,
+                keyWidthPx = keyWidth,
+                accentCount = accents.size,
+                accentCellWidthPx = accentCellWidthPx,
+                accentShiftPx = shift,
+            ),
+        )
+        assertEquals(
+            2,
+            resolveAccentIndex(
+                pointerX = popupLeft + accentCellWidthPx * 2.5f,
+                keyLeftPx = keyLeft,
+                keyWidthPx = keyWidth,
+                accentCount = accents.size,
+                accentCellWidthPx = accentCellWidthPx,
+                accentShiftPx = shift,
+            ),
+        )
     }
 }

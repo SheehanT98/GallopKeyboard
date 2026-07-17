@@ -134,11 +134,7 @@ fun SmartVoiceButton(
                 visualRecording = false
                 recordingJob?.cancel()
                 recordingJob = null
-                val session = activeSession
-                activeSession = null
-                if (session != null) {
-                    transcriber.onSessionCancel(session)
-                }
+                activeSession = cancelActiveSession(transcriber, activeSession)
             },
         )
     }
@@ -146,7 +142,10 @@ fun SmartVoiceButton(
     DisposableEffect(Unit) {
         onDispose {
             recordingJob?.cancel()
+            recordingJob = null
             holdTimerJob?.cancel()
+            visualRecording = false
+            activeSession = cancelActiveSession(transcriber, activeSession)
             fsm.reset()
         }
     }

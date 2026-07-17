@@ -5,13 +5,15 @@ import com.gallopkeyboard.asr.parakeet.AsrModelMissingException
 import com.gallopkeyboard.asr.parakeet.ParakeetConfig
 import com.gallopkeyboard.asr.parakeet.StreamingAsrEngine
 import com.gallopkeyboard.core.flags.Flags
+import com.gallopkeyboard.ime.audio.AsrCoroutineDispatcher
 import com.gallopkeyboard.ime.audio.AudioSession
-import com.gallopkeyboard.ime.audio.RecorderCoroutineDispatcher
 import com.gallopkeyboard.ime.audio.RingByteBuffer
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -21,6 +23,8 @@ import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowToast
 import android.os.Looper
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [29])
@@ -28,7 +32,7 @@ class StreamingTranscriberTest {
 
     private lateinit var engine: FakeStreamingAsrEngine
     private lateinit var committer: RecordingImeTextCommitter
-    private lateinit var dispatcher: RecorderCoroutineDispatcher
+    private lateinit var asrDispatcher: AsrCoroutineDispatcher
     private lateinit var context: Context
     private lateinit var transcriber: StreamingTranscriber
 
@@ -36,9 +40,9 @@ class StreamingTranscriberTest {
     fun setUp() {
         engine = FakeStreamingAsrEngine()
         committer = RecordingImeTextCommitter()
-        dispatcher = RecorderCoroutineDispatcher()
+        asrDispatcher = AsrCoroutineDispatcher()
         context = androidx.test.core.app.ApplicationProvider.getApplicationContext()
-        transcriber = StreamingTranscriber(engine, committer, dispatcher, VoiceModelPromptState(), context)
+        transcriber = StreamingTranscriber(engine, committer, asrDispatcher, VoiceModelPromptState(), context)
         Flags.polishEnabled = false
     }
 
@@ -52,6 +56,7 @@ class StreamingTranscriberTest {
     fun `session start commits empty composing region once`() {
         val session = newSession()
         transcriber.onSessionStart(session)
+        drainAsrAndMain()
 
         assertEquals(listOf(CommitterCall.SetComposing("")), committer.calls)
     }
@@ -61,11 +66,13 @@ class StreamingTranscriberTest {
         engine.partialsOnPoll = listOf("hel", "hello")
         val session = newSession()
         transcriber.onSessionStart(session)
+        drainAsrAndMain()
         committer.calls.clear()
 
         repeat(10) {
             transcriber.onAudioFrame(session, ShortArray(1600))
         }
+        drainAsrAndMain()
 
         assertEquals(
             listOf(
@@ -81,11 +88,13 @@ class StreamingTranscriberTest {
         engine.partialsOnPoll = listOf("hello", "hello", "hello world")
         val session = newSession()
         transcriber.onSessionStart(session)
+        drainAsrAndMain()
         committer.calls.clear()
 
         repeat(15) {
             transcriber.onAudioFrame(session, ShortArray(1600))
         }
+        drainAsrAndMain()
 
         assertEquals(
             listOf(
@@ -97,13 +106,45 @@ class StreamingTranscriberTest {
     }
 
     @Test
+    fun `acceptFrame runs on ASR dispatcher thread`() {
+        val latch = CountDownLatch(1)
+        engine.onAcceptFrame = { latch.countDown() }
+        val session = newSession()
+        transcriber.onSessionStart(session)
+        drainAsrAndMain()
+
+        transcriber.onAudioFrame(session, ShortArray(1600))
+        assertTrue(latch.await(5, TimeUnit.SECONDS))
+        assertTrue(engine.acceptFrameThreadName!!.startsWith("AsrEngine"))
+        assertNotEquals("main", engine.acceptFrameThreadName)
+    }
+
+    @Test
+    fun `rapid frames do not throw and composing eventually updates on main`() {
+        engine.partialsOnPoll = listOf("hello")
+        val session = newSession()
+        transcriber.onSessionStart(session)
+        drainAsrAndMain()
+        committer.calls.clear()
+
+        repeat(50) {
+            transcriber.onAudioFrame(session, ShortArray(1600))
+        }
+        drainAsrAndMain()
+
+        assertTrue(committer.calls.any { it == CommitterCall.SetComposing("hello") })
+    }
+
+    @Test
     fun `session stop finalizes and sets composing text`() = runTest {
         engine.finalizeResult = "hello world."
         val session = newSession()
         transcriber.onSessionStart(session)
+        drainAsrAndMain()
         committer.calls.clear()
 
         transcriber.onSessionStop(session)
+        drainAsrAndMain()
 
         assertTrue(engine.finalizeCalled)
         assertTrue(committer.calls.any { it == CommitterCall.SetComposing("hello world.") })
@@ -113,6 +154,7 @@ class StreamingTranscriberTest {
     fun `session cancel clears composing`() {
         val session = newSession()
         transcriber.onSessionStart(session)
+        drainAsrAndMain()
         committer.calls.clear()
 
         transcriber.onSessionCancel(session)
@@ -127,7 +169,7 @@ class StreamingTranscriberTest {
         val session = newSession()
         transcriber.onSessionStart(session)
 
-        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        drainAsrAndMain()
         assertTrue(committer.calls.isEmpty())
         val toast = ShadowToast.getTextOfLatestToast().toString()
         assertTrue(toast.contains("Voice models"))
@@ -140,9 +182,11 @@ class StreamingTranscriberTest {
         Flags.polishEnabled = false
         val session = newSession()
         transcriber.onSessionStart(session)
+        drainAsrAndMain()
         committer.calls.clear()
 
         transcriber.onSessionStop(session)
+        drainAsrAndMain()
 
         assertTrue(committer.calls.contains(CommitterCall.ClearComposing))
     }
@@ -153,11 +197,18 @@ class StreamingTranscriberTest {
         Flags.polishEnabled = true
         val session = newSession()
         transcriber.onSessionStart(session)
+        drainAsrAndMain()
         committer.calls.clear()
 
         transcriber.onSessionStop(session)
+        drainAsrAndMain()
 
         assertFalse(committer.calls.contains(CommitterCall.ClearComposing))
+    }
+
+    private fun drainAsrAndMain() {
+        runBlocking(asrDispatcher.dispatcher) { }
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
     }
 
     private fun newSession(): AudioSession =
@@ -200,6 +251,8 @@ class FakeStreamingAsrEngine : StreamingAsrEngine {
     var failBeginWith: Exception? = null
     var finalizeCalled = false
     var cancelCalled = false
+    var acceptFrameThreadName: String? = null
+    var onAcceptFrame: (() -> Unit)? = null
 
     private var pollIndex = 0
     private var initialized = false
@@ -213,7 +266,10 @@ class FakeStreamingAsrEngine : StreamingAsrEngine {
         pollIndex = 0
     }
 
-    override fun acceptFrame(pcm16k: ShortArray) = Unit
+    override fun acceptFrame(pcm16k: ShortArray) {
+        acceptFrameThreadName = Thread.currentThread().name
+        onAcceptFrame?.invoke()
+    }
 
     override fun currentPartial(): String {
         val value = partialsOnPoll.getOrElse(pollIndex) { partialsOnPoll.last() }
