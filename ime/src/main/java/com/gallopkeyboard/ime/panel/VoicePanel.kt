@@ -2,7 +2,6 @@ package com.gallopkeyboard.ime.panel
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,8 +26,8 @@ import com.gallopkeyboard.ime.theme.GallopVoiceTheme
 /** Typing keyboard total height (toolbar + keys). */
 val KEYBOARD_PANEL_HEIGHT_DP: Dp = 346.dp
 
-/** Thin dedicated voice bar (~Hold to speak + keyboard return). */
-val VOICE_PANEL_HEIGHT_DP: Dp = 140.dp
+/** Thin dedicated voice bar — full-width speak button + keyboard return. */
+val VOICE_PANEL_HEIGHT_DP: Dp = 148.dp
 
 @Composable
 fun VoicePanel(
@@ -47,34 +46,31 @@ fun VoicePanel(
                 .fillMaxWidth()
                 .height(keyboardHeight)
                 .background(GallopColors.Surface)
-                .padding(horizontal = 12.dp),
+                .padding(horizontal = 12.dp, vertical = 10.dp),
         ) {
             if (showSetupBanner) {
                 VoicePanelPromptBanner(
                     onSetupVoiceModels = onSetupVoiceModels,
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 4.dp),
+                        .padding(top = 0.dp),
                 )
             }
-            Box(
+            SmartVoiceButton(
+                audioRecorderEngine = audioRecorderEngine,
+                transcriber = transcriber,
+                permissionRequester = permissionRequester,
+                style = SmartVoiceButtonStyle.PanelCompact,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 8.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                SmartVoiceButton(
-                    audioRecorderEngine = audioRecorderEngine,
-                    transcriber = transcriber,
-                    permissionRequester = permissionRequester,
-                    style = SmartVoiceButtonStyle.PanelCompact,
-                )
-            }
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .padding(end = 48.dp),
+            )
             IconButton(
                 onClick = onSwitchToTyping,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .size(40.dp),
+                    .align(Alignment.CenterEnd)
+                    .size(44.dp),
             ) {
                 Icon(
                     imageVector = Icons.Filled.Keyboard,

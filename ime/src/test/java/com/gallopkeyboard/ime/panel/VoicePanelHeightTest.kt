@@ -12,8 +12,8 @@ class VoicePanelHeightTest {
     }
 
     @Test
-    fun `voice panel height is about 140dp`() {
-        assertEquals(140, VOICE_PANEL_HEIGHT_DP.value.toInt())
+    fun `voice panel height is about 148dp`() {
+        assertEquals(148, VOICE_PANEL_HEIGHT_DP.value.toInt())
     }
 
     @Test

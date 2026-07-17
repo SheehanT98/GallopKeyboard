@@ -3,24 +3,24 @@ package com.gallopkeyboard.ime.model
 /**
  * Complete keyboard layout data for all layers.
  *
- * Each layout is a List<List<KeyDefinition>> representing rows of keys.
- * Bottom row matches classic phone keyboards: 123 · emoji · mic · space · return.
+ * Bottom rows: layer switch · emoji · clipboard · space · return.
+ * Voice entry is the toolbar **Voice panel** control (not a bottom mic key).
  */
 object KeyboardLayouts {
 
     private val bottomLettersSwitchRow: List<KeyDefinition> = listOf(
         KeyDefinition("ABC", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.25f),
         KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.15f),
-        KeyDefinition("\uD83C\uDFA4", type = KeyType.MIC, widthMultiplier = 1.15f),
+        KeyDefinition("\uD83D\uDCCB", type = KeyType.CLIPBOARD, widthMultiplier = 1.15f),
         KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.0f),
         KeyDefinition("return", type = KeyType.RETURN, widthMultiplier = 1.75f),
     )
 
-    /** Symbols bottom row: clipboard replaces emoji for quick clip access. */
+    /** Symbols bottom row — clipboard stays for quick clip access. */
     private val symbolsBottomRow: List<KeyDefinition> = listOf(
         KeyDefinition("ABC", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.25f),
+        KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.15f),
         KeyDefinition("\uD83D\uDCCB", type = KeyType.CLIPBOARD, widthMultiplier = 1.15f),
-        KeyDefinition("\uD83C\uDFA4", type = KeyType.MIC, widthMultiplier = 1.15f),
         KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.0f),
         KeyDefinition("return", type = KeyType.RETURN, widthMultiplier = 1.75f),
     )
@@ -44,7 +44,7 @@ object KeyboardLayouts {
         listOf(
             KeyDefinition("?123", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.25f),
             KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.15f),
-            KeyDefinition("\uD83C\uDFA4", type = KeyType.MIC, widthMultiplier = 1.15f),
+            KeyDefinition("\uD83D\uDCCB", type = KeyType.CLIPBOARD, widthMultiplier = 1.15f),
             KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.0f),
             KeyDefinition("return", type = KeyType.RETURN, widthMultiplier = 1.75f),
         ),
@@ -69,7 +69,7 @@ object KeyboardLayouts {
         listOf(
             KeyDefinition("123", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.25f),
             KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.15f),
-            KeyDefinition("\uD83C\uDFA4", type = KeyType.MIC, widthMultiplier = 1.15f),
+            KeyDefinition("\uD83D\uDCCB", type = KeyType.CLIPBOARD, widthMultiplier = 1.15f),
             KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.0f),
             KeyDefinition("return", type = KeyType.RETURN, widthMultiplier = 1.75f),
         ),
