@@ -39,7 +39,7 @@ Execute in numeric order unless a plan header says otherwise. Header
 | 011 | Toolbar Voice + thin voice panel + hide suggestions | 6 | P1 | M | 010 | DONE |
 | 012 | Symbols clipboard entry + pinned persistent clips | 6 | P1 | M | 011 | DONE |
 | 013 | Swipe typing across letters | 6 | P2 | L | 011 | DONE |
-| 014 | Offload streaming ASR from IME main thread | 7 | P1 | M | — | TODO |
+| 014 | Offload streaming ASR from IME main thread | 7 | P1 | M | — | DONE |
 | 015 | Defer daily model SHA-256 verify off IME `onCreate` | 7 | P1 | S | — | DONE |
 | 016 | Cancel ASR on SmartVoice dispose + unify dual mic | 7 | P1 | M | 014 optional | TODO |
 | 017 | Fix accent popup double-commit + swipe accent geometry | 7 | P2 | S | — | TODO |

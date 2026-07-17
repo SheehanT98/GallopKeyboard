@@ -1,0 +1,56 @@
+{
+  "id": "job-017",
+  "status": "awaiting_review",
+  "mode": "quick",
+  "originalAsk": "Execute plan 014 offload streaming ASR from IME main thread",
+  "planRef": "plans/014-offload-streaming-asr-from-ime-main-thread.md",
+  "feature": "Execute plan 014 offload streaming ASR from IME main thread",
+  "slug": "execute-plan-014-offload-streaming-asr-from-ime-",
+  "branch": "cursor/devteam-job-017-execute-plan-014-offload-streaming-asr-from-ime--c1fc",
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/40",
+  "prNumber": 40,
+  "chatTitle": "devteam pr40",
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-17T15:38:23.656Z",
+  "lastStatusAt": "2026-07-17T16:11:19.782Z",
+  "completedAt": "2026-07-17T16:11:19.782Z",
+  "plannedFiles": [
+    "plans/README.md",
+    "docs/adr/0002-hybrid-stt-pipeline.md",
+    "ime/src/main/java/com/gallopkeyboard/ime/panel/SmartVoiceButton.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/asr/StreamingTranscriber.kt",
+    "asr/.../ParakeetEngine.kt",
+    "ime/.../audio/RecorderCoroutineDispatcher.kt",
+    "ime/src/test/.../StreamingTranscriberTest.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/audio/RecorderCoroutineDispatcher.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/asr/ImeTextCommitter.kt",
+    "ime/src/test/java/com/gallopkeyboard/ime/asr/StreamingTranscriberTest.kt",
+    "docs/dictus-inventory.md",
+    "asr/src/main/java/com/gallopkeyboard/asr/parakeet/ParakeetEngine.kt",
+    "scripts/verify.sh"
+  ],
+  "touchedFiles": [],
+  "blockedBy": [],
+  "dependsOn": [
+    "job-016"
+  ],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "done",
+    "test": "done",
+    "review": "done",
+    "doubleCheck": "done"
+  }
+}
