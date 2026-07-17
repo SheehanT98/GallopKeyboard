@@ -344,3 +344,20 @@ Hardening: local crash logs, StrictMode (debug), model lifecycle unload, release
 Recorded in `docs/manual-test-matrix.md` — requires unplugged S22 device run
 (agent environment: pending owner measurement).
 
+## Plan 018 additions
+
+Docs-only reconciliation — no Kotlin or Gradle changes.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `AGENTS.md` | Remove swipe ban; document Plan 013 in-scope swipe; CONTEXT supersession note; plans index pointer 001+ |
+| `plans/README.md` | Intro prose for 001–010 / 011–013 / 014–018 waves; Plan 018 status DONE |
+
+### Agent rules (authoritative over historical CONTEXT)
+
+- Swipe typing on LETTERS is in scope (Plan 013); do not remove without ADR.
+- Cloud-backed swipe decoders / network lexicon remain out of scope.
+- `CONTEXT.md` swipe out-of-scope bullet is historical — see `AGENTS.md`.
+
