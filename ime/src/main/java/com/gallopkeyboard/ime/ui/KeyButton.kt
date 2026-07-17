@@ -97,7 +97,8 @@ fun KeyButton(
         key.type == KeyType.SHIFT && isShifted -> DictusColors.Accent
         key.type == KeyType.CHARACTER ||
             key.type == KeyType.SPACE ||
-            key.type == KeyType.MIC -> LocalDictusColors.current.keyBackground
+            key.type == KeyType.MIC ||
+            key.type == KeyType.CLIPBOARD -> LocalDictusColors.current.keyBackground
         else -> LocalDictusColors.current.keySpecialBackground
     }
 
@@ -108,7 +109,7 @@ fun KeyButton(
 
     val fontSize = when (key.type) {
         KeyType.CHARACTER, KeyType.SHIFT, KeyType.DELETE, KeyType.RETURN,
-        KeyType.EMOJI, KeyType.ACCENT_ADAPTIVE, KeyType.MIC -> 20.sp
+        KeyType.EMOJI, KeyType.ACCENT_ADAPTIVE, KeyType.MIC, KeyType.CLIPBOARD -> 20.sp
         KeyType.SPACE, KeyType.LAYER_SWITCH, KeyType.KEYBOARD_SWITCH -> 14.sp
     }
 

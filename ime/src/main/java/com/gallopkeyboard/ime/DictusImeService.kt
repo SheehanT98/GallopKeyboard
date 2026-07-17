@@ -37,10 +37,12 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.gallopkeyboard.ime.panel.PanelController
 import com.gallopkeyboard.ime.panel.PanelHost
+import com.gallopkeyboard.ime.panel.PanelState
 import com.gallopkeyboard.ime.panel.VoicePanelDependencies
 import com.gallopkeyboard.ime.asr.InputConnectionSupplier
 import com.gallopkeyboard.ime.clipboard.ClipboardStore
 import com.gallopkeyboard.ime.clipboard.ClipboardWatcher
+import com.gallopkeyboard.ime.clipboard.PinnedClipboardStore
 import com.gallopkeyboard.ime.model.KeyboardLayer
 
 /**
@@ -89,6 +91,9 @@ class DictusImeService : LifecycleInputMethodService() {
     private val panelController = PanelController()
 
     private val clipboardStore = ClipboardStore()
+    private val pinnedClipboardStore: PinnedClipboardStore by lazy {
+        PinnedClipboardStore(entryPoint.dataStore(), bindingScope)
+    }
     private lateinit var clipboardWatcher: ClipboardWatcher
 
     // Emoji picker visibility state, hoisted here so back key can dismiss it via onKeyDown.
@@ -227,9 +232,15 @@ class DictusImeService : LifecycleInputMethodService() {
      * Overriding onKeyDown is the correct approach for IME services.
      */
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK && _isEmojiPickerOpen.value) {
-            _isEmojiPickerOpen.value = false
-            return true // Consume the back key
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (_isEmojiPickerOpen.value) {
+                _isEmojiPickerOpen.value = false
+                return true
+            }
+            if (panelController.state.value == PanelState.CLIPBOARD) {
+                panelController.showTyping()
+                return true
+            }
         }
         return super.onKeyDown(keyCode, event)
     }
@@ -356,6 +367,7 @@ class DictusImeService : LifecycleInputMethodService() {
             .collectAsState(initial = "qwerty")
 
         val clipboardItems by clipboardStore.itemsFlow.collectAsState()
+        val pinnedClipboardEntries by pinnedClipboardStore.entriesFlow.collectAsState()
 
         val switchKeyboard = {
             val imm = getSystemService(INPUT_METHOD_SERVICE)
@@ -375,6 +387,11 @@ class DictusImeService : LifecycleInputMethodService() {
                     modelLifecycleManager = entryPoint.modelLifecycleManager(),
                 )
             },
+            pinnedClipboardEntries = pinnedClipboardEntries,
+            recentClipboardTexts = clipboardItems,
+            onClipboardInsert = { text -> commitText(text) },
+            onClipboardTogglePin = { text -> pinnedClipboardStore.togglePin(text) },
+            isClipboardPinned = { text -> pinnedClipboardStore.isPinned(text) },
         ) {
             when (dictationState) {
                 is DictationState.Idle -> {
@@ -383,6 +400,7 @@ class DictusImeService : LifecycleInputMethodService() {
                         onDeleteBackward = { deleteBackward() },
                         onSendReturn = { sendReturnKey() },
                         onVoicePanelToggle = panelController::showVoice,
+                        onClipboardPanelToggle = panelController::showClipboard,
                         audioRecorderEngine = audioRecorderEngine,
                         transcriber = transcriber,
                         permissionRequester = permissionRequester,

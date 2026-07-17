@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * Most recent item first. No persistence — history is lost when the IME process dies.
  */
-class ClipboardStore(private val capacity: Int = 3) {
+class ClipboardStore(private val capacity: Int = 10) {
 
     companion object {
         const val MAX_TEXT_LENGTH = 500

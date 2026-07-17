@@ -42,6 +42,11 @@ fun PanelHost(
     @Suppress("UNUSED_PARAMETER") themeMode: ThemeMode,
     voiceDependencies: () -> VoicePanelDependencies,
     voicePanelHeight: Dp = VOICE_PANEL_HEIGHT_DP,
+    pinnedClipboardEntries: List<com.gallopkeyboard.ime.clipboard.ClipboardEntry> = emptyList(),
+    recentClipboardTexts: List<String> = emptyList(),
+    onClipboardInsert: (String) -> Unit = {},
+    onClipboardTogglePin: (String) -> Unit = {},
+    isClipboardPinned: (String) -> Boolean = { false },
     typingContent: @Composable () -> Unit,
 ) {
     val state by controller.state.collectAsState()
@@ -96,6 +101,19 @@ fun PanelHost(
                     },
                 )
             }
+        }
+        PanelState.CLIPBOARD -> {
+            ClipboardPanel(
+                pinnedEntries = pinnedClipboardEntries,
+                recentTexts = recentClipboardTexts,
+                onInsert = { text ->
+                    onClipboardInsert(text)
+                    controller.showTyping()
+                },
+                onTogglePin = onClipboardTogglePin,
+                isPinned = isClipboardPinned,
+                onClose = controller::showTyping,
+            )
         }
     }
 }

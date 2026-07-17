@@ -35,6 +35,7 @@ fun KeyboardScreen(
     onDeleteBackward: () -> Unit,
     onSendReturn: () -> Unit,
     onVoicePanelToggle: () -> Unit,
+    onClipboardPanelToggle: () -> Unit = {},
     audioRecorderEngine: AudioRecorderEngine,
     transcriber: Transcriber,
     permissionRequester: PermissionRequester,
@@ -106,6 +107,7 @@ fun KeyboardScreen(
                                 onSendReturn = onSendReturn,
                                 onEmojiToggle = onEmojiToggle,
                                 onMicTap = onMicTap,
+                                onClipboardPanelToggle = onClipboardPanelToggle,
                                 onSpaceTapTime = { lastSpaceTapTime = it },
                                 onShiftChanged = { shifted, caps, tapTime ->
                                     isShifted = shifted
@@ -154,6 +156,7 @@ internal fun handleKeyPress(
     onSendReturn: () -> Unit,
     onEmojiToggle: () -> Unit = {},
     onMicTap: () -> Unit = {},
+    onClipboardPanelToggle: () -> Unit = {},
     onSpaceTapTime: (Long) -> Unit = {},
     onShiftChanged: (shifted: Boolean, caps: Boolean, tapTime: Long) -> Unit,
     onLayerChanged: (KeyboardLayer) -> Unit,
@@ -212,6 +215,10 @@ internal fun handleKeyPress(
         KeyType.MIC -> {
             onMicTap()
             Timber.d("Mic key tapped")
+        }
+        KeyType.CLIPBOARD -> {
+            onClipboardPanelToggle()
+            Timber.d("Clipboard key tapped")
         }
         KeyType.ACCENT_ADAPTIVE -> {
             onCommitText(key.output)

@@ -16,6 +16,15 @@ object KeyboardLayouts {
         KeyDefinition("return", type = KeyType.RETURN, widthMultiplier = 1.75f),
     )
 
+    /** Symbols bottom row: clipboard replaces emoji for quick clip access. */
+    private val symbolsBottomRow: List<KeyDefinition> = listOf(
+        KeyDefinition("ABC", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.25f),
+        KeyDefinition("\uD83D\uDCCB", type = KeyType.CLIPBOARD, widthMultiplier = 1.15f),
+        KeyDefinition("\uD83C\uDFA4", type = KeyType.MIC, widthMultiplier = 1.15f),
+        KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.0f),
+        KeyDefinition("return", type = KeyType.RETURN, widthMultiplier = 1.75f),
+    )
+
     val azertyLetters: List<List<KeyDefinition>> = listOf(
         listOf("A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P")
             .map { KeyDefinition(label = it, output = it.lowercase()) },
@@ -97,7 +106,7 @@ object KeyboardLayouts {
             KeyDefinition("'", output = "'"),
             KeyDefinition("\u232B", type = KeyType.DELETE, widthMultiplier = 1.5f),
         ),
-        bottomLettersSwitchRow,
+        symbolsBottomRow,
     )
 
     /**
