@@ -70,10 +70,16 @@ fun KeyboardView(
     val density = LocalDensity.current
     val view = LocalView.current
     val swipeSlopPx = with(density) { 12.dp.toPx() }
-    val swipeController = remember { SwipeTypingController(swipeSlopPx) }
+    val accentCellWidthPx = with(density) { ACCENT_CELL_WIDTH_DP.toPx() }
+    val swipeController = remember(swipeSlopPx, accentCellWidthPx) {
+        SwipeTypingController(swipeSlopPx, accentCellWidthPx)
+    }
     swipeController.isShifted = isShifted
 
     var columnCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    swipeController.parentWidthPx =
+        columnCoordinates?.size?.width?.toFloat() ?: view.rootView.width.toFloat()
+
     val keyBoundsMap = remember { mutableStateMapOf<KeyDefinition, Rect>() }
     var gestureTick by remember { mutableIntStateOf(0) }
 

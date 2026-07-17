@@ -42,7 +42,7 @@ Execute in numeric order unless a plan header says otherwise. Header
 | 014 | Offload streaming ASR from IME main thread | 7 | P1 | M | — | DONE |
 | 015 | Defer daily model SHA-256 verify off IME `onCreate` | 7 | P1 | S | — | DONE |
 | 016 | Cancel ASR on SmartVoice dispose + unify dual mic | 7 | P1 | M | 014 optional | DONE |
-| 017 | Fix accent popup double-commit + swipe accent geometry | 7 | P2 | S | — | TODO |
+| 017 | Fix accent popup double-commit + swipe accent geometry | 7 | P2 | S | — | DONE |
 | 018 | Reconcile AGENTS.md with shipped Plans 011–013 UX | 7 | P2 | S | — | DONE |
 
 **Status values**: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` (with

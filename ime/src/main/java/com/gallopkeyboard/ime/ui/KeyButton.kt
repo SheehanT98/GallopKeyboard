@@ -83,22 +83,22 @@ fun KeyButton(
         if (externalGesturesEnabled) highlightedAccentIndexOverride else highlightedAccentIndex
     val showPreviewPopup =
         effectivePressed && key.type == KeyType.CHARACTER && !effectiveShowAccentPopup && !isSwipeHighlighted
-    val accentCellWidthPx = with(density) { 44.dp.toPx() }
+    val accentCellWidthPx = with(density) { ACCENT_CELL_WIDTH_DP.toPx() }
     val selectionSlopPx = with(density) { 8.dp.toPx() }
 
     // Horizontal shift (px) needed to keep the accent popup within screen bounds.
     // Computed once and shared between the Popup offset and resolveAccentIndex().
     val accentShiftPx = remember(keyWidthPx, keyPositionXPx, accentChars) {
-        val accents = accentChars ?: return@remember 0
-        if (accents.isEmpty() || keyWidthPx <= 0) return@remember 0
-        val popupWidthPx = accents.size * accentCellWidthPx
-        val naturalLeftPx = keyPositionXPx + (keyWidthPx - popupWidthPx) / 2f
+        val accents = accentChars ?: return@remember 0f
+        if (accents.isEmpty() || keyWidthPx <= 0) return@remember 0f
         val screenWidthPx = view.rootView.width.toFloat()
-        val clampedLeftPx = naturalLeftPx.coerceIn(
-            0f,
-            (screenWidthPx - popupWidthPx).coerceAtLeast(0f),
+        computeAccentShiftPx(
+            keyLeftPx = keyPositionXPx,
+            keyWidthPx = keyWidthPx.toFloat(),
+            accentCount = accents.size,
+            accentCellWidthPx = accentCellWidthPx,
+            parentWidthPx = screenWidthPx,
         )
-        (clampedLeftPx - naturalLeftPx).toInt()
     }
 
     // Caps lock check must come before isShifted since caps lock also sets isShifted=true
@@ -133,13 +133,14 @@ fun KeyButton(
 
     fun resolveAccentIndex(pointerX: Float): Int? {
         val accents = accentChars ?: return null
-        if (accents.isEmpty() || keyWidthPx <= 0) return null
-
-        val popupWidthPx = accents.size * accentCellWidthPx
-        // Natural centered offset + clamping shift to match the popup's actual position
-        val popupLeftPx = (keyWidthPx - popupWidthPx) / 2f + accentShiftPx
-        val index = ((pointerX - popupLeftPx) / accentCellWidthPx).toInt()
-        return index.takeIf { it in accents.indices }
+        return resolveAccentIndex(
+            pointerX = pointerX,
+            keyLeftPx = 0f,
+            keyWidthPx = keyWidthPx.toFloat(),
+            accentCount = accents.size,
+            accentCellWidthPx = accentCellWidthPx,
+            accentShiftPx = accentShiftPx,
+        )
     }
 
     // Character keys on the LETTERS layer delegate gestures to KeyboardView for swipe typing.
@@ -324,18 +325,12 @@ fun KeyButton(
         if (effectiveShowAccentPopup && !accentChars.isNullOrEmpty()) {
             Popup(
                 alignment = Alignment.TopCenter,
-                offset = IntOffset(accentShiftPx, -100),
+                offset = IntOffset(accentShiftPx.toInt(), -100),
                 properties = PopupProperties(clippingEnabled = false),
             ) {
                 AccentPopup(
                     accents = accentChars,
                     highlightedIndex = effectiveHighlightedAccentIndex,
-                    onAccentSelected = { accent ->
-                        showAccentPopup = false
-                        isPressed = false
-                        highlightedAccentIndex = null
-                        currentOnAccentSelected.value?.invoke(accent)
-                    },
                 )
             }
         }
