@@ -24,6 +24,7 @@ data class CharacterKeyBounds(
  */
 class SwipeTypingController(
     private val swipeSlopPx: Float,
+    private val accentCellWidthPx: Float,
 ) {
     private val pathKeys = mutableListOf<KeyDefinition>()
     private var downPosition: Offset = Offset.Zero
@@ -35,6 +36,8 @@ class SwipeTypingController(
 
     var keyBounds: List<CharacterKeyBounds> = emptyList()
         private set
+
+    var parentWidthPx: Float = 0f
 
     var isShifted: Boolean = false
 
@@ -141,9 +144,21 @@ class SwipeTypingController(
         val bounds = keyBounds.firstOrNull { it.key == key }?.bounds ?: return null
         if (accents.isEmpty()) return null
 
-        val accentCellWidthPx = bounds.width / accents.size.coerceAtLeast(1)
-        val index = ((pointerX - bounds.left) / accentCellWidthPx).toInt()
-        return index.takeIf { it in accents.indices }
+        val accentShiftPx = computeAccentShiftPx(
+            keyLeftPx = bounds.left,
+            keyWidthPx = bounds.width,
+            accentCount = accents.size,
+            accentCellWidthPx = accentCellWidthPx,
+            parentWidthPx = parentWidthPx,
+        )
+        return resolveAccentIndex(
+            pointerX = pointerX,
+            keyLeftPx = bounds.left,
+            keyWidthPx = bounds.width,
+            accentCount = accents.size,
+            accentCellWidthPx = accentCellWidthPx,
+            accentShiftPx = accentShiftPx,
+        )
     }
 
     companion object {

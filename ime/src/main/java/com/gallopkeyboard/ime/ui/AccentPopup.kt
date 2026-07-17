@@ -1,7 +1,6 @@
 package com.gallopkeyboard.ime.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -27,7 +26,6 @@ import com.gallopkeyboard.core.theme.LocalDictusColors
 fun AccentPopup(
     accents: List<String>,
     highlightedIndex: Int?,
-    onAccentSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (accents.isEmpty()) return
@@ -50,8 +48,7 @@ fun AccentPopup(
                         } else {
                             LocalDictusColors.current.keyBackground
                         }
-                    )
-                    .clickable { onAccentSelected(accent) },
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(

@@ -428,3 +428,33 @@ Docs-only reconciliation — no Kotlin or Gradle changes.
 - Cloud-backed swipe decoders / network lexicon remain out of scope.
 - `CONTEXT.md` swipe out-of-scope bullet is historical — see `AGENTS.md`.
 
+## Plan 017 additions
+
+Single accent commit channel and shared popup hit-test geometry for swipe typing.
+
+### Product decision
+
+Accent selection commits on pointer release only (KeyButton non-swipe path and
+`SwipeTypingController` swipe path). `AccentPopup` cells are display-only — no
+per-cell `clickable` commit.
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/.../ui/AccentPopupGeometry.kt` | Shared `44.dp` cell width, clamp shift, `resolveAccentIndex` |
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../ui/AccentPopup.kt` | Remove `clickable` / `onAccentSelected` — visual + highlight only |
+| `ime/.../ui/KeyButton.kt` | Shared geometry; release-only accent commit |
+| `ime/.../ui/SwipeTypingController.kt` | `44.dp` popup cells + parent-width clamp (not key-width fractions) |
+| `ime/.../ui/KeyboardView.kt` | Pass `accentCellWidthPx` and column width into controller |
+| `ime/src/test/.../ui/SwipeTypingControllerTest.kt` | Geometry + swipe-before-long-press regression |
+
+### Constant
+
+- `ACCENT_CELL_WIDTH_DP = 44.dp` — must stay in sync with `AccentPopup` cell `size`.
+
