@@ -110,6 +110,17 @@ class KeyboardLayoutTest {
     }
 
     @Test
+    fun `symbols row 4 has clipboard key`() {
+        val row4 = KeyboardLayouts.symbolsRows[3]
+        val types = row4.map { it.type }
+        assertTrue(types.contains(KeyType.CLIPBOARD))
+        assertTrue(types.contains(KeyType.LAYER_SWITCH))
+        assertTrue(types.contains(KeyType.MIC))
+        assertTrue(types.contains(KeyType.SPACE))
+        assertTrue(types.contains(KeyType.RETURN))
+    }
+
+    @Test
     fun `symbols row 3 has 123 layer switch to return to numbers`() {
         val row3 = KeyboardLayouts.symbolsRows[2]
         val switchKey = row3.first { it.type == KeyType.LAYER_SWITCH }

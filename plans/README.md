@@ -34,7 +34,7 @@ ever out of sync.
 | 009 | Keyboard polish — clipboard + emoji + DeepSeek look | 4 | P2 | M | 008 | DONE |
 | 010 | Hardening — battery, crashes, ANR guards, release APK | 5 | P1 | L | 009 | DONE |
 | 011 | Toolbar Voice + thin voice panel + hide suggestions | 6 | P1 | M | 010 | DONE |
-| 012 | Symbols clipboard entry + pinned persistent clips | 6 | P1 | M | 011 | TODO |
+| 012 | Symbols clipboard entry + pinned persistent clips | 6 | P1 | M | 011 | DONE |
 | 013 | Swipe typing across letters | 6 | P2 | L | 011 | TODO |
 
 **Status values**: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` (with

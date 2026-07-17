@@ -52,6 +52,21 @@ class PanelControllerTest {
   }
 
   @Test
+  fun `showClipboard sets state to CLIPBOARD`() {
+    val controller = PanelController()
+    controller.showClipboard()
+    assertEquals(PanelState.CLIPBOARD, controller.state.value)
+  }
+
+  @Test
+  fun `toggle from CLIPBOARD returns to TYPING`() {
+    val controller = PanelController()
+    controller.showClipboard()
+    controller.toggle()
+    assertEquals(PanelState.TYPING, controller.state.value)
+  }
+
+  @Test
   fun `state is a hot StateFlow collectors receive current value on subscribe`() {
     val controller = PanelController()
     controller.showVoice()

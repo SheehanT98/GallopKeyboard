@@ -78,7 +78,7 @@ fake DataStore if already patterned).
 
 ## Done when
 
-- [ ] Clipboard icon on symbols keyboard opens clipboard UI
-- [ ] Pin persists; unpin removes from persistent store
-- [ ] Tap inserts text
-- [ ] Tests pass; README updated
+- [x] Clipboard icon on symbols keyboard opens clipboard UI
+- [x] Pin persists; unpin removes from persistent store
+- [x] Tap inserts text
+- [x] Tests pass; README updated

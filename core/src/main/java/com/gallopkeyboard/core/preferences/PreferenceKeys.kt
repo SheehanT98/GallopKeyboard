@@ -56,4 +56,8 @@ object PreferenceKeys {
     // --- Model lifecycle (Plan 010) ---
     /** When true, keep Parakeet + Whisper engines loaded in RAM (faster voice, more battery). */
     val MODELS_KEEP_LOADED = booleanPreferencesKey("models_keep_loaded")
+
+    // --- Clipboard pins (Plan 012) ---
+    /** Set of encoded pinned clipboard entries (on-device plaintext). */
+    val PINNED_CLIPBOARD_ENTRIES = stringSetPreferencesKey("pinned_clipboard_entries")
 }

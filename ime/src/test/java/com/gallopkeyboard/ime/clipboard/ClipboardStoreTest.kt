@@ -23,7 +23,7 @@ class ClipboardStoreTest {
 
     @Test
     fun `add 4th evicts oldest`() {
-        val store = ClipboardStore()
+        val store = ClipboardStore(capacity = 3)
         store.add("one")
         store.add("two")
         store.add("three")

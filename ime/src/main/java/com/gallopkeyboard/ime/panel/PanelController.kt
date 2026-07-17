@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * Pure state holder for typing ↔ voice panel transitions.
+ * Pure state holder for typing ↔ voice ↔ clipboard panel transitions.
  *
  * Owned by [com.gallopkeyboard.ime.DictusImeService]; no Android context
  * dependencies so unit tests run without Robolectric.
@@ -19,6 +19,7 @@ class PanelController {
         _state.value = when (_state.value) {
             PanelState.TYPING -> PanelState.VOICE
             PanelState.VOICE -> PanelState.TYPING
+            PanelState.CLIPBOARD -> PanelState.TYPING
         }
     }
 
@@ -28,6 +29,10 @@ class PanelController {
 
     fun showVoice() {
         _state.value = PanelState.VOICE
+    }
+
+    fun showClipboard() {
+        _state.value = PanelState.CLIPBOARD
     }
 
     fun reset() {
