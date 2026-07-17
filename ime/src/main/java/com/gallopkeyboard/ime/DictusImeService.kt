@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import dagger.hilt.android.EntryPointAccessors
 import com.gallopkeyboard.core.log.CrashHandler
 import com.gallopkeyboard.core.models.ModelInstaller
@@ -97,7 +98,7 @@ class DictusImeService : LifecycleInputMethodService() {
 
     // Whether the built-in suggestion bar is enabled. Observed from DataStore
     // so the user can toggle it in settings without restarting the IME.
-    private val _suggestionsEnabled = MutableStateFlow(true)
+    private val _suggestionsEnabled = MutableStateFlow(false)
 
     // Production suggestion engine: loads AOSP FR/EN dictionary from assets on
     // Dispatchers.IO, performs accent-insensitive prefix matching with frequency
@@ -168,10 +169,10 @@ class DictusImeService : LifecycleInputMethodService() {
             entryPoint.voiceModelPromptState().showBanner()
         }
 
-        // Observe suggestions toggle from DataStore (defaults to true)
+        // Observe suggestions toggle from DataStore (defaults to false — bar hidden in v1 UX)
         bindingScope.launch {
             entryPoint.dataStore().data
-                .map { it[PreferenceKeys.SUGGESTIONS_ENABLED] ?: true }
+                .map { it[PreferenceKeys.SUGGESTIONS_ENABLED] ?: false }
                 .collect { enabled -> _suggestionsEnabled.value = enabled }
         }
     }
@@ -317,8 +318,10 @@ class DictusImeService : LifecycleInputMethodService() {
     override fun KeyboardContent() {
         val dictationState by _serviceState.collectAsState()
         val isEmojiPickerOpen by _isEmojiPickerOpen.collectAsState()
-        val currentWord by _currentWord.collectAsState()
-        val suggestions by _suggestions.collectAsState()
+
+        val audioRecorderEngine = remember { entryPoint.audioRecorderEngine() }
+        val transcriber = remember { entryPoint.transcriber() }
+        val permissionRequester = remember { entryPoint.permissionRequester() }
 
         // Read theme preference from DataStore and map to ThemeMode.
         // The entryPoint provides DataStore access via Hilt SingletonComponent.
@@ -379,41 +382,14 @@ class DictusImeService : LifecycleInputMethodService() {
                         onCommitText = { text -> commitText(text) },
                         onDeleteBackward = { deleteBackward() },
                         onSendReturn = { sendReturnKey() },
-                        onSwitchKeyboard = switchKeyboard,
-                        onMicTap = { handleMicTap() },
                         onVoicePanelToggle = panelController::showVoice,
+                        audioRecorderEngine = audioRecorderEngine,
+                        transcriber = transcriber,
+                        permissionRequester = permissionRequester,
+                        onMicTap = { handleMicTap() },
                         isEmojiPickerOpen = isEmojiPickerOpen,
                         onEmojiToggle = { _isEmojiPickerOpen.value = !_isEmojiPickerOpen.value },
                         onEmojiSelected = { emoji -> commitText(emoji) },
-                        currentWord = currentWord,
-                        suggestions = suggestions,
-                        onSuggestionSelected = { suggestion ->
-                            // Replace the current word fragment with the selected suggestion + space
-                            val ic = currentInputConnection ?: return@KeyboardScreen
-                            val word = _currentWord.value
-                            if (word.isNotEmpty()) {
-                                ic.deleteSurroundingText(word.length, 0)
-                            }
-                            ic.commitText("$suggestion ", 1)
-                            // Count suggestion selection toward personal dictionary learning (2 taps = learned).
-                            // Safe cast: at runtime suggestionEngine is always DictionaryEngine, but the safe
-                            // cast avoids a hard coupling on the declared SuggestionEngine interface type.
-                            (suggestionEngine as? DictionaryEngine)?.personalDictionary?.recordWordTyped(suggestion)
-                            _suggestions.value = emptyList()
-                            _currentWord.value = ""
-                        },
-                        onCurrentWordSelected = {
-                            // Commit the raw input as-is + space (user accepts what they typed)
-                            val ic = currentInputConnection ?: return@KeyboardScreen
-                            val word = _currentWord.value
-                            if (word.isNotEmpty()) {
-                                // Count the committed raw word toward personal dictionary learning.
-                                (suggestionEngine as? DictionaryEngine)?.personalDictionary?.recordWordTyped(word)
-                                ic.commitText(" ", 1)
-                                _suggestions.value = emptyList()
-                                _currentWord.value = ""
-                            }
-                        },
                         themeMode = themeMode,
                         initialLayer = initialLayer,
                         hapticsEnabled = hapticsEnabled,

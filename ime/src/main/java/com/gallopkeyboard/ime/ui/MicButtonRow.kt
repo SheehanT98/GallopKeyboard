@@ -7,30 +7,33 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gallopkeyboard.ime.R
+import com.gallopkeyboard.ime.audio.AudioRecorderEngine
+import com.gallopkeyboard.ime.audio.Transcriber
 import com.gallopkeyboard.ime.haptics.HapticHelper
+import com.gallopkeyboard.ime.panel.PermissionRequester
+import com.gallopkeyboard.ime.panel.SmartVoiceButton
+import com.gallopkeyboard.ime.panel.SmartVoiceButtonStyle
 
 /**
- * Slim toolbar above the keys: settings + optional voice-panel entry.
- * Mic lives on the bottom key row (classic phone layout).
+ * Slim toolbar above the keys: **Voice panel** (left) opens the dedicated voice
+ * panel; **Voice** (right) runs inline dictation without leaving the typing panel.
  */
 @Composable
 fun MicButtonRow(
-    onSwitchKeyboard: () -> Unit,
-    onMicTap: () -> Unit = {},
-    onVoicePanelToggle: (() -> Unit)? = null,
-    isRecording: Boolean = false,
+    onVoicePanelToggle: () -> Unit,
+    audioRecorderEngine: AudioRecorderEngine,
+    transcriber: Transcriber,
+    permissionRequester: PermissionRequester,
     modifier: Modifier = Modifier,
 ) {
     val view = LocalView.current
@@ -44,53 +47,23 @@ fun MicButtonRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        Text(
+            text = stringResource(R.string.toolbar_voice_panel),
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 13.sp,
             modifier = Modifier
                 .clickable {
-                    HapticHelper.performKeyHaptic(view)
-                    onSwitchKeyboard()
+                    HapticHelper.performMicHaptic(view)
+                    onVoicePanelToggle()
                 }
                 .padding(horizontal = 8.dp, vertical = 6.dp),
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_settings),
-                contentDescription = "Settings",
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                modifier = Modifier.size(18.dp),
-            )
-            Text(
-                text = "Keyboard",
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                fontSize = 13.sp,
-            )
-        }
+        )
 
-        if (onVoicePanelToggle != null) {
-            Text(
-                text = if (isRecording) "Listening…" else "Voice panel",
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 13.sp,
-                modifier = Modifier
-                    .clickable {
-                        HapticHelper.performMicHaptic(view)
-                        onVoicePanelToggle()
-                    }
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
-            )
-        } else {
-            Text(
-                text = "Mic on bottom row",
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
-                fontSize = 12.sp,
-                modifier = Modifier
-                    .clickable {
-                        HapticHelper.performMicHaptic(view)
-                        onMicTap()
-                    }
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
-            )
-        }
+        SmartVoiceButton(
+            audioRecorderEngine = audioRecorderEngine,
+            transcriber = transcriber,
+            permissionRequester = permissionRequester,
+            style = SmartVoiceButtonStyle.Toolbar,
+        )
     }
 }
