@@ -1,0 +1,48 @@
+{
+  "id": "job-014",
+  "status": "reviewing",
+  "mode": "quick",
+  "originalAsk": "Execute plan 018 reconcile AGENTS docs",
+  "planRef": "plans/018-reconcile-agents-docs-with-shipped-ux.md",
+  "feature": "Execute plan 018 reconcile AGENTS docs",
+  "slug": "execute-plan-018-reconcile-agents-docs",
+  "branch": "cursor/devteam-job-014-execute-plan-018-reconcile-agents-docs-c1fc",
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/38",
+  "prNumber": 38,
+  "chatTitle": "devteam pr38",
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-17T15:38:12.686Z",
+  "lastStatusAt": "2026-07-17T15:42:26.082Z",
+  "completedAt": null,
+  "plannedFiles": [
+    "plans/README.md",
+    "ime/.../ui/SwipeTypingController.kt",
+    "ime/.../ui/KeyboardView.kt",
+    "plans/013-swipe-typing-across-letters.md",
+    "docs/dictus-inventory.md",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/SwipeTypingController.kt",
+    "scripts/verify.sh"
+  ],
+  "touchedFiles": [],
+  "blockedBy": [],
+  "dependsOn": [],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "done",
+    "test": "done",
+    "review": "in_progress",
+    "doubleCheck": "pending"
+  }
+}
