@@ -367,6 +367,20 @@ Cold-start IME on a device with models installed on a verify-due day — keyboar
 chrome appears without multi-second freeze; logcat may show verify completing
 afterward.
 
+## Plan 014 additions
+
+Streaming ASR frame work off the IME/Compose main thread (ADR-0002).
+
+- **`AsrCoroutineDispatcher`** (`ime/.../audio/AsrCoroutineDispatcher.kt`) — single-thread
+  `"AsrEngine"` executor, separate from `RecorderCoroutineDispatcher` (`"AudioRecorder"`)
+  so AudioRecord I/O is not starved by ONNX decode.
+- **`StreamingTranscriber`** — `onSessionStart` / `onAudioFrame` enqueue work on
+  `AsrCoroutineDispatcher` via an internal `CoroutineScope` (non-blocking for callers);
+  `acceptFrame` / `currentPartial` / `beginStream` / `cancel` / `finalize` never run on
+  Main; composing updates post to Main via `Handler(Looper.getMainLooper())`.
+- **Tests** — `StreamingTranscriberTest` thread-affinity case asserts `acceptFrame` runs
+  on `"AsrEngine"`.
+
 ## Plan 018 additions
 
 Docs-only reconciliation — no Kotlin or Gradle changes.
