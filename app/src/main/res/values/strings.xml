@@ -223,16 +223,24 @@
     <string name="cd_selected">Selected</string>
 
     <!-- Voice model onboarding (Plan 008) -->
-    <string name="voice_onboarding_title">Set up voice</string>
-    <string name="voice_onboarding_subtitle">Downloads ~%1$d MB of on-device voice models. No data leaves your phone.</string>
-    <string name="voice_onboarding_metered_warning">You\u2019re on mobile data \u2014 this will use ~%1$d MB.</string>
-    <string name="voice_onboarding_download">Download</string>
+    <string name="voice_onboarding_title">Gallop Keyboard</string>
+    <string name="voice_onboarding_subtitle">On-device voice typing. Two quick steps to get ready.</string>
+    <string name="voice_onboarding_step1_title">1. Enable the keyboard</string>
+    <string name="voice_onboarding_step1_body">Open system settings, turn on Gallop Keyboard, then set it as your default.</string>
+    <string name="voice_onboarding_step1_cta">Open keyboard settings</string>
+    <string name="voice_onboarding_step2_title">2. Download voice models</string>
+    <string name="voice_onboarding_step2_body">One-time download (~%1$d MB). Files stay on this phone — nothing is sent to the cloud. Wi‑Fi recommended.</string>
+    <string name="voice_onboarding_metered_warning">You\u2019re on mobile data — this will use ~%1$d MB.</string>
+    <string name="voice_onboarding_download">Download voice models</string>
     <string name="voice_onboarding_skip">Skip for now</string>
-    <string name="voice_onboarding_retry">Retry</string>
+    <string name="voice_onboarding_retry">Retry download</string>
     <string name="voice_onboarding_downloading">Downloading %1$s\u2026</string>
-    <string name="voice_onboarding_error_generic">Download failed</string>
-    <string name="voice_onboarding_success">Voice ready. Enable this keyboard in system settings if you haven\u2019t already.</string>
+    <string name="voice_onboarding_error_generic">Download failed. Check Wi‑Fi and try again.</string>
+    <string name="voice_onboarding_success">Voice models ready</string>
+    <string name="voice_onboarding_success_body">Enable Gallop Keyboard in system settings if you haven\u2019t already, then tap any text field.</string>
     <string name="voice_onboarding_open_keyboard_settings">Open keyboard settings</string>
+    <string name="voice_onboarding_models_ready">Voice models installed</string>
+    <string name="voice_onboarding_manage_models">Manage models</string>
 
     <!-- Voice model settings (Plan 008) -->
     <string name="voice_settings_title">Voice models</string>

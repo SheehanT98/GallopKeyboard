@@ -8,8 +8,17 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!--
+      Fully-qualified class names are required here.
+
+      namespace is com.gallopkeyboard.app (for R/BuildConfig), but Application,
+      MainActivity, and DictationService live in com.gallopkeyboard.* —
+      relative ".DictusApplication" wrongly resolves to
+      com.gallopkeyboard.app.DictusApplication and crashes process start
+      (launcher + IME both die with "this app has a bug").
+    -->
     <application
-        android:name=".DictusApplication"
+        android:name="com.gallopkeyboard.DictusApplication"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
@@ -33,13 +42,13 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.gallopkeyboard.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
 
         <service
-            android:name=".service.DictationService"
+            android:name="com.gallopkeyboard.service.DictationService"
             android:foregroundServiceType="microphone"
             android:exported="false" />
 

@@ -3,6 +3,7 @@ package com.gallopkeyboard.app.onboarding
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
@@ -21,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,30 +46,35 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 /**
- * First-launch voice model download screen.
- *
- * Launcher entry point; routes to [ModelsSettingsActivity] when models are ready.
+ * Launcher setup screen: enable Gallop Keyboard + download voice models.
  */
 class OnboardingActivity : ComponentActivity() {
 
     private val installer by lazy { ModelInstaller(this) }
+    private val resumeTick = mutableIntStateOf(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val tick by resumeTick
             DictusTheme {
-                OnboardingScreen(
+                SetupScreen(
                     installer = installer,
                     isMetered = ModelDownloader.isMeteredNetwork(this),
                     bundleSizeMb = ModelRegistry.defaultBundleSizeBytes() / (1024 * 1024),
+                    isImeEnabled = remember(tick) { isGallopImeEnabled() },
+                    modelsInstalled = remember(tick) {
+                        installer.areFilesPresent(ModelRegistry.defaultVoiceBundle)
+                    },
                     onOpenKeyboardSettings = {
                         startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
                     },
-                    onSkip = { finish() },
-                    onComplete = {
-                        VoiceSetupPrefs.markSetupCompleted(this)
+                    onManageModels = {
                         startActivity(Intent(this, ModelsSettingsActivity::class.java))
-                        finish()
+                    },
+                    onDownloadComplete = {
+                        VoiceSetupPrefs.markSetupCompleted(this)
+                        resumeTick.intValue++
                     },
                 )
             }
@@ -74,31 +83,43 @@ class OnboardingActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (installer.isInstalled(ModelRegistry.defaultVoiceBundle)) {
-            VoiceSetupPrefs.markSetupCompleted(this)
-            startActivity(Intent(this, ModelsSettingsActivity::class.java))
-            finish()
-        }
+        resumeTick.intValue++
+    }
+
+    private fun isGallopImeEnabled(): Boolean {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        return imm.enabledInputMethodList.any { it.packageName == packageName }
     }
 }
 
-private enum class OnboardingUiState {
-    Ready,
+private enum class DownloadUiState {
+    Idle,
     Downloading,
     Error,
     Success,
 }
 
 @Composable
-private fun OnboardingScreen(
+private fun SetupScreen(
     installer: ModelInstaller,
     isMetered: Boolean,
     bundleSizeMb: Long,
+    isImeEnabled: Boolean,
+    modelsInstalled: Boolean,
     onOpenKeyboardSettings: () -> Unit,
-    onSkip: () -> Unit,
-    onComplete: () -> Unit,
+    onManageModels: () -> Unit,
+    onDownloadComplete: () -> Unit,
 ) {
-    var uiState by remember { mutableStateOf(OnboardingUiState.Ready) }
+    var uiState by remember {
+        mutableStateOf(
+            if (modelsInstalled) DownloadUiState.Success else DownloadUiState.Idle,
+        )
+    }
+    // Keep Success in sync when returning from manage-models / reinstall.
+    if (modelsInstalled && uiState == DownloadUiState.Idle) {
+        uiState = DownloadUiState.Success
+    }
+
     var progress by remember { mutableStateOf(0f) }
     var currentLabel by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -107,13 +128,13 @@ private fun OnboardingScreen(
 
     fun startDownload() {
         downloadJob?.cancel()
-        uiState = OnboardingUiState.Downloading
+        uiState = DownloadUiState.Downloading
         errorMessage = null
         downloadJob = scope.launch {
             installer.install(ModelRegistry.defaultVoiceBundle)
                 .catch { e ->
                     errorMessage = e.message
-                    uiState = OnboardingUiState.Error
+                    uiState = DownloadUiState.Error
                 }
                 .collect { install ->
                     val dl = install.download
@@ -129,11 +150,12 @@ private fun OnboardingScreen(
                     when (dl.state) {
                         DownloadState.Failed -> {
                             errorMessage = dl.errorMessage
-                            uiState = OnboardingUiState.Error
+                            uiState = DownloadUiState.Error
                         }
                         DownloadState.Done -> {
                             if (install.specIndex == install.specCount - 1) {
-                                uiState = OnboardingUiState.Success
+                                uiState = DownloadUiState.Success
+                                onDownloadComplete()
                             }
                         }
                         else -> Unit
@@ -147,84 +169,114 @@ private fun OnboardingScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .padding(horizontal = 24.dp, vertical = 20.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
         ) {
-            when (uiState) {
-                OnboardingUiState.Ready, OnboardingUiState.Downloading, OnboardingUiState.Error -> {
-                    Text(
-                        text = stringResource(R.string.voice_onboarding_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    Text(
-                        text = stringResource(R.string.voice_onboarding_subtitle, bundleSizeMb),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                    if (isMetered) {
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = stringResource(R.string.voice_onboarding_metered_warning, bundleSizeMb),
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                    Spacer(Modifier.height(24.dp))
+            Text(
+                text = stringResource(R.string.voice_onboarding_title),
+                style = MaterialTheme.typography.headlineLarge,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.voice_onboarding_subtitle),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
 
-                    when (uiState) {
-                        OnboardingUiState.Downloading -> {
-                            LinearProgressIndicator(
-                                progress = { progress.coerceIn(0f, 1f) },
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                text = stringResource(R.string.voice_onboarding_downloading, currentLabel),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                            Spacer(Modifier.height(16.dp))
-                            CircularProgressIndicator()
-                        }
-                        OnboardingUiState.Error -> {
-                            Text(
-                                text = errorMessage ?: stringResource(R.string.voice_onboarding_error_generic),
-                                color = MaterialTheme.colorScheme.error,
-                            )
-                            Spacer(Modifier.height(16.dp))
-                            Button(onClick = { startDownload() }, modifier = Modifier.fillMaxWidth()) {
-                                Text(stringResource(R.string.voice_onboarding_retry))
-                            }
-                        }
-                        else -> {
-                            Button(onClick = { startDownload() }, modifier = Modifier.fillMaxWidth()) {
-                                Text(stringResource(R.string.voice_onboarding_download))
-                            }
-                            Spacer(Modifier.height(12.dp))
-                            OutlinedButton(
-                                onClick = onSkip,
-                                modifier = Modifier.fillMaxWidth(),
-                                enabled = uiState != OnboardingUiState.Downloading,
-                            ) {
-                                Text(stringResource(R.string.voice_onboarding_skip))
-                            }
-                        }
+            Spacer(modifier = Modifier.height(28.dp))
+
+            Text(
+                text = stringResource(R.string.voice_onboarding_step1_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = stringResource(R.string.voice_onboarding_step1_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = onOpenKeyboardSettings,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.voice_onboarding_step1_cta))
+            }
+            if (isImeEnabled) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.ime_status_active),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            Text(
+                text = stringResource(R.string.voice_onboarding_step2_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = stringResource(R.string.voice_onboarding_step2_body, bundleSizeMb),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (isMetered && uiState != DownloadUiState.Success) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.voice_onboarding_metered_warning, bundleSizeMb),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            when (uiState) {
+                DownloadUiState.Idle -> {
+                    Button(onClick = { startDownload() }, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.voice_onboarding_download))
                     }
                 }
-                OnboardingUiState.Success -> {
-                    Text(
-                        text = stringResource(R.string.voice_onboarding_success),
-                        style = MaterialTheme.typography.headlineSmall,
+                DownloadUiState.Downloading -> {
+                    LinearProgressIndicator(
+                        progress = { progress.coerceIn(0f, 1f) },
+                        modifier = Modifier.fillMaxWidth(),
                     )
-                    Spacer(Modifier.height(24.dp))
-                    Button(
-                        onClick = {
-                            onComplete()
-                            onOpenKeyboardSettings()
-                        },
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.voice_onboarding_downloading, currentLabel),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
+                DownloadUiState.Error -> {
+                    Text(
+                        text = errorMessage
+                            ?: stringResource(R.string.voice_onboarding_error_generic),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Button(onClick = { startDownload() }, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.voice_onboarding_retry))
+                    }
+                }
+                DownloadUiState.Success -> {
+                    Text(
+                        text = stringResource(R.string.voice_onboarding_models_ready),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedButton(
+                        onClick = onManageModels,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Text(stringResource(R.string.voice_onboarding_open_keyboard_settings))
+                        Text(stringResource(R.string.voice_onboarding_manage_models))
                     }
                 }
             }

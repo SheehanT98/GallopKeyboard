@@ -25,6 +25,12 @@
 -keep class com.gallopkeyboard.ime.LifecycleInputMethodService { *; }
 -keep class com.gallopkeyboard.ime.di.DictusImeEntryPoint { *; }
 
+# App process entry points (must match AndroidManifest FQCNs exactly)
+-keep class com.gallopkeyboard.DictusApplication { *; }
+-keep class com.gallopkeyboard.MainActivity { *; }
+-keep class com.gallopkeyboard.app.onboarding.OnboardingActivity { *; }
+-keep class com.gallopkeyboard.app.settings.ModelsSettingsActivity { *; }
+
 # DictationService binder is reached via reflection from the IME module
 # (ime must not compile against the app module).
 -keep class com.gallopkeyboard.service.DictationService { *; }
