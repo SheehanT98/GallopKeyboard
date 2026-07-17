@@ -1,16 +1,20 @@
 package com.gallopkeyboard.ime.model
 
 /**
- * Complete keyboard layout data for all layers, ported from the iOS Dictus app.
+ * Complete keyboard layout data for all layers.
  *
  * Each layout is a List<List<KeyDefinition>> representing rows of keys.
- * Row 1-2: character keys. Row 3: shift + characters + delete. Row 4: utility keys.
- *
- * The AZERTY layout is the default for French users (fr_FR locale).
- * The QWERTY layout is used for English (en_US locale).
- * Numbers and symbols layers are shared across both layouts.
+ * Bottom row matches classic phone keyboards: 123 · emoji · mic · space · return.
  */
 object KeyboardLayouts {
+
+    private val bottomLettersSwitchRow: List<KeyDefinition> = listOf(
+        KeyDefinition("ABC", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.25f),
+        KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.15f),
+        KeyDefinition("\uD83C\uDFA4", type = KeyType.MIC, widthMultiplier = 1.15f),
+        KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.0f),
+        KeyDefinition("return", type = KeyType.RETURN, widthMultiplier = 1.75f),
+    )
 
     val azertyLetters: List<List<KeyDefinition>> = listOf(
         listOf("A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P")
@@ -29,10 +33,11 @@ object KeyboardLayouts {
             KeyDefinition("\u232B", type = KeyType.DELETE, widthMultiplier = 1.5f),
         ),
         listOf(
-            KeyDefinition("?123", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.2f),
-            KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.2f),
-            KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.5f),
-            KeyDefinition("\u21B5", type = KeyType.RETURN, widthMultiplier = 1.8f),
+            KeyDefinition("?123", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.25f),
+            KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.15f),
+            KeyDefinition("\uD83C\uDFA4", type = KeyType.MIC, widthMultiplier = 1.15f),
+            KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.0f),
+            KeyDefinition("return", type = KeyType.RETURN, widthMultiplier = 1.75f),
         ),
     )
 
@@ -53,10 +58,11 @@ object KeyboardLayouts {
             KeyDefinition("\u232B", type = KeyType.DELETE, widthMultiplier = 1.5f),
         ),
         listOf(
-            KeyDefinition("?123", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.2f),
-            KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.2f),
-            KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.5f),
-            KeyDefinition("\u21B5", type = KeyType.RETURN, widthMultiplier = 1.8f),
+            KeyDefinition("123", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.25f),
+            KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.15f),
+            KeyDefinition("\uD83C\uDFA4", type = KeyType.MIC, widthMultiplier = 1.15f),
+            KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.0f),
+            KeyDefinition("return", type = KeyType.RETURN, widthMultiplier = 1.75f),
         ),
     )
 
@@ -74,12 +80,7 @@ object KeyboardLayouts {
             KeyDefinition("'", output = "'"),
             KeyDefinition("\u232B", type = KeyType.DELETE, widthMultiplier = 1.5f),
         ),
-        listOf(
-            KeyDefinition("ABC", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.2f),
-            KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.2f),
-            KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.5f),
-            KeyDefinition("\u21B5", type = KeyType.RETURN, widthMultiplier = 1.8f),
-        ),
+        bottomLettersSwitchRow,
     )
 
     val symbolsRows: List<List<KeyDefinition>> = listOf(
@@ -96,21 +97,16 @@ object KeyboardLayouts {
             KeyDefinition("'", output = "'"),
             KeyDefinition("\u232B", type = KeyType.DELETE, widthMultiplier = 1.5f),
         ),
-        listOf(
-            KeyDefinition("ABC", type = KeyType.LAYER_SWITCH, widthMultiplier = 1.2f),
-            KeyDefinition("\uD83D\uDE0A", type = KeyType.EMOJI, widthMultiplier = 1.2f),
-            KeyDefinition("space", output = " ", type = KeyType.SPACE, widthMultiplier = 4.5f),
-            KeyDefinition("\u21B5", type = KeyType.RETURN, widthMultiplier = 1.8f),
-        ),
+        bottomLettersSwitchRow,
     )
 
     /**
      * Returns the letter layout for the given layout name.
-     * Defaults to AZERTY if the layout name is not recognized.
+     * Defaults to QWERTY if the layout name is not recognized.
      */
     fun lettersForLayout(layout: String): List<List<KeyDefinition>> = when (layout) {
         "azerty" -> azertyLetters
         "qwerty" -> qwertyLetters
-        else -> azertyLetters
+        else -> qwertyLetters
     }
 }

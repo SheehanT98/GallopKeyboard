@@ -28,16 +28,16 @@ import androidx.compose.material3.MaterialTheme
  * Card showing the current IME (Input Method Editor) status.
  *
  * Displays one of three states:
- * 1. Not enabled: Red dot, "Keyboard not enabled", "Enable Keyboard" button
- * 2. Enabled but not selected: Orange dot, "Keyboard enabled but not selected", "Select Keyboard" button
- * 3. Active: Green dot, "Dictus keyboard active", no action button
+ * 1. Not enabled: Red dot, enable Gallop Keyboard CTA
+ * 2. Enabled but not selected: Orange dot, select Gallop Keyboard CTA
+ * 3. Active: Green dot, Gallop Keyboard active, no action button
  *
- * WHY this card exists: Users must manually enable and select the Dictus keyboard
+ * WHY this card exists: Users must manually enable and select Gallop Keyboard
  * in Android system settings. This card guides them through the process and confirms
  * when the keyboard is ready to use.
  *
- * @param isEnabled Whether Dictus keyboard is listed in system enabled IME list
- * @param isSelected Whether Dictus keyboard is the currently active IME
+ * @param isEnabled Whether Gallop Keyboard is listed in system enabled IME list
+ * @param isSelected Whether Gallop Keyboard is the currently active IME
  * @param onOpenSettings Callback to open the appropriate system settings screen
  */
 @Composable

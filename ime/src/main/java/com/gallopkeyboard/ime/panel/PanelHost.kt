@@ -19,6 +19,18 @@ import com.gallopkeyboard.ime.audio.AudioRecorderEngine
 import com.gallopkeyboard.ime.audio.Transcriber
 
 /**
+ * Voice-only dependencies. Resolved lazily when the voice panel opens so a
+ * typing-only keyboard open does not construct ASR / recorder / Whisper graph.
+ */
+data class VoicePanelDependencies(
+    val audioRecorderEngine: AudioRecorderEngine,
+    val transcriber: Transcriber,
+    val permissionRequester: PermissionRequester,
+    val promptState: VoiceModelPromptState,
+    val modelLifecycleManager: ModelLifecycleController,
+)
+
+/**
  * Root panel switcher for the IME keyboard view.
  *
  * [typingContent] wraps the existing typing keyboard (Compose).
@@ -27,49 +39,63 @@ import com.gallopkeyboard.ime.audio.Transcriber
 @Composable
 fun PanelHost(
     controller: PanelController,
-    themeMode: ThemeMode,
-    audioRecorderEngine: AudioRecorderEngine,
-    transcriber: Transcriber,
-    permissionRequester: PermissionRequester,
-    promptState: VoiceModelPromptState,
-    modelLifecycleManager: ModelLifecycleController,
+    @Suppress("UNUSED_PARAMETER") themeMode: ThemeMode,
+    voiceDependencies: () -> VoicePanelDependencies,
     keyboardHeight: Dp = KEYBOARD_PANEL_HEIGHT_DP,
     typingContent: @Composable () -> Unit,
 ) {
     val state by controller.state.collectAsState()
-    val showSetupBanner by promptState.showSetupBanner.collectAsState()
     val context = LocalContext.current
-
+    var cachedVoiceDeps by remember { mutableStateOf<VoicePanelDependencies?>(null) }
     var previousState by remember { mutableStateOf(state) }
+
+    // Resolve voice graph only while the voice panel is visible. Keep the same
+    // instance for the whole VOICE session so hide/show lifecycle match.
+    if (state == PanelState.VOICE && cachedVoiceDeps == null) {
+        cachedVoiceDeps = voiceDependencies()
+    }
+    val voiceDeps = cachedVoiceDeps
+
     LaunchedEffect(state) {
         if (state == PanelState.VOICE) {
-            modelLifecycleManager.onVoicePanelShown()
+            val deps = cachedVoiceDeps ?: return@LaunchedEffect
+            deps.modelLifecycleManager.onVoicePanelShown()
             // Cheap presence check (exists + size). Full SHA is daily / settings only.
             val installer = ModelInstaller(context)
             if (installer.areFilesPresent(ModelRegistry.defaultVoiceBundle)) {
-                promptState.dismissBanner()
+                deps.promptState.dismissBanner()
             } else {
-                promptState.showBanner()
+                deps.promptState.showBanner()
             }
         }
         if (previousState == PanelState.VOICE && state == PanelState.TYPING) {
-            modelLifecycleManager.onVoicePanelHidden()
+            cachedVoiceDeps?.modelLifecycleManager?.onVoicePanelHidden()
+            cachedVoiceDeps = null
         }
         previousState = state
     }
 
     when (state) {
         PanelState.TYPING -> typingContent()
-        PanelState.VOICE -> VoicePanel(
-            onSwitchToTyping = controller::showTyping,
-            audioRecorderEngine = audioRecorderEngine,
-            transcriber = transcriber,
-            permissionRequester = permissionRequester,
-            keyboardHeight = keyboardHeight,
-            showSetupBanner = showSetupBanner,
-            onSetupVoiceModels = {
-                context.startActivity(VoiceSetupIntents.onboardingIntent(context))
-            },
-        )
+        PanelState.VOICE -> {
+            // Fallback to typing if deps failed to resolve — never leave a blank IME.
+            val deps = voiceDeps
+            if (deps == null) {
+                typingContent()
+            } else {
+                val showSetupBanner by deps.promptState.showSetupBanner.collectAsState()
+                VoicePanel(
+                    onSwitchToTyping = controller::showTyping,
+                    audioRecorderEngine = deps.audioRecorderEngine,
+                    transcriber = deps.transcriber,
+                    permissionRequester = deps.permissionRequester,
+                    keyboardHeight = keyboardHeight,
+                    showSetupBanner = showSetupBanner,
+                    onSetupVoiceModels = {
+                        context.startActivity(VoiceSetupIntents.onboardingIntent(context))
+                    },
+                )
+            }
+        }
     }
 }

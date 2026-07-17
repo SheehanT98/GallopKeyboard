@@ -31,8 +31,8 @@ class ImeStatusCardTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Keyboard not enabled").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Enable Keyboard").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Gallop Keyboard not enabled").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Enable Gallop Keyboard").assertIsDisplayed()
     }
 
     @Test
@@ -47,8 +47,8 @@ class ImeStatusCardTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Keyboard enabled but not selected").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Select Keyboard").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Gallop Keyboard enabled but not selected").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Select Gallop Keyboard").assertIsDisplayed()
     }
 
     @Test
@@ -63,8 +63,8 @@ class ImeStatusCardTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Keyboard active").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Enable Keyboard").assertDoesNotExist()
-        composeTestRule.onNodeWithText("Select Keyboard").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Gallop Keyboard active").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Enable Gallop Keyboard").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Select Gallop Keyboard").assertDoesNotExist()
     }
 }

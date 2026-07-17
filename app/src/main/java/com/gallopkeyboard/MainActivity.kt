@@ -97,12 +97,12 @@ class MainActivity : AppCompatActivity() {
             // collectAsState with initial="dark" ensures the theme is applied immediately
             // on first composition without waiting for DataStore to emit.
             val themeKey by dataStore.data
-                .map { it[PreferenceKeys.THEME] ?: "dark" }
-                .collectAsState(initial = "dark")
+                .map { it[PreferenceKeys.THEME] ?: "light" }
+                .collectAsState(initial = "light")
             val themeMode = when (themeKey) {
-                "light" -> ThemeMode.LIGHT
+                "dark" -> ThemeMode.DARK
                 "auto" -> ThemeMode.AUTO
-                else -> ThemeMode.DARK
+                else -> ThemeMode.LIGHT
             }
 
             DictusTheme(themeMode = themeMode) {

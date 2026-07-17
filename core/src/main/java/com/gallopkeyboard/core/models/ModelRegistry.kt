@@ -17,22 +17,22 @@ object ModelRegistry {
         ModelSpec(
             id = "parakeet-encoder",
             url = "$HF_ZIPFORMER/encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx",
-            sha256 = "5022b2eca5b19d1bc104fcf33e26bc32604b7df553cd2e1f62e31dc7b05e9c87",
-            sizeBytes = 70_108_816L,
+            sha256 = "563fde436d16cf7607cf408cd6b30909819d03162652ef389c2450ced3f45ac1",
+            sizeBytes = 71_083_163L,
             relPath = "models/parakeet/encoder.onnx",
         ),
         ModelSpec(
             id = "parakeet-decoder",
             url = "$HF_ZIPFORMER/decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx",
-            sha256 = "780c63ee94c7cfa314211172e5d09b406c0da2beab5c40ea2f54cc95670b76a5",
-            sizeBytes = 540_688L,
+            sha256 = "98da299f471e38bb4e1a8df579b8cc9122d6039576a77e357b3c60f17dd83b02",
+            sizeBytes = 1_307_236L,
             relPath = "models/parakeet/decoder.onnx",
         ),
         ModelSpec(
             id = "parakeet-joiner",
             url = "$HF_ZIPFORMER/joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx",
-            sha256 = "abd5e30f3f16fc510605c6029dba33f10e4386bd75c5bdc30cf94076864db10d",
-            sizeBytes = 259_416L,
+            sha256 = "d944208d660d67c8d72cd2acaeac971fa5ceb8c80e76c1968148846fedd6e297",
+            sizeBytes = 259_335L,
             relPath = "models/parakeet/joiner.onnx",
         ),
         ModelSpec(

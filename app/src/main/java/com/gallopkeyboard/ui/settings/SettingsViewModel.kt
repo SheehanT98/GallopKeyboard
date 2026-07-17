@@ -73,8 +73,8 @@ class SettingsViewModel @Inject constructor(
 
     /** Currently selected keyboard layout key ("azerty" or "qwerty"). */
     val keyboardLayout: StateFlow<String> = dataStore.data
-        .map { it[PreferenceKeys.KEYBOARD_LAYOUT] ?: "azerty" }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, "azerty")
+        .map { it[PreferenceKeys.KEYBOARD_LAYOUT] ?: "qwerty" }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "qwerty")
 
     /**
      * List of model keys currently downloaded on disk.
@@ -190,8 +190,8 @@ class SettingsViewModel @Inject constructor(
 
     /** Currently selected theme key ("dark"). Phase 6 adds "system" for Material You. */
     val theme: StateFlow<String> = dataStore.data
-        .map { it[PreferenceKeys.THEME] ?: "dark" }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, "dark")
+        .map { it[PreferenceKeys.THEME] ?: "light" }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "light")
 
     /** Persist the selected theme key to DataStore. */
     fun setTheme(themeKey: String) {

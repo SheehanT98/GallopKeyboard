@@ -39,11 +39,12 @@ class KeyboardLayoutTest {
     }
 
     @Test
-    fun `row 4 has layer switch, emoji, space, and return`() {
+    fun `row 4 has layer switch, emoji, mic, space, and return`() {
         val row4 = KeyboardLayouts.azertyLetters[3]
         val types = row4.map { it.type }
         assertTrue(types.contains(KeyType.LAYER_SWITCH))
         assertTrue(types.contains(KeyType.EMOJI))
+        assertTrue(types.contains(KeyType.MIC))
         assertTrue(types.contains(KeyType.SPACE))
         assertTrue(types.contains(KeyType.RETURN))
     }
@@ -55,8 +56,8 @@ class KeyboardLayoutTest {
     }
 
     @Test
-    fun `lettersForLayout defaults to azerty for unknown`() {
-        assertSame(KeyboardLayouts.azertyLetters, KeyboardLayouts.lettersForLayout("dvorak"))
+    fun `lettersForLayout defaults to qwerty for unknown`() {
+        assertSame(KeyboardLayouts.qwertyLetters, KeyboardLayouts.lettersForLayout("dvorak"))
     }
 
     @Test

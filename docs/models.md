@@ -130,12 +130,12 @@ Base URL: `https://huggingface.co/csukuangfj/sherpa-onnx-streaming-zipformer-en-
 
 | Device path | Source file | Size (bytes) | SHA-256 |
 |-------------|-------------|--------------|---------|
-| `models/parakeet/encoder.onnx` | `encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx` | 70,108,816 | `5022b2eca5b19d1bc104fcf33e26bc32604b7df553cd2e1f62e31dc7b05e9c87` |
-| `models/parakeet/decoder.onnx` | `decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx` | 540,688 | `780c63ee94c7cfa314211172e5d09b406c0da2beab5c40ea2f54cc95670b76a5` |
-| `models/parakeet/joiner.onnx` | `joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx` | 259,416 | `abd5e30f3f16fc510605c6029dba33f10e4386bd75c5bdc30cf94076864db10d` |
+| `models/parakeet/encoder.onnx` | `encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx` | 71,083,163 | `563fde436d16cf7607cf408cd6b30909819d03162652ef389c2450ced3f45ac1` |
+| `models/parakeet/decoder.onnx` | `decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx` | 1,307,236 | `98da299f471e38bb4e1a8df579b8cc9122d6039576a77e357b3c60f17dd83b02` |
+| `models/parakeet/joiner.onnx` | `joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx` | 259,335 | `d944208d660d67c8d72cd2acaeac971fa5ceb8c80e76c1968148846fedd6e297` |
 | `models/parakeet/tokens.txt` | `tokens.txt` | 5,048 | `49e3c2646595fd907228b3c6787069658f67b17377c60aeb8619c4551b2316fb` |
 
-Parakeet bundle total: **~71 MB**.
+Parakeet bundle total: **~73 MB**.
 
 ### Whisper polish
 
