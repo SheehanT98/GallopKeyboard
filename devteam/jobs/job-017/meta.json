@@ -1,6 +1,6 @@
 {
   "id": "job-017",
-  "status": "reviewing",
+  "status": "awaiting_review",
   "mode": "quick",
   "originalAsk": "Execute plan 014 offload streaming ASR from IME main thread",
   "planRef": "plans/014-offload-streaming-asr-from-ime-main-thread.md",
@@ -18,8 +18,8 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-17T15:38:23.656Z",
-  "lastStatusAt": "2026-07-17T16:09:01.236Z",
-  "completedAt": null,
+  "lastStatusAt": "2026-07-17T16:11:19.782Z",
+  "completedAt": "2026-07-17T16:11:19.782Z",
   "plannedFiles": [
     "plans/README.md",
     "docs/adr/0002-hybrid-stt-pipeline.md",
@@ -50,7 +50,7 @@
     "plan": "skipped",
     "code": "done",
     "test": "done",
-    "review": "in_progress",
-    "doubleCheck": "pending"
+    "review": "done",
+    "doubleCheck": "done"
   }
 }
