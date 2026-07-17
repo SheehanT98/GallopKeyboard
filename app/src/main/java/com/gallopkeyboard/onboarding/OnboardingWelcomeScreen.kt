@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gallopkeyboard.app.R
@@ -71,18 +70,7 @@ fun OnboardingWelcomeScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // "Dictus" wordmark
-        Text(
-            text = stringResource(R.string.onboarding_welcome_wordmark),
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 42.sp,
-            fontWeight = FontWeight.ExtraLight,
-            letterSpacing = (-0.5).sp,
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Tagline
+        // Tagline only — no brand wordmark
         Text(
             text = stringResource(R.string.onboarding_welcome_tagline),
             color = LocalDictusColors.current.textSecondary,

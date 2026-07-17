@@ -18,10 +18,8 @@ import com.gallopkeyboard.core.models.ModelRegistry
 import com.gallopkeyboard.ime.R
 
 /**
- * Shown in the voice panel when on-device voice models are missing or corrupt.
- *
- * Explains that voice needs a one-time download (~220 MB) and opens the in-app
- * download screen. User-initiated start is required on Android 12+.
+ * Shown when on-device voice models are missing.
+ * Plain explanation + one download button — no branding chrome.
  */
 @Composable
 fun VoicePanelPromptBanner(
@@ -39,11 +37,6 @@ fun VoicePanelPromptBanner(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text(
-                text = stringResource(R.string.voice_panel_setup_title),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
             Text(
                 text = stringResource(R.string.voice_panel_setup_body, sizeMb),
                 style = MaterialTheme.typography.bodySmall,

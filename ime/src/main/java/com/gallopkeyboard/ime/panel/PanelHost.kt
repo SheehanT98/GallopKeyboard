@@ -44,9 +44,9 @@ fun PanelHost(
     LaunchedEffect(state) {
         if (state == PanelState.VOICE) {
             modelLifecycleManager.onVoicePanelShown()
-            // Re-check on every open so returning from download clears/shows the prompt.
+            // Cheap presence check (exists + size). Full SHA is daily / settings only.
             val installer = ModelInstaller(context)
-            if (installer.isInstalled(ModelRegistry.defaultVoiceBundle)) {
+            if (installer.areFilesPresent(ModelRegistry.defaultVoiceBundle)) {
                 promptState.dismissBanner()
             } else {
                 promptState.showBanner()

@@ -57,6 +57,19 @@ class ModelInstaller(
     fun isInstalled(bundle: List<ModelSpec>): Boolean =
         bundle.all { spec -> fileStatus(spec) == ModelFileStatus.Installed }
 
+    /**
+     * Fast readiness check for the IME hot path (voice panel open).
+     *
+     * Only checks that each file exists and matches the expected byte length —
+     * no SHA-256. Full integrity stays on [isInstalled] / [verifyInstalledIfDue]
+     * (settings + daily IME startup).
+     */
+    fun areFilesPresent(bundle: List<ModelSpec>): Boolean =
+        bundle.all { spec ->
+            val file = File(filesRoot, spec.relPath)
+            file.isFile && file.length() == spec.sizeBytes
+        }
+
     fun fileStatus(spec: ModelSpec): ModelFileStatus {
         val file = File(filesRoot, spec.relPath)
         if (!file.isFile) return ModelFileStatus.Missing

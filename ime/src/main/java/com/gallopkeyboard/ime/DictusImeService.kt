@@ -163,7 +163,7 @@ class DictusImeService : LifecycleInputMethodService() {
 
         val installer = ModelInstaller(applicationContext)
         installer.verifyInstalledIfDue()
-        if (!installer.isInstalled(ModelRegistry.defaultVoiceBundle)) {
+        if (!installer.areFilesPresent(ModelRegistry.defaultVoiceBundle)) {
             entryPoint.voiceModelPromptState().showBanner()
         }
 

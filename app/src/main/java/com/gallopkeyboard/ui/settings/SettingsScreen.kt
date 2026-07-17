@@ -190,7 +190,7 @@ fun SettingsScreen(
         SettingsCard {
             SettingInfoRow(
                 label = stringResource(R.string.settings_version),
-                value = "GallopKeyboard ${BuildConfig.VERSION_NAME} (build ${BuildConfig.VERSION_CODE})",
+                value = "Version ${BuildConfig.VERSION_NAME} (build ${BuildConfig.VERSION_CODE})",
             )
             SettingDivider()
             SettingNavRow(

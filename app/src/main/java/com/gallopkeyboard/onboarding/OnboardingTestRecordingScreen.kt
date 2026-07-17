@@ -147,7 +147,7 @@ fun OnboardingTestRecordingScreen(
                                         Context.CLIPBOARD_SERVICE,
                                     ) as ClipboardManager
                                     clipboard.setPrimaryClip(
-                                        ClipData.newPlainText("GallopKeyboard", transcriptionResult),
+                                        ClipData.newPlainText("Transcription", transcriptionResult),
                                     )
                                     copied = true
                                 }

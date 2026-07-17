@@ -137,40 +137,26 @@ fun SoundPickerScreen(
 // ---------------------------------------------------------------------------
 
 /**
- * Groups the 28 available electronic WAV files by family prefix.
+ * Groups the curated electronic WAV files by family prefix.
  *
- * Each entry maps to files in res/raw/ (e.g., "electronic_01a" -> R.raw.electronic_01a).
+ * Each entry maps to files in res/raw/ (e.g., "electronic_01f" -> R.raw.electronic_01f).
  */
 private enum class SoundFamily(val displayName: String, val sounds: List<String>) {
-    ELECTRONIC_01(
-        displayName = "Electronic 01",
-        sounds = listOf(
-            "electronic_01a", "electronic_01b", "electronic_01c",
-            "electronic_01d", "electronic_01e", "electronic_01f",
-        ),
+    START(
+        displayName = "Start",
+        sounds = listOf("electronic_01a", "electronic_01f"),
     ),
-    ELECTRONIC_02(
-        displayName = "Electronic 02",
-        sounds = listOf(
-            "electronic_02a", "electronic_02b", "electronic_02c",
-            "electronic_02d", "electronic_02e", "electronic_02f",
-        ),
+    STOP(
+        displayName = "Stop",
+        sounds = listOf("electronic_02a", "electronic_02b"),
     ),
-    ELECTRONIC_03(
-        displayName = "Electronic 03",
-        sounds = listOf(
-            "electronic_03a", "electronic_03b", "electronic_03c",
-            "electronic_03d", "electronic_03e", "electronic_03f",
-            "electronic_03g", "electronic_03h", "electronic_03i",
-        ),
+    CANCEL(
+        displayName = "Cancel",
+        sounds = listOf("electronic_03a", "electronic_03c"),
     ),
-    ELECTRONIC_04(
-        displayName = "Electronic 04",
-        sounds = listOf(
-            "electronic_04a", "electronic_04b", "electronic_04c",
-            "electronic_04d", "electronic_04e", "electronic_04f",
-            "electronic_04g",
-        ),
+    OTHER(
+        displayName = "Other",
+        sounds = listOf("electronic_04a", "ui_chime_01"),
     ),
 }
 

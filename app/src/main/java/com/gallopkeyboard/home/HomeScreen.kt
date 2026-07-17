@@ -83,18 +83,8 @@ fun HomeScreen(
     ) {
         Spacer(modifier = Modifier.weight(1f))
 
-        // Waveform logo (3 bars matching the app icon)
+        // Waveform logo (3 bars matching the app icon) — no wordmark / brand label
         DictusWaveformLogo()
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // "Dictus" wordmark in accent blue
-        Text(
-            text = "GallopKeyboard",
-            color = DictusColors.Accent,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -172,7 +162,7 @@ fun HomeScreen(
                                     Context.CLIPBOARD_SERVICE,
                                 ) as ClipboardManager
                                 clipboard.setPrimaryClip(
-                                    ClipData.newPlainText("GallopKeyboard", lastTranscription),
+                                    ClipData.newPlainText("Transcription", lastTranscription),
                                 )
                             },
                     )

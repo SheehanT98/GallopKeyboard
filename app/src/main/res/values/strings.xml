@@ -2,19 +2,19 @@
 <resources>
 
     <!-- Onboarding: Welcome screen (Step 1) -->
-    <string name="onboarding_welcome_wordmark">GallopKeyboard</string>
+    <string name="onboarding_welcome_wordmark"></string>
     <string name="onboarding_welcome_tagline">Voice dictation, 100\u00a0% offline</string>
     <string name="onboarding_welcome_cta">Start</string>
 
     <!-- Onboarding: Microphone permission screen (Step 2) -->
     <string name="onboarding_mic_permission_title">Microphone</string>
-    <string name="onboarding_mic_permission_body">GallopKeyboard needs the microphone to transcribe your voice. Your recordings stay on your device.</string>
+    <string name="onboarding_mic_permission_body">Microphone access is needed to transcribe your voice. Recordings stay on this device.</string>
     <string name="onboarding_mic_permission_cta_grant">Allow Microphone</string>
     <string name="onboarding_mic_permission_cta_continue">Continue</string>
 
     <!-- Onboarding: Keyboard setup screen (Step 3) -->
     <string name="onboarding_keyboard_setup_title">Add the keyboard</string>
-    <string name="onboarding_keyboard_setup_body">Enable GallopKeyboard in your device settings.</string>
+    <string name="onboarding_keyboard_setup_body">Enable this keyboard in your device settings.</string>
     <string name="onboarding_keyboard_setup_cta_open_settings">Open Settings</string>
     <string name="onboarding_keyboard_setup_cta_continue">Continue</string>
 
@@ -37,7 +37,7 @@
 
     <!-- Onboarding: Test recording screen (Step 6) -->
     <string name="onboarding_test_recording_title">Test dictation</string>
-    <string name="onboarding_test_recording_body">Tap the mic and speak.\nGallopKeyboard will transcribe your voice.</string>
+    <string name="onboarding_test_recording_body">Tap the mic and speak.\nYour voice will be transcribed on this device.</string>
     <string name="onboarding_test_recording_result">Result</string>
     <string name="onboarding_test_recording_transcribing">Transcribing\u2026</string>
     <string name="onboarding_test_recording_no_result">(No result)</string>
@@ -49,7 +49,7 @@
 
     <!-- Onboarding: Success screen (Step 7) -->
     <string name="onboarding_success_title">All set!</string>
-    <string name="onboarding_success_body">GallopKeyboard is configured and ready to use.</string>
+    <string name="onboarding_success_body">You\u2019re set up and ready to use.</string>
     <string name="onboarding_success_cta">Start</string>
 
     <!-- Settings: Section headers -->
@@ -135,7 +135,7 @@
     <string name="licences_back_cd">Back</string>
 
     <!-- ImeStatusCard -->
-    <string name="ime_status_active">GallopKeyboard active</string>
+    <string name="ime_status_active">Keyboard active</string>
     <string name="ime_status_enabled_not_selected">Keyboard enabled but not selected</string>
     <string name="ime_status_not_enabled">Keyboard not enabled</string>
     <string name="ime_status_select_keyboard">Select Keyboard</string>
@@ -191,7 +191,7 @@
     <string name="recording_record_cd">Record</string>
     <string name="recording_new_dictation_cd">New dictation</string>
     <string name="recording_idle_title">New dictation</string>
-    <string name="recording_idle_body">Tap the mic and speak.\nGallopKeyboard will transcribe your voice.</string>
+    <string name="recording_idle_body">Tap the mic and speak.\nYour voice will be transcribed on this device.</string>
     <string name="recording_tap_to_stop">Tap to stop</string>
     <string name="recording_transcribing">Transcribing\u2026</string>
     <string name="recording_no_result">(No result)</string>
@@ -223,7 +223,7 @@
     <string name="cd_selected">Selected</string>
 
     <!-- Voice model onboarding (Plan 008) -->
-    <string name="voice_onboarding_title">Set up GallopKeyboard voice</string>
+    <string name="voice_onboarding_title">Set up voice</string>
     <string name="voice_onboarding_subtitle">Downloads ~%1$d MB of on-device voice models. No data leaves your phone.</string>
     <string name="voice_onboarding_metered_warning">You\u2019re on mobile data \u2014 this will use ~%1$d MB.</string>
     <string name="voice_onboarding_download">Download</string>
@@ -231,7 +231,7 @@
     <string name="voice_onboarding_retry">Retry</string>
     <string name="voice_onboarding_downloading">Downloading %1$s\u2026</string>
     <string name="voice_onboarding_error_generic">Download failed</string>
-    <string name="voice_onboarding_success">Voice ready. Open your keyboard settings to enable GallopKeyboard.</string>
+    <string name="voice_onboarding_success">Voice ready. Enable this keyboard in system settings if you haven\u2019t already.</string>
     <string name="voice_onboarding_open_keyboard_settings">Open keyboard settings</string>
 
     <!-- Voice model settings (Plan 008) -->
