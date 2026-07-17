@@ -43,7 +43,7 @@ class DictusThemeTest {
 
     @Test
     fun `light background color matches iOS token F2F2F7`() {
-        assertEquals(Color(0xFFF2F2F7), DictusColors.LightBackground)
+        assertEquals(Color(0xFFD1D5DB), DictusColors.LightBackground)
     }
 
     @Test

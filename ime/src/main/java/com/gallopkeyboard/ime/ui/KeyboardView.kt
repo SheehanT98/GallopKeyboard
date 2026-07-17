@@ -41,7 +41,7 @@ fun KeyboardView(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(top = 2.dp, bottom = 2.dp),
+            .padding(horizontal = 2.dp, vertical = 3.dp),
     ) {
         rows.forEach { rowKeys ->
             KeyRow(

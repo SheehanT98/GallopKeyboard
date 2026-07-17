@@ -95,7 +95,9 @@ fun KeyButton(
     val backgroundColor = when {
         key.type == KeyType.SHIFT && isCapsLock -> DictusColors.AccentHighlight
         key.type == KeyType.SHIFT && isShifted -> DictusColors.Accent
-        key.type == KeyType.CHARACTER || key.type == KeyType.SPACE -> LocalDictusColors.current.keyBackground
+        key.type == KeyType.CHARACTER ||
+            key.type == KeyType.SPACE ||
+            key.type == KeyType.MIC -> LocalDictusColors.current.keyBackground
         else -> LocalDictusColors.current.keySpecialBackground
     }
 
@@ -106,12 +108,11 @@ fun KeyButton(
 
     val fontSize = when (key.type) {
         KeyType.CHARACTER, KeyType.SHIFT, KeyType.DELETE, KeyType.RETURN,
-        KeyType.EMOJI, KeyType.ACCENT_ADAPTIVE -> 20.sp
+        KeyType.EMOJI, KeyType.ACCENT_ADAPTIVE, KeyType.MIC -> 20.sp
         KeyType.SPACE, KeyType.LAYER_SWITCH, KeyType.KEYBOARD_SWITCH -> 14.sp
-        KeyType.MIC -> 20.sp
     }
 
-    val shape = RoundedCornerShape(8.dp)
+    val shape = RoundedCornerShape(5.dp)
 
     // rememberUpdatedState ensures that pointerInput always calls the latest
     // callbacks even though the coroutine launched by pointerInput(Unit) is

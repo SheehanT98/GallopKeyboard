@@ -69,9 +69,8 @@ abstract class LifecycleInputMethodService : InputMethodService(),
             imeWindow.decorView.setViewTreeLifecycleOwner(this@LifecycleInputMethodService)
             imeWindow.decorView.setViewTreeViewModelStoreOwner(this@LifecycleInputMethodService)
             imeWindow.decorView.setViewTreeSavedStateRegistryOwner(this@LifecycleInputMethodService)
-            // Opaque fallback so a failed composition is still visible as a panel,
-            // not an invisible "nothing happened" keyboard window.
-            imeWindow.setBackgroundDrawable(ColorDrawable(Color.parseColor("#1C1C1E")))
+            // Opaque light fallback so a failed composition is still a visible panel.
+            imeWindow.setBackgroundDrawable(ColorDrawable(Color.parseColor("#D1D5DB")))
         }
 
         Timber.d("IME input view created (lifecycle=%s)", lifecycle.currentState)

@@ -30,8 +30,8 @@ fun KeyRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 2.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+            .padding(horizontal = 1.dp),
+        horizontalArrangement = Arrangement.spacedBy(3.dp),
     ) {
         keys.forEach { key ->
             val displayChar = when (key.type) {

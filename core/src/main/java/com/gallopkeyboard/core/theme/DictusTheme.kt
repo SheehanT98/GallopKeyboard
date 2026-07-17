@@ -119,7 +119,7 @@ private val DictusLightColorScheme = lightColorScheme(
  */
 @Composable
 fun DictusTheme(
-    themeMode: ThemeMode = ThemeMode.DARK,
+    themeMode: ThemeMode = ThemeMode.LIGHT,
     content: @Composable () -> Unit,
 ) {
     val useDark = when (themeMode) {

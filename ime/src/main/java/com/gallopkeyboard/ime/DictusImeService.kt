@@ -323,12 +323,12 @@ class DictusImeService : LifecycleInputMethodService() {
         // Read theme preference from DataStore and map to ThemeMode.
         // The entryPoint provides DataStore access via Hilt SingletonComponent.
         val themeKey by entryPoint.dataStore().data
-            .map { it[PreferenceKeys.THEME] ?: "dark" }
-            .collectAsState(initial = "dark")
+            .map { it[PreferenceKeys.THEME] ?: "light" }
+            .collectAsState(initial = "light")
         val themeMode = when (themeKey) {
-            "light" -> ThemeMode.LIGHT
+            "dark" -> ThemeMode.DARK
             "auto" -> ThemeMode.AUTO
-            else -> ThemeMode.DARK
+            else -> ThemeMode.LIGHT
         }
 
         // Read keyboard mode preference to set the initial layer when the keyboard opens.
@@ -349,8 +349,8 @@ class DictusImeService : LifecycleInputMethodService() {
         // the layout in Settings, DataStore emits a new value, Compose recomposes, and
         // KeyboardScreen receives the updated layout immediately.
         val keyboardLayout by entryPoint.dataStore().data
-            .map { it[PreferenceKeys.KEYBOARD_LAYOUT] ?: "azerty" }
-            .collectAsState(initial = "azerty")
+            .map { it[PreferenceKeys.KEYBOARD_LAYOUT] ?: "qwerty" }
+            .collectAsState(initial = "qwerty")
 
         val clipboardItems by clipboardStore.itemsFlow.collectAsState()
 
