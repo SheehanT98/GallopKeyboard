@@ -1,0 +1,49 @@
+{
+  "id": "job-016",
+  "status": "awaiting_review",
+  "mode": "quick",
+  "originalAsk": "Execute plan 015 defer IME model SHA verify",
+  "planRef": "plans/015-defer-ime-model-sha-verify.md",
+  "feature": "Execute plan 015 defer IME model SHA verify",
+  "slug": "execute-plan-015-defer-ime-model-sha-verify",
+  "branch": "cursor/devteam-job-016-execute-plan-015-defer-ime-model-sha-verify-c1fc",
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/39",
+  "prNumber": 39,
+  "chatTitle": "devteam pr39",
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-17T15:38:23.459Z",
+  "lastStatusAt": "2026-07-17T15:54:55.042Z",
+  "completedAt": "2026-07-17T15:54:55.041Z",
+  "plannedFiles": [
+    "plans/README.md",
+    "ime/src/main/java/com/gallopkeyboard/ime/DictusImeService.kt",
+    "core/src/main/java/com/gallopkeyboard/core/models/ModelInstaller.kt",
+    "docs/dictus-inventory.md",
+    "ime/src/main/java/com/gallopkeyboard/ime/panel/PanelHost.kt",
+    "scripts/verify.sh"
+  ],
+  "touchedFiles": [],
+  "blockedBy": [],
+  "dependsOn": [
+    "job-014"
+  ],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "done",
+    "test": "done",
+    "review": "done",
+    "doubleCheck": "done"
+  }
+}
