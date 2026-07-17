@@ -1,0 +1,53 @@
+{
+  "id": "job-018",
+  "status": "awaiting_review",
+  "mode": "quick",
+  "originalAsk": "Execute plan 016 voice dispose cancel and unify mic",
+  "planRef": "plans/016-voice-dispose-cancel-and-unify-mic.md",
+  "feature": "Execute plan 016 voice dispose cancel and unify mic",
+  "slug": "execute-plan-016-voice-dispose-cancel-and-unify-",
+  "branch": "cursor/devteam-job-018-execute-plan-016-voice-dispose-cancel-and-unify--c1fc",
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/41",
+  "prNumber": 41,
+  "chatTitle": "devteam pr41",
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-17T15:38:23.849Z",
+  "lastStatusAt": "2026-07-17T16:23:15.131Z",
+  "completedAt": "2026-07-17T16:23:15.131Z",
+  "plannedFiles": [
+    "plans/README.md",
+    "ime/src/test/.../panel/GestureFsmTest.kt",
+    "ime/src/test/.../model/KeyboardLayoutTest.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/panel/SmartVoiceButton.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/panel/GestureFsm.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/DictusImeService.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/KeyboardScreen.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/model/KeyboardLayouts.kt",
+    "docs/dictus-inventory.md",
+    "scripts/verify.sh"
+  ],
+  "touchedFiles": [],
+  "blockedBy": [],
+  "dependsOn": [
+    "job-017"
+  ],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "done",
+    "test": "done",
+    "review": "done",
+    "doubleCheck": "done"
+  }
+}
