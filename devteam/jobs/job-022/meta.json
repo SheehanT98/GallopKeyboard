@@ -1,0 +1,65 @@
+{
+  "id": "job-022",
+  "status": "awaiting_review",
+  "mode": "quick",
+  "originalAsk": "Execute plan 033 async mic permission and polish ic",
+  "planRef": "plans/033-async-mic-permission-and-polish-ic.md",
+  "feature": "Execute plan 033 async mic permission and polish ic",
+  "slug": "execute-plan-033-async-mic-permission-and-polish",
+  "branch": "cursor/devteam-job-022-execute-plan-033-async-mic-permission-and-polish-c1fc",
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/51",
+  "prNumber": 51,
+  "chatTitle": "devteam pr51",
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-20T21:57:18.407Z",
+  "lastStatusAt": "2026-07-20T22:35:44.595Z",
+  "completedAt": "2026-07-20T22:35:44.594Z",
+  "plannedFiles": [
+    "plans/README.md",
+    "ime/.../panel/SmartVoiceButton.kt",
+    "ime/.../DictusImeService.kt",
+    "docs/dictus-inventory.md",
+    "ime/src/main/java/com/gallopkeyboard/ime/panel/SmartVoiceButton.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/DictusImeService.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/asr/PolishingTranscriber.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/asr/ImeTextCommitter.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/di/AsrModule.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/panel/VoiceSessionCleanup.kt",
+    "scripts/verify.sh"
+  ],
+  "touchedFiles": [
+    "docs/dictus-inventory.md",
+    "ime/src/main/java/com/gallopkeyboard/ime/DictusImeService.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/asr/ImeTextCommitter.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/asr/PolishingTranscriber.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/di/AsrModule.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/panel/SmartVoiceButton.kt",
+    "ime/src/test/java/com/gallopkeyboard/ime/asr/InputConnectionSupplierTest.kt",
+    "ime/src/test/java/com/gallopkeyboard/ime/asr/PolishingTranscriberTest.kt",
+    "ime/src/test/java/com/gallopkeyboard/ime/asr/StreamingTranscriberTest.kt",
+    "plans/README.md"
+  ],
+  "blockedBy": [],
+  "dependsOn": [
+    "job-021"
+  ],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "done",
+    "test": "done",
+    "review": "done",
+    "doubleCheck": "done"
+  }
+}

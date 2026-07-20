@@ -19,6 +19,7 @@ class PolishingTranscriber @Inject constructor(
     private val streaming: StreamingTranscriber,
     private val engine: AsrPolishEngine,
     private val committer: ImeTextCommitter,
+    private val inputConnectionSupplier: InputConnectionSupplier,
     private val lifecycleManager: ModelLifecycleController,
 ) : Transcriber {
 
@@ -47,24 +48,29 @@ class PolishingTranscriber @Inject constructor(
             return
         }
 
-        val pcm = session.buffer.snapshotShorts()
-        val polished = try {
-            withTimeout(POLISH_TIMEOUT_MS) {
-                engine.transcribe(pcm)
+        inputConnectionSupplier.beginPolishCommit()
+        try {
+            val pcm = session.buffer.snapshotShorts()
+            val polished = try {
+                withTimeout(POLISH_TIMEOUT_MS) {
+                    engine.transcribe(pcm)
+                }
+            } catch (t: TimeoutCancellationException) {
+                Log.w(TAG, "polish timed out; keeping streaming partial")
+                null
+            } catch (t: Throwable) {
+                Log.e(TAG, "polish failed", t)
+                null
             }
-        } catch (t: TimeoutCancellationException) {
-            Log.w(TAG, "polish timed out; keeping streaming partial")
-            null
-        } catch (t: Throwable) {
-            Log.e(TAG, "polish failed", t)
-            null
-        }
 
-        // Empty / blank polish must not wipe the streaming partial via commitText("").
-        val processed = polished?.let { TextPostProcessor.process(it) }.orEmpty()
-        when {
-            processed.isNotEmpty() -> committer.commitText(processed)
-            else -> committer.clearComposing() // finish composing → keep last partial
+            // Empty / blank polish must not wipe the streaming partial via commitText("").
+            val processed = polished?.let { TextPostProcessor.process(it) }.orEmpty()
+            when {
+                processed.isNotEmpty() -> committer.commitText(processed)
+                else -> committer.clearComposing() // finish composing → keep last partial
+            }
+        } finally {
+            inputConnectionSupplier.endPolishCommit()
         }
         lifecycleManager.onSessionStopped()
     }

@@ -60,7 +60,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 enum class SmartVoiceButtonStyle {
@@ -98,6 +97,7 @@ fun SmartVoiceButton(
     var stoppingJob by remember { mutableStateOf<Job?>(null) }
     var holdTimerJob by remember { mutableStateOf<Job?>(null) }
     var pointerPressed by remember { mutableStateOf(false) }
+    var permissionRequestInFlight by remember { mutableStateOf(false) }
 
     val fsm = remember(cancelSlopPx, recorderDispatcher) {
         GestureFsm(
@@ -230,14 +230,22 @@ fun SmartVoiceButton(
             holdTimerJob?.cancel()
 
             if (!AudioRecorderEngine.checkPermission(context)) {
-                val granted = runBlocking {
-                    permissionRequester.request(context)
+                pointerPressed = false
+                if (!permissionRequestInFlight) {
+                    permissionRequestInFlight = true
+                    scope.launch {
+                        try {
+                            val granted = permissionRequester.request(context)
+                            if (!granted) {
+                                context.showToast(R.string.mic_permission_denied)
+                            }
+                            // Second-press pattern: on grant the user taps again to record.
+                        } finally {
+                            permissionRequestInFlight = false
+                        }
+                    }
                 }
-                if (!granted) {
-                    context.showToast(R.string.mic_permission_denied)
-                    pointerPressed = false
-                    return@awaitEachGesture
-                }
+                return@awaitEachGesture
             }
 
             val downMs = SystemClock.elapsedRealtime()
