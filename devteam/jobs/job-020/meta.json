@@ -1,6 +1,6 @@
 {
   "id": "job-020",
-  "status": "double_checking",
+  "status": "awaiting_review",
   "mode": "quick",
   "originalAsk": "Execute plan 029 finish privacy backup and log scrub",
   "planRef": "plans/029-finish-privacy-backup-and-log-scrub.md",
@@ -15,7 +15,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-20T21:40:00.000Z",
-  "lastStatusAt": "2026-07-20T21:50:44.273Z",
+  "lastStatusAt": "2026-07-20T21:52:09.492Z",
   "plannedFiles": [
     "app/src/main/AndroidManifest.xml",
     "app/src/main/res/xml/backup_rules.xml",
@@ -43,9 +43,10 @@
     "code": "done",
     "test": "done",
     "review": "done",
-    "doubleCheck": "in_progress"
+    "doubleCheck": "done"
   },
   "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/48",
   "prNumber": 48,
-  "chatTitle": "devteam pr48"
+  "chatTitle": "devteam pr48",
+  "completedAt": "2026-07-20T21:52:09.491Z"
 }
