@@ -29,11 +29,11 @@ Read [`../AGENTS.md`](../AGENTS.md) before executing any plan.
 | 021 | Stop full-keyboard recomposition on swipe MOVE | 8 | P1 | M | — | DONE |
 | 022 | Disable Auto Backup + scrub keystroke/transcript logs | 8 | P1 | S | — | DONE |
 | 023 | Decode swipe paths with DictionaryEngine | 8 | P2 | M | 019 | DONE |
-| 024 | Keep voice stop/polish alive after leaving voice panel | 9 | P1 | M | 020 recommended | TODO |
-| 025 | Code-point delete, space cursor drag, word-delete accelerate | 9 | P1 | M | — | TODO |
-| 026 | Spike opt-in on-device autocorrect on space | 9 | P1 | M | 019 | TODO |
-| 027 | Move voice PCM off Main + bound ASR frames + gate pulse | 9 | P1 | M | 024 recommended | TODO |
-| 028 | Stop IME from mirroring DictationService Recording UI | 9 | P1 | M | — | TODO |
+| 024 | Keep voice stop/polish alive after leaving voice panel | 9 | P1 | M | 020 recommended | DONE |
+| 025 | Code-point delete, space cursor drag, word-delete accelerate | 9 | P1 | M | — | DONE |
+| 026 | Spike opt-in on-device autocorrect on space | 9 | P1 | M | 019; 025 preferred | DONE |
+| 027 | Move voice PCM off Main + bound ASR frames + gate pulse | 9 | P1 | M | 024 recommended | DONE |
+| 028 | Stop IME from mirroring DictationService Recording UI | 9 | P1 | M | — | DONE |
 
 **Status values**: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` | `REJECTED`.
 
