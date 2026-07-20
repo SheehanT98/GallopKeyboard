@@ -7,9 +7,9 @@
   "feature": "Execute plan 032 swipe dictionary decoder and dwell",
   "slug": "execute-plan-032-swipe-dictionary-decoder-and-dw",
   "branch": "cursor/devteam-job-023-execute-plan-032-swipe-dictionary-decoder-and-dw-c1fc",
-  "pr": null,
-  "prNumber": null,
-  "chatTitle": null,
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/52",
+  "prNumber": 52,
+  "chatTitle": "devteam pr52",
   "models": {
     "plan": "cursor-grok-4.5-high",
     "code": "composer-2.5",
