@@ -22,10 +22,18 @@ class SwipePathHelperTest {
     }
 
     @Test
-    fun `pathToWord ignores non-letters and dedupes`() {
+    fun `pathToWord keeps dwell doubles and ignores non-letters`() {
+        assertEquals(
+            "hello",
+            SwipePathHelper.pathToWord(listOf('h', 'e', 'l', 'l', 'o', '1', ' ')),
+        )
+    }
+
+    @Test
+    fun `pathToWord returns raw swipe without dedupe`() {
         assertEquals(
             "helo",
-            SwipePathHelper.pathToWord(listOf('h', 'e', 'l', 'l', 'o', '1', ' ')),
+            SwipePathHelper.pathToWord(listOf('h', 'e', 'l', 'o')),
         )
     }
 

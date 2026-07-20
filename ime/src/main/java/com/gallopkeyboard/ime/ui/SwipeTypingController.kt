@@ -25,6 +25,8 @@ data class CharacterKeyBounds(
 class SwipeTypingController(
     private val swipeSlopPx: Float,
     private val accentCellWidthPx: Float,
+    private val dwellMs: Long = 300L,
+    private val clock: () -> Long = { System.currentTimeMillis() },
 ) {
     private val pathKeys = mutableListOf<KeyDefinition>()
     private var downPosition: Offset = Offset.Zero
@@ -33,6 +35,8 @@ class SwipeTypingController(
     private var accentPopupVisible = false
     private var accentTrackingActive = false
     private var highlightedAccentIndex: Int? = null
+    private var currentKeyEnteredAt: Long = 0L
+    private var dwellEmittedForCurrentKey: Boolean = false
 
     var keyBounds: List<CharacterKeyBounds> = emptyList()
         private set
@@ -59,6 +63,8 @@ class SwipeTypingController(
         accentTrackingActive = false
         highlightedAccentIndex = null
         accentChars = emptyList()
+        currentKeyEnteredAt = 0L
+        dwellEmittedForCurrentKey = false
     }
 
     fun onPointerDown(position: Offset, hitKey: KeyDefinition, accents: List<String>?) {
@@ -80,7 +86,9 @@ class SwipeTypingController(
         }
 
         if (swipeActive) {
-            hitTest(position)?.let(::appendKey)
+            val hit = hitTest(position) ?: return
+            maybeEmitDwell(hit)
+            appendKey(hit)
             return
         }
 
@@ -144,7 +152,22 @@ class SwipeTypingController(
         if (key.type != KeyType.CHARACTER) return
         if (pathKeys.isEmpty() || pathKeys.last() != key) {
             pathKeys.add(key)
+            currentKeyEnteredAt = clock()
+            dwellEmittedForCurrentKey = false
         }
+    }
+
+    /**
+     * When the finger stays on the same key past [dwellMs], append a second visit
+     * so double-letter words (hello, better) are reachable.
+     */
+    private fun maybeEmitDwell(key: KeyDefinition) {
+        if (key.type != KeyType.CHARACTER) return
+        if (pathKeys.isEmpty() || pathKeys.last() != key) return
+        if (dwellEmittedForCurrentKey) return
+        if (clock() - currentKeyEnteredAt < dwellMs) return
+        pathKeys.add(key)
+        dwellEmittedForCurrentKey = true
     }
 
     private fun resolveAccentIndex(pointerX: Float, key: KeyDefinition?): Int? {

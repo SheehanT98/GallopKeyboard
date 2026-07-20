@@ -14,10 +14,11 @@ import androidx.compose.ui.unit.dp
 import com.gallopkeyboard.core.theme.DictusTheme
 import com.gallopkeyboard.core.theme.ThemeMode
 import com.gallopkeyboard.ime.clipboard.ClipboardStore
+import com.gallopkeyboard.ime.panel.ClipboardStrip
 import com.gallopkeyboard.ime.model.KeyDefinition
 import com.gallopkeyboard.ime.model.KeyType
 import com.gallopkeyboard.ime.model.KeyboardLayer
-import com.gallopkeyboard.ime.panel.ClipboardStrip
+import com.gallopkeyboard.ime.suggestion.SuggestionEngine
 import timber.log.Timber
 
 /**
@@ -54,6 +55,7 @@ fun KeyboardScreen(
     suggestions: List<String> = emptyList(),
     onSuggestionSelected: (String) -> Unit = {},
     onCurrentWordSelected: () -> Unit = {},
+    suggestionEngine: SuggestionEngine? = null,
 ) {
     var currentLayer by remember(initialLayer) { mutableStateOf(initialLayer) }
     var isShifted by remember { mutableStateOf(false) }
@@ -104,6 +106,7 @@ fun KeyboardScreen(
                         isCapsLock = isCapsLock,
                         layout = currentLayout,
                         hapticsEnabled = hapticsEnabled,
+                        suggestionEngine = suggestionEngine,
                         onSwipeWord = { word ->
                             onCommitText(word)
                             if (isShifted && !isCapsLock) {

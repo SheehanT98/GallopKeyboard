@@ -709,3 +709,26 @@ Long-press accent strip on a letter key still tracks finger across cells;
 swipe across LETTERS highlights keys without janking the full QWERTY tree on
 every MOVE when the highlight set is unchanged.
 
+## Plan 032 additions
+
+Swipe commit resolves raw paths through the English dictionary; dwell on a key
+emits double letters for words like `hello`.
+
+### Swipe dictionary decoder
+
+| Item | Detail |
+|------|--------|
+| `SwipeWordResolver` | Pure subsequence scorer; prefers first/last letter + frequency; returns raw path when under-confident |
+| `DictionaryEngine.candidatesForSwipe` | First-letter bucket, length band `[path, path+3]`, last-letter + subsequence filter; capped at 150 |
+| `DictionaryEngine.resolveSwipePath` | Candidate gather + resolver on pointer-up only |
+| `KeyboardView.resolveSwipeWord` | Calls `DictionaryEngine.resolveSwipePath` when engine is wired |
+| `KeyboardScreen` / `DictusImeService` | Pass `dictionaryEngine` into `KeyboardView` |
+
+### Dwell for double letters
+
+| Item | Detail |
+|------|--------|
+| `SwipeTypingController` | `dwellMs = 300`; re-emits same key after dwell while finger stays |
+| `SwipePathHelper.pathToWord` | No dedupe — slide dedupe in controller; dwell adds intentional doubles |
+| Offline only | No cloud lexicon; under-match preferred over random corrections |
+

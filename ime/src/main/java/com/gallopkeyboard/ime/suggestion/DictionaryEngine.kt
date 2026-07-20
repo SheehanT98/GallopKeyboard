@@ -137,6 +137,40 @@ class DictionaryEngine(
      * Levenshtein distance ≤ [maxEditDistance], and keeps the highest-frequency
      * hits. Bounded work for main-thread space-commit use (Plan 026).
      */
+    /**
+     * Return dictionary entries that could decode a swipe [rawPath].
+     *
+     * Scans only the first-letter bucket, filters by length band and last-letter
+     * match, then subsequence. Capped at [maxCandidates] to keep main-thread work bounded.
+     */
+    fun candidatesForSwipe(rawPath: String, maxCandidates: Int = 150): List<WordEntry> {
+        if (rawPath.length < 2 || !_isReady.value || maxCandidates <= 0) return emptyList()
+        val pathLower = rawPath.lowercase()
+        val firstChar = pathLower.firstOrNull() ?: return emptyList()
+        val lastChar = pathLower.lastOrNull() ?: return emptyList()
+        val bucket = prefixIndex[firstChar] ?: return emptyList()
+
+        val minLen = pathLower.length
+        val maxLen = pathLower.length + 3
+        val results = ArrayList<WordEntry>(maxCandidates.coerceAtMost(150))
+        for (entry in bucket) {
+            if (results.size >= maxCandidates) break
+            val word = entry.strippedLower
+            val wordLen = word.length
+            if (wordLen < minLen || wordLen > maxLen) continue
+            if (word.lastOrNull() != lastChar) continue
+            if (!SwipeWordResolver.isSubsequence(pathLower, word)) continue
+            results.add(entry)
+        }
+        return results
+    }
+
+    /**
+     * Resolve a swipe raw path to a dictionary word when confident, else return [rawPath].
+     */
+    fun resolveSwipePath(rawPath: String): String =
+        SwipeWordResolver.resolve(rawPath, candidatesForSwipe(rawPath))
+
     fun candidatesNear(
         typed: String,
         max: Int = 25,

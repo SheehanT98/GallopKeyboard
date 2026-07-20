@@ -236,6 +236,41 @@ class DictionaryEngineTest {
     }
 
     @Test
+    fun `candidatesForSwipe filters subsequence and length band`() = runTest(testDispatcher) {
+        val engine = createEngine()
+        advanceUntilIdle()
+
+        val candidates = engine.candidatesForSwipe("helo")
+
+        assertTrue("Should include hello", candidates.any { it.word == "hello" })
+        assertTrue(
+            "All candidates start with h and end with o",
+            candidates.all {
+                it.strippedLower.first() == 'h' && it.strippedLower.last() == 'o'
+            },
+        )
+        assertTrue("Should respect length band", candidates.all {
+            it.strippedLower.length in 4..7
+        })
+    }
+
+    @Test
+    fun `resolveSwipePath maps helo to hello`() = runTest(testDispatcher) {
+        val engine = createEngine()
+        advanceUntilIdle()
+
+        assertEquals("hello", engine.resolveSwipePath("helo"))
+    }
+
+    @Test
+    fun `resolveSwipePath returns raw for short path`() = runTest(testDispatcher) {
+        val engine = createEngine()
+        advanceUntilIdle()
+
+        assertEquals("h", engine.resolveSwipePath("h"))
+    }
+
+    @Test
     fun `dictionaryAssetForLanguage maps language codes to bundled assets`() {
         assertEquals("dict_en.txt", dictionaryAssetForLanguage(null))
         assertEquals("dict_en.txt", dictionaryAssetForLanguage("auto"))
