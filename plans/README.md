@@ -6,13 +6,16 @@ into plan waves:
 - **Plans 001–010** (2026-07-16) — v1 delivery (**DONE**).
 - **Plans 011–013** — post-v1 UX (**DONE**).
 - **Plans 014–018** (2026-07-17) — hardening / docs (**DONE**).
-- **Plans 019–023** (2026-07-20 deep #1) — suggestion bar, cancel discard,
-  swipe jank, privacy scrub, swipe decoder — **DONE (assumed merged for
-  deep #2 planning; mark verified on reconcile if HEAD lacks code)**.
-- **Plans 024–028** (2026-07-20 deep #2 at `bfc7085`) — voice finalize
-  reliability, editing gestures, autocorrect spike, voice PCM/ASR perf,
-  detach IME from DictationService UI (**TODO**). Non-interactive default:
-  top five by leverage after assuming 019–023 landed.
+- **Plans 019–023** (2026-07-20 deep #1) — marked DONE in index by owner
+  assumption — **CODE NEVER MERGED** (deep #3 verified). Superseded by
+  **029–032**.
+- **Plans 024–028** (2026-07-20 deep #2) — voice finalize, editing,
+  autocorrect, PCM/ASR, IME detach — **DONE** on branches / PRs
+  [#43](https://github.com/SheehanT98/GallopKeyboard/pull/43)–[#47](https://github.com/SheehanT98/GallopKeyboard/pull/47);
+  deep #3 **assumes merged** (local audit merge `32b0d20`).
+- **Plans 029–033** (2026-07-20 deep #3 at `32b0d20`) — finish phantom Phase 8
+  privacy/suggestions/swipe + post–Phase 9 voice IC/permission (**TODO**).
+  Non-interactive default: top five by leverage.
 
 Read [`../AGENTS.md`](../AGENTS.md) before executing any plan.
 
@@ -24,83 +27,94 @@ Read [`../AGENTS.md`](../AGENTS.md) before executing any plan.
 | Plan | Title | Phase | Priority | Effort | Depends on | Status |
 |------|-------|-------|----------|--------|------------|--------|
 | 001–018 | (see prior waves) | 0–7 | — | — | — | DONE |
-| 019 | Wire suggestion bar + English dictionary defaults | 8 | P1 | M | — | DONE |
-| 020 | Discard composing on voice cancel + serialize IC writes | 8 | P1 | M | — | DONE |
-| 021 | Stop full-keyboard recomposition on swipe MOVE | 8 | P1 | M | — | DONE |
-| 022 | Disable Auto Backup + scrub keystroke/transcript logs | 8 | P1 | S | — | DONE |
-| 023 | Decode swipe paths with DictionaryEngine | 8 | P2 | M | 019 | DONE |
-| 024 | Keep voice stop/polish alive after leaving voice panel | 9 | P1 | M | 020 recommended | DONE |
-| 025 | Code-point delete, space cursor drag, word-delete accelerate | 9 | P1 | M | — | DONE |
-| 026 | Spike opt-in on-device autocorrect on space | 9 | P1 | M | 019; 025 preferred | DONE |
-| 027 | Move voice PCM off Main + bound ASR frames + gate pulse | 9 | P1 | M | 024 recommended | DONE |
-| 028 | Stop IME from mirroring DictationService Recording UI | 9 | P1 | M | — | DONE |
+| 019 | Wire suggestion bar + English dictionary defaults | 8 | P1 | M | — | SUPERSEDED → 030 |
+| 020 | Discard composing on voice cancel + serialize IC writes | 8 | P1 | M | — | DONE (partial / verify) |
+| 021 | Stop full-keyboard recomposition on swipe MOVE | 8 | P1 | M | — | SUPERSEDED → 031 |
+| 022 | Disable Auto Backup + scrub keystroke/transcript logs | 8 | P1 | S | — | SUPERSEDED → 029 |
+| 023 | Decode swipe paths with DictionaryEngine | 8 | P2 | M | 019 | SUPERSEDED → 032 |
+| 024 | Keep voice stop/polish alive after leaving voice panel | 9 | P1 | M | 020 | DONE (PR #43) |
+| 025 | Code-point delete, space cursor drag, word-delete | 9 | P1 | M | — | DONE (PR #45) |
+| 026 | Spike opt-in on-device autocorrect on space | 9 | P1 | M | 019/030 | DONE (PR #46) |
+| 027 | Move voice PCM off Main + bound ASR frames + gate pulse | 9 | P1 | M | 024 | DONE (PR #44) |
+| 028 | Stop IME from mirroring DictationService Recording UI | 9 | P1 | M | — | DONE (PR #47) |
+| 029 | Finish privacy — backup off + scrub PII logs | 10 | P1 | S | Phase 9 on main | TODO |
+| 030 | Wire SuggestionBar + English dictionary defaults | 10 | P1 | M | Phase 9 on main | TODO |
+| 031 | Stop swipe MOVE full recomposition (`gestureTick`) | 10 | P1 | M | — | TODO |
+| 032 | Swipe dictionary decoder + dwell for doubles | 10 | P1 | M | 030 | TODO |
+| 033 | Async mic permission + pin IC through polish | 10 | P1 | M | 024/027 | TODO |
 
-**Status values**: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` | `REJECTED`.
+**Status values**: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` | `REJECTED` | `SUPERSEDED`.
 
-## Recommended next execution order (Phase 9)
+## Recommended next execution order (Phase 10)
 
-1. **024** (voice finalize trust) — before or with **027**
-2. **028** (IME/DictationService detach) — parallel-safe with 024–026
-3. **025** (editing gestures) — parallel-safe; land before **026** if both
-   touch SPACE handling
-4. **027** (voice PCM/ASR perf) — after **024** when possible
-5. **026** (autocorrect spike) — after **019** (done) and preferably after
-   **025** space-drag so undo/drag gates are clear
+1. **Merge PRs #43→#47** onto `main` if not already (deep #3 assumption).
+2. **029** (privacy) — independent, smallest trust win
+3. **030** (suggestion bar + English dict) — unlocks 032; fixes 026 ranking
+4. **031** (swipe jank) — parallel-safe with 029/030
+5. **033** (mic permission + polish IC) — parallel-safe with 031
+6. **032** (swipe decoder + dwell) — after **030**
 
 ## Phase mapping
 
 - **Phases 0–7**: Plans 001–018 (**DONE**).
-- **Phase 8 — Frontier typing + trust**: Plans 019–023 (**DONE**, assumed).
-- **Phase 9 — Finalize voice + editing + simplify IME**: Plans 024–028.
+- **Phase 8**: Plans 019–023 — **docs claimed DONE; code missing** except
+  whatever landed via other PRs (020 semantics partially present).
+- **Phase 9**: Plans 024–028 (**DONE** on PRs #43–#47; assume on main).
+- **Phase 10 — Finish Phase 8 ghosts + voice polish holes**: Plans 029–033.
 
 ## Dependency notes
 
-- **024 → 027**: stop/polish scope should land before PCM collector moves.
-- **025 → 026**: space-drag must win over autocorrect when movement > slop.
-- **028** independent; reduces dual-pipeline confusion for later catalog
-  unification (not planned this round).
+- **030 → 032**: English `dict_en.txt` + engine wired before swipe decode.
+- **024/027 → 033**: polish scope must exist before pinning IC through it.
+- **029** before encrypt-at-rest (deferred).
 - Append **"Plan NNN additions"** to `docs/dictus-inventory.md` when touching
   Kotlin.
 
-## 2026-07-20 deep audit #2 — vetted findings (summary)
+## 2026-07-20 deep audit #3 — vetted findings (summary)
 
-Audit mode: **deep**. Planned against `bfc7085`. **Assumption**: Plans
-019–023 are built and merged (owner directive). Findings that those plans
-fix were excluded. Default plans: **024–028**.
+Audit mode: **deep**. Audited tree: local merge of Phase 9 PRs onto main →
+`32b0d20`. **Assumption**: Plans 024–028 merged (owner directive). **Finding**:
+Plans 019/021/022/023 marked DONE but code absent — treated as incomplete,
+not as fixed.
 
 | # | Finding | Category | Impact | Effort | Risk | Evidence |
 |---|---------|----------|--------|--------|------|----------|
-| 1 | `onSessionStop` on Compose scope cancelled when leaving voice panel; blank polish wipes partial; late frames toast failure | bug | H | M | MED | `SmartVoiceButton` `rememberCoroutineScope` + dispose; `PolishingTranscriber` empty commit; `StreamingTranscriber` unbounded frame launches |
-| 2 | UTF-16 backspace; no space-cursor; delete never jumps by word | direction / bug | H | M | MED | `deleteSurroundingText(1,0)`; SPACE tap-only; KeyButton char-repeat |
-| 3 | No autocorrect-on-space (opt-in) after suggestions land | direction | H | M | HIGH | Space commits `" "` only; Plan 019 out-scoped autocorrect |
-| 4 | PCM collect/ring write on Main; unbounded ASR `launch`; idle infinite pulse | perf | H | M | MED | `SmartVoiceButton` collector; `StreamingTranscriber.onAudioFrame`; `rememberInfiniteTransition` |
-| 5 | IME binds DictationService and replaces keyboard with Recording/Transcribing UI | debt / bug | H | M | MED | `DictusImeService` bind + `when (dictationState)` |
+| 1 | Auto Backup still default-on; keystroke/transcript logs + crash logcat | security | H | S | LOW | no `allowBackup`; `KeyboardScreen` Timber; `CrashHandler` logcat |
+| 2 | SuggestionBar unwired; IME pref default false vs Settings true; dict defaults FR | bug | H | M | MED | `_suggestions` unused; `DictionaryEngine` `?: "fr"` |
+| 3 | `gestureTick++` on every swipe MOVE → full QWERTY recomposition | perf | H | M | MED | `KeyboardView.kt` |
+| 4 | Swipe commits raw path; no resolver; no dwell for doubles | bug | H | M | MED | `resolveSwipeWord` prefix/`null` engine; `helo` tests |
+| 5 | `runBlocking` mic permission; IC supplier nulled mid-polish | bug | H | M | MED | `SmartVoiceButton`; `onFinishInputView` |
 
 ### Other vetted findings (not in default top five)
 
 | Finding | Category | Effort | Notes |
 |---------|----------|--------|-------|
-| Legacy `ModelDownloader` without SHA-256 | security | M | Follow-up; pairs with catalog unify |
-| Encrypt pins / last transcription at rest | security | M | After 022 backup-off |
+| Legacy `ModelDownloader` without SHA-256 | security | M | With catalog unify |
+| Encrypt pins / last transcription at rest | security | M | After 029 backup-off |
 | Release signing falls back to debug | security | S | Fail-closed `assembleRelease` |
 | Permission receiver exported API 29–32 | security | S | `ContextCompat.registerReceiver` |
-| `runBlocking` mic permission on pointer thread | bug | M | With 024/027 SmartVoice edits or solo |
-| Swipe dwell for double letters | bug | M | After 023 decoder |
-| DictionaryEngine empty-personal early-exit | perf | S | Drive-by with suggestion work |
-| Dual ModelRegistry vs ModelCatalog | debt | L | After 028 |
-| Dual onboarding flows | debt | M–L | After 028 |
-| `testAll` omits `:asr`/`:whisper`; LifecycleIMS tests | tests | M | Follow-up |
+| Space-drag `setSelection` uses window-relative offsets | bug | S | Long fields |
+| Recorder failure doesn’t cancel ASR session | bug | S | `SmartVoiceButton` catch |
+| Empty `finalize()` clears streaming partial | bug | S | `StreamingTranscriber` |
+| Dual ModelRegistry vs ModelCatalog | debt | L | After 028 — unlocked |
+| Dual onboarding flows | debt | M–L | With catalog |
+| Dead IME `RecordingScreen` / `TranscribingScreen` | debt | S | Safe delete |
+| `testAll` omits `:asr`/`:whisper` | tests | M | Follow-up |
 | CI ⊊ `verify.sh`; SDK docs 34 vs compile 35 | dx / deps | S | Opportunistic |
+| DictionaryEngine empty-personal early-exit | perf | S | Drive-by with 030 |
+| RingByteBuffer per-byte write under lock | perf | S | Drive-by with voice work |
+| Whisper cold-load inside 2s polish timeout | perf | M | Follow-up |
 | Manual S22 matrix still ☐ | docs / direction | M | Owner device gate |
-| Pref-gated number row | direction | M | After height budget known post-019 |
+| Pref-gated number row | direction | M | After height budget post-030 |
 
 ### Direction (options)
 
-1. **Autocorrect opt-in (Plan 026)** — largest remaining Gboard typing gap.
-2. **Editing gestures (Plan 025)** — cursor + delete muscle memory.
-3. **Number row pref** — alphanumeric friction; not planned this round.
-4. **Dual-stack simplification (028 + later catalog/onboarding)** — “one product.”
-5. **Tick `docs/manual-test-matrix.md` on S22** — only real daily-driver proof.
+1. **Finish Phase 8 ghosts (029–032)** — unblock daily-driver typing trust.
+2. **S22 manual matrix + battery** — only real acceptance proof; gates
+   autocorrect default-ON (ADR-0005).
+3. **Unify ModelCatalog → ModelRegistry + one onboarding** — “one product.”
+4. **Number row pref** — after suggestion bar height known.
+5. **Promote autocorrect default ON** — only after matrix sign-off.
 
 ### Not audited / light coverage
 
@@ -111,50 +125,43 @@ fix were excluded. Default plans: **024–028**.
 
 ## Findings considered and rejected
 
-### Carried forward from prior audits
+### Carried forward
 
-- Telemetry / cloud STT / bundle models in APK / auto-upstream Dictus — rejected.
-- AGP 9 major bump now — defer; don’t block Phase 9 UX/reliability.
-- Encrypt pins as P1 before backup-off — superseded by 022; encryption still
-  deferred (listed above).
-- Re-planning 019–023 items — excluded by owner assumption this run.
+- Telemetry / cloud STT / bundle models in APK / auto-upstream Dictus —
+  rejected.
+- AGP 9 major bump now — prefer AGP 8.13 first (deps finding); don’t block
+  Phase 10 UX/privacy.
+- Ship autocorrect default ON ungated — rejected (ADR-0005).
+- Full geometric swipe / LatinIME JNI — not yet; 032 lightweight decoder first.
+- Delete DictationService entirely this round — too large; catalog unify first.
 
-### From deep #2
+### From deep #3
 
-- **"Full geometric swipe decoder / LatinIME JNI"** — not worth it yet; 023 +
-  dwell follow-up first.
-- **"Delete DictationService entirely in 028"** — too large; detach IME UI only.
-- **"Ship autocorrect default ON"** — rejected; HIGH trust risk.
+- Re-planning 024–028 items — excluded (assumed merged; code present on
+  audit tree).
+- Encrypt pins as P1 before backup-off — do **029** first.
 
 ## Key documents
 
 - [`../AGENTS.md`](../AGENTS.md), [`../CONTEXT.md`](../CONTEXT.md) (historical
-  swipe bullet superseded), [`../docs/adr/`](../docs/adr/),
+  swipe bullet superseded), [`../docs/adr/`](../docs/adr/) (incl. ADR-0005),
   `../docs/dictus-inventory.md`, `../docs/manual-test-matrix.md`.
 
 ## Advisor notes
 
-Deep #2 assumes Phase 8 (019–023) shipped. Remaining path to a frontier
-daily driver: **don’t drop polish when leaving the voice panel**, **edit text
-like Gboard**, **optional autocorrect**, **keep recording off the UI thread**,
-and **stop the legacy DictationService overlay from hijacking the IME**.
-On reconcile: verify 019–023 code actually exists on HEAD; if not, execute
-Phase 8 before Phase 9.
+Deep #3 headline: **Phase 9 landed on PRs, but Phase 8 “DONE” was a paper
+fiction** — suggestions, swipe jank, privacy scrub, and swipe decode still
+need real code (029–032). After that, pin polish IC + kill mic `runBlocking`
+(033). Then owner S22 matrix before promoting autocorrect.
 
-## Execute results (2026-07-20)
-
-`/improve execute` dispatched isolated worktree executors; advisor reviewed
-diffs + re-ran done criteria. **Code was not merged into `main`** — merge is
-owner decision via the PRs below (opened in merge order so numbers ascend).
+## Execute results — Phase 9 (2026-07-20)
 
 | # | Plan | PR | Branch | HEAD |
 |---|------|----|--------|------|
 | 1 | 024 | [#43](https://github.com/SheehanT98/GallopKeyboard/pull/43) | `cursor/024-voice-stop-outlives-panel` | `75ea90c` |
-| 2 | 027 | [#44](https://github.com/SheehanT98/GallopKeyboard/pull/44) | `cursor/027-voice-pcm-and-frame-backpressure` | `6935b2c` (includes 024) |
+| 2 | 027 | [#44](https://github.com/SheehanT98/GallopKeyboard/pull/44) | `cursor/027-voice-pcm-and-frame-backpressure` | `6935b2c` |
 | 3 | 025 | [#45](https://github.com/SheehanT98/GallopKeyboard/pull/45) | `cursor/025-editing-cursor-and-delete` | `b1cbc2f` |
-| 4 | 026 | [#46](https://github.com/SheehanT98/GallopKeyboard/pull/46) | `cursor/026-autocorrect-on-space-spike` | `aab29cc` (includes 025) |
+| 4 | 026 | [#46](https://github.com/SheehanT98/GallopKeyboard/pull/46) | `cursor/026-autocorrect-on-space-spike` | `aab29cc` |
 | 5 | 028 | [#47](https://github.com/SheehanT98/GallopKeyboard/pull/47) | `cursor/028-ime-detach-dictation-service-ui` | `c7c60d4` |
 
-Merge in PR number order: **#43 → #44 → #45 → #46 → #47**.
-Expect conflicts in `DictusImeService.kt` / `docs/dictus-inventory.md` when
-combining stacks; #44 shrinks after #43 lands, #46 shrinks after #45 lands.
+Merge **#43 → #44 → #45 → #46 → #47** before executing Phase 10.
