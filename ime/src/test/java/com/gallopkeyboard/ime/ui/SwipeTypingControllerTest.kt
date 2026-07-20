@@ -55,6 +55,67 @@ class SwipeTypingControllerTest {
     }
 
     @Test
+    fun `dwell on same key emits double letter`() {
+        var now = 0L
+        val dwellController = SwipeTypingController(
+            swipeSlopPx = 10f,
+            accentCellWidthPx = accentCellWidthPx,
+            dwellMs = 300L,
+            clock = { now },
+        )
+        dwellController.parentWidthPx = parentWidthPx
+        dwellController.updateKeyBounds(
+            listOf(
+                CharacterKeyBounds(keyH, Rect(0f, 0f, 40f, 40f)),
+                CharacterKeyBounds(keyE, Rect(50f, 0f, 90f, 40f)),
+                CharacterKeyBounds(keyL, Rect(100f, 0f, 140f, 40f)),
+                CharacterKeyBounds(keyO, Rect(150f, 0f, 190f, 40f)),
+            ),
+        )
+
+        dwellController.onPointerDown(Offset(20f, 20f), keyH, accents = null)
+        dwellController.onPointerMove(Offset(70f, 20f))
+        now = 400L
+        dwellController.onPointerMove(Offset(120f, 20f))
+        now = 800L
+        dwellController.onPointerMove(Offset(120f, 20f))
+        dwellController.onPointerMove(Offset(170f, 20f))
+        val result = dwellController.onPointerUp()
+        assertTrue(result is SwipeTypingResult.SwipeWord)
+        assertEquals("hello", (result as SwipeTypingResult.SwipeWord).word)
+    }
+
+    @Test
+    fun `jitter below dwell does not emit double letter`() {
+        var now = 0L
+        val dwellController = SwipeTypingController(
+            swipeSlopPx = 10f,
+            accentCellWidthPx = accentCellWidthPx,
+            dwellMs = 300L,
+            clock = { now },
+        )
+        dwellController.parentWidthPx = parentWidthPx
+        dwellController.updateKeyBounds(
+            listOf(
+                CharacterKeyBounds(keyH, Rect(0f, 0f, 40f, 40f)),
+                CharacterKeyBounds(keyE, Rect(50f, 0f, 90f, 40f)),
+                CharacterKeyBounds(keyL, Rect(100f, 0f, 140f, 40f)),
+                CharacterKeyBounds(keyO, Rect(150f, 0f, 190f, 40f)),
+            ),
+        )
+
+        dwellController.onPointerDown(Offset(20f, 20f), keyH, accents = null)
+        dwellController.onPointerMove(Offset(70f, 20f))
+        now = 100L
+        dwellController.onPointerMove(Offset(120f, 20f))
+        now = 150L
+        dwellController.onPointerMove(Offset(120f, 20f))
+        dwellController.onPointerMove(Offset(170f, 20f))
+        val result = dwellController.onPointerUp()
+        assertEquals("helo", (result as SwipeTypingResult.SwipeWord).word)
+    }
+
+    @Test
     fun `long press with accent selection resolves to Accent`() {
         controller.onPointerDown(Offset(60f, 20f), keyE, accents = listOf("é", "è", "ê"))
         controller.onLongPressThreshold()

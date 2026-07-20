@@ -6,7 +6,8 @@ package com.gallopkeyboard.ime.ui
 object SwipePathHelper {
 
     /**
-     * Collapse consecutive duplicate letters (e.g. h-e-l-l-o path may visit "l" twice).
+     * Collapse consecutive duplicate letters (e.g. slide jitter on the same key).
+     * Dwell-emitted doubles are preserved when the path is built without dedupe first.
      */
     fun dedupeConsecutive(letters: List<Char>): List<Char> {
         if (letters.isEmpty()) return emptyList()
@@ -22,8 +23,10 @@ object SwipePathHelper {
     }
 
     /**
-     * Keep only alphabetic characters, dedupe consecutive duplicates, and join.
+     * Keep only alphabetic characters and join.
+     *
+     * Slide dedupe is handled in [SwipeTypingController]; dwell adds intentional doubles.
      */
     fun pathToWord(path: List<Char>): String =
-        dedupeConsecutive(path.filter { it.isLetter() }).joinToString("")
+        path.filter { it.isLetter() }.joinToString("")
 }

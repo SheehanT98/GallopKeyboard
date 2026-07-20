@@ -29,6 +29,7 @@ import com.gallopkeyboard.ime.model.KeyDefinition
 import com.gallopkeyboard.ime.model.KeyType
 import com.gallopkeyboard.ime.model.KeyboardLayer
 import com.gallopkeyboard.ime.model.KeyboardLayouts
+import com.gallopkeyboard.ime.suggestion.DictionaryEngine
 import com.gallopkeyboard.ime.suggestion.SuggestionEngine
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -101,9 +102,8 @@ fun KeyboardView(
 
     fun resolveSwipeWord(rawPath: String): String {
         if (rawPath.length < 2) return rawPath
-        val engine = currentSuggestionEngine.value ?: return rawPath
-        val suggestions = engine.getSuggestions(rawPath, maxResults = 1)
-        return suggestions.firstOrNull() ?: rawPath
+        val engine = currentSuggestionEngine.value as? DictionaryEngine ?: return rawPath
+        return engine.resolveSwipePath(rawPath)
     }
 
     fun commitSwipeResult(result: SwipeTypingResult) {

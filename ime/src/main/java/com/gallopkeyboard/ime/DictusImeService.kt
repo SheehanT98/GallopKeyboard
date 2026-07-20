@@ -317,6 +317,7 @@ class DictusImeService : LifecycleInputMethodService() {
                 suggestions = suggestions,
                 onSuggestionSelected = { word -> commitSuggestion(word) },
                 onCurrentWordSelected = { commitCurrentWord() },
+                suggestionEngine = dictionaryEngine,
             )
         }
     }
