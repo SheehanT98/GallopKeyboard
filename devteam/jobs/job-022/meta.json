@@ -7,9 +7,9 @@
   "feature": "Execute plan 033 async mic permission and polish ic",
   "slug": "execute-plan-033-async-mic-permission-and-polish",
   "branch": "cursor/devteam-job-022-execute-plan-033-async-mic-permission-and-polish-c1fc",
-  "pr": null,
-  "prNumber": null,
-  "chatTitle": null,
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/51",
+  "prNumber": 51,
+  "chatTitle": "devteam pr51",
   "models": {
     "plan": "cursor-grok-4.5-high",
     "code": "composer-2.5",
