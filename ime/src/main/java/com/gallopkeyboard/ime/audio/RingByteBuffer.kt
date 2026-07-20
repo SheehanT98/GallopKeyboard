@@ -35,6 +35,22 @@ class RingByteBuffer(capacityBytes: Int) {
         }
     }
 
+    /**
+     * Writes PCM16 little-endian samples via bulk short→byte conversion.
+     * Pass a reusable [scratch] (`size >= samples.size * 2`) to avoid per-frame alloc.
+     */
+    fun writeShorts(samples: ShortArray, scratch: ByteArray? = null) {
+        if (samples.isEmpty()) return
+        val byteLen = samples.size * 2
+        val bytes = if (scratch != null && scratch.size >= byteLen) {
+            scratch
+        } else {
+            ByteArray(byteLen)
+        }
+        ByteBuffer.wrap(bytes, 0, byteLen).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().put(samples)
+        write(bytes, 0, byteLen)
+    }
+
     /** Snapshot of buffered PCM16 little-endian samples at 16 kHz mono. */
     fun snapshotShorts(): ShortArray {
         val bytes = snapshot()

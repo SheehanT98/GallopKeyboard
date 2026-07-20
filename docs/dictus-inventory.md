@@ -489,3 +489,33 @@ does not. Successful polish runs through `TextPostProcessor` (same as
 Release mic → immediately tap keyboard icon → polish must still replace composing
 text in Notes/WhatsApp. Empty Whisper result must leave streaming partial committed.
 
+## Plan 027 additions
+
+Move voice PCM collection off Compose Main; bound ASR frame work; gate idle pulse.
+
+### Product / perf decision
+
+- PCM collect/write runs on `RecorderCoroutineDispatcher` via `sessionScope.launch(recorderDispatcher)`
+  (not Compose `rememberCoroutineScope`), preserving Plan 024 stop/polish on `voiceStopScope`.
+- `StreamingTranscriber` uses a serial consumer + capacity-2 DROP_OLDEST frame queue instead of
+  unbounded per-frame `launch`.
+- `rememberInfiniteTransition` for the mic pulse runs only while `isRecordingVisual` (RecordingDot
+  was already gated). Idle voice panel must not spin an infinite transition.
+- Optional 60 s→5 min ring grow deferred — keep Plan 005 five-minute ceiling capacity.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../panel/SmartVoiceButton.kt` | Collect on recorder dispatcher; `writeShorts` + scratch; gate pulse |
+| `ime/.../asr/StreamingTranscriber.kt` | Bounded serial frame queue + single consumer; keep sessionEpoch |
+| `ime/.../audio/RingByteBuffer.kt` | `writeShorts(samples, scratch?)` bulk helper |
+| `ime/.../di/DictusImeEntryPoint.kt` | Expose `recorderCoroutineDispatcher()` |
+| `ime/src/test/.../audio/RingByteBufferTest.kt` | writeShorts equivalence |
+| `ime/src/test/.../asr/StreamingTranscriberTest.kt` | Slow-engine queue bound; interleaved drain for partials |
+
+### Manual / visual smoke
+
+Idle voice panel: no continuous pulse animation CPU. Start recording: pulse + RecordingDot
+animate. Release: pulse stops. Partials still update under normal speech (queue capacity 2).
+

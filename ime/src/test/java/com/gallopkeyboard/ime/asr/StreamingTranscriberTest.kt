@@ -69,10 +69,11 @@ class StreamingTranscriberTest {
         drainAsrAndMain()
         committer.calls.clear()
 
+        // Interleave drain so the bounded queue is not DROP_OLDEST-starved in unit tests.
         repeat(10) {
             transcriber.onAudioFrame(session, ShortArray(1600))
+            drainAsrAndMain()
         }
-        drainAsrAndMain()
 
         assertEquals(
             listOf(
@@ -93,8 +94,8 @@ class StreamingTranscriberTest {
 
         repeat(15) {
             transcriber.onAudioFrame(session, ShortArray(1600))
+            drainAsrAndMain()
         }
-        drainAsrAndMain()
 
         assertEquals(
             listOf(
@@ -129,10 +130,47 @@ class StreamingTranscriberTest {
 
         repeat(50) {
             transcriber.onAudioFrame(session, ShortArray(1600))
+            // Keep consumer fed enough frames under DROP_OLDEST capacity.
+            if (it % 3 == 2) {
+                runBlocking(asrDispatcher.dispatcher) { }
+            }
         }
         drainAsrAndMain()
 
         assertTrue(committer.calls.any { it == CommitterCall.SetComposing("hello") })
+    }
+
+    @Test
+    fun `slow acceptFrame keeps queued copies bounded`() {
+        val acceptStarted = CountDownLatch(1)
+        val releaseAccept = CountDownLatch(1)
+        engine.onAcceptFrame = {
+            acceptStarted.countDown()
+            releaseAccept.await(5, TimeUnit.SECONDS)
+        }
+        val session = newSession()
+        transcriber.onSessionStart(session)
+        drainAsrAndMain()
+
+        // First frame enters acceptFrame and blocks; subsequent frames fill/drop in queue.
+        transcriber.onAudioFrame(session, ShortArray(1600))
+        assertTrue(acceptStarted.await(5, TimeUnit.SECONDS))
+
+        repeat(100) {
+            transcriber.onAudioFrame(session, ShortArray(1600))
+        }
+
+        assertTrue(
+            "peak queued copies=${transcriber.peakQueuedFrameCopies.get()}",
+            transcriber.peakQueuedFrameCopies.get() <= StreamingTranscriber.FRAME_QUEUE_CAPACITY,
+        )
+        assertTrue(
+            "current queued=${transcriber.queuedFrameCopies.get()}",
+            transcriber.queuedFrameCopies.get() <= StreamingTranscriber.FRAME_QUEUE_CAPACITY,
+        )
+
+        releaseAccept.countDown()
+        drainAsrAndMain()
     }
 
     @Test

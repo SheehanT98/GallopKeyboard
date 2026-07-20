@@ -52,14 +52,16 @@ import com.gallopkeyboard.ime.audio.AudioSession
 import com.gallopkeyboard.ime.audio.RING_BUFFER_CAPACITY_BYTES
 import com.gallopkeyboard.ime.audio.RingByteBuffer
 import com.gallopkeyboard.ime.audio.Transcriber
+import com.gallopkeyboard.ime.di.DictusImeEntryPoint
 import com.gallopkeyboard.ime.theme.GallopColors
+import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import kotlinx.coroutines.withContext
 
 enum class SmartVoiceButtonStyle {
     /** Full-width bar in a tall dedicated voice panel. */
@@ -83,6 +85,13 @@ fun SmartVoiceButton(
     val scope = rememberCoroutineScope()
     val cancelSlopPx = with(density) { CANCEL_SLOP_DP.dp.toPx() }
 
+    val recorderDispatcher = remember(context) {
+        EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            DictusImeEntryPoint::class.java,
+        ).recorderCoroutineDispatcher()
+    }
+
     var visualRecording by remember { mutableStateOf(false) }
     var activeSession by remember { mutableStateOf<AudioSession?>(null) }
     var recordingJob by remember { mutableStateOf<Job?>(null) }
@@ -90,7 +99,7 @@ fun SmartVoiceButton(
     var holdTimerJob by remember { mutableStateOf<Job?>(null) }
     var pointerPressed by remember { mutableStateOf(false) }
 
-    val fsm = remember(cancelSlopPx) {
+    val fsm = remember(cancelSlopPx, recorderDispatcher) {
         GestureFsm(
             cancelSlopPx = cancelSlopPx,
             onSessionStart = {
@@ -102,11 +111,20 @@ fun SmartVoiceButton(
                 activeSession = session
                 transcriber.onSessionStart(session)
                 recordingJob?.cancel()
-                recordingJob = scope.launch {
+                // Collect PCM on RecorderCoroutineDispatcher — never Compose Main (Plan 027).
+                // Job still owned by sessionScope so it is not tied to composition dispose
+                // the same way as stop/polish (Plan 024); cancel explicitly on stop/cancel/dispose.
+                recordingJob = sessionScope.launch(recorderDispatcher.dispatcher) {
+                    // Reusable LE PCM scratch — one alloc per session, not per ~100 ms frame.
+                    var scratch = ByteArray(0)
                     try {
                         audioRecorderEngine.start().collect { frame ->
                             val sessionRef = activeSession ?: return@collect
-                            writeFrameToBuffer(sessionRef.buffer, frame)
+                            val need = frame.size * 2
+                            if (scratch.size < need) {
+                                scratch = ByteArray(need)
+                            }
+                            sessionRef.buffer.writeShorts(frame, scratch)
                             val dropped = sessionRef.buffer.droppedBytes()
                             if (dropped > 0L) {
                                 Log.w(
@@ -118,8 +136,10 @@ fun SmartVoiceButton(
                         }
                     } catch (e: Exception) {
                         Log.e("AudioRecorder", "recording failed", e)
-                        visualRecording = false
-                        activeSession = null
+                        withContext(Dispatchers.Main) {
+                            visualRecording = false
+                            activeSession = null
+                        }
                     }
                 }
             },
@@ -203,17 +223,26 @@ fun SmartVoiceButton(
         SmartVoiceButtonStyle.Panel -> 16.dp
     }
 
-    val pulseTransition = rememberInfiniteTransition(label = "recording-pulse")
-    val pulseRadius by pulseTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "pulse-radius",
-    )
-    val pulseAlpha = if (isRecordingVisual) 0.15f + pulseRadius * 0.25f else 0f
+    // Gate infinite pulse to recording-only — idle voice panel must not run forever.
+    val pulseRadius: Float
+    val pulseAlpha: Float
+    if (isRecordingVisual) {
+        val pulseTransition = rememberInfiniteTransition(label = "recording-pulse")
+        val radius by pulseTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 1000),
+                repeatMode = RepeatMode.Reverse,
+            ),
+            label = "pulse-radius",
+        )
+        pulseRadius = radius
+        pulseAlpha = 0.15f + radius * 0.25f
+    } else {
+        pulseRadius = 0f
+        pulseAlpha = 0f
+    }
 
     val gestureModifier = Modifier.pointerInput(cancelSlopPx) {
         awaitEachGesture {
@@ -348,13 +377,6 @@ private fun RecordingDot() {
             .graphicsLayer { this.alpha = alpha }
             .background(GallopColors.AccentOn, CircleShape),
     )
-}
-
-private fun writeFrameToBuffer(buffer: RingByteBuffer, frame: ShortArray) {
-    val bytes = ByteArray(frame.size * 2)
-    val bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
-    frame.forEach { sample -> bb.putShort(sample) }
-    buffer.write(bytes, 0, bytes.size)
 }
 
 private fun Context.showToast(messageRes: Int) {
