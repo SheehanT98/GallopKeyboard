@@ -145,16 +145,16 @@ Phase 8 before Phase 9.
 
 `/improve execute` dispatched isolated worktree executors; advisor reviewed
 diffs + re-ran done criteria. **Code was not merged into `main`** — merge is
-owner decision.
+owner decision via the PRs below (opened in merge order so numbers ascend).
 
-| Plan | Verdict | Worktree | Branch | HEAD |
-|------|---------|----------|--------|------|
-| 024 | APPROVE | `/tmp/plan-024-wt` | `advisor/024-voice-stop-outlives-panel` | `75ea90c` |
-| 025 | APPROVE | `/tmp/plan-025-wt` | `advisor/025-editing-cursor-and-delete` | `b1cbc2f` |
-| 026 | APPROVE | `/tmp/plan-026-wt` | `advisor/026-autocorrect-on-space-spike` | `aab29cc` (based on 025) |
-| 027 | APPROVE | `/tmp/plan-027-wt` | `advisor/027-voice-pcm-and-frame-backpressure` | `6935b2c` (based on 024; + Compose pulse fix) |
-| 028 | APPROVE | `/tmp/plan-028-wt` | `advisor/028-ime-detach-dictation-service-ui` | `c7c60d4` |
+| # | Plan | PR | Branch | HEAD |
+|---|------|----|--------|------|
+| 1 | 024 | [#43](https://github.com/SheehanT98/GallopKeyboard/pull/43) | `cursor/024-voice-stop-outlives-panel` | `75ea90c` |
+| 2 | 027 | [#44](https://github.com/SheehanT98/GallopKeyboard/pull/44) | `cursor/027-voice-pcm-and-frame-backpressure` | `6935b2c` (includes 024) |
+| 3 | 025 | [#45](https://github.com/SheehanT98/GallopKeyboard/pull/45) | `cursor/025-editing-cursor-and-delete` | `b1cbc2f` |
+| 4 | 026 | [#46](https://github.com/SheehanT98/GallopKeyboard/pull/46) | `cursor/026-autocorrect-on-space-spike` | `aab29cc` (includes 025) |
+| 5 | 028 | [#47](https://github.com/SheehanT98/GallopKeyboard/pull/47) | `cursor/028-ime-detach-dictation-service-ui` | `c7c60d4` |
 
-Suggested merge order into product branch: **024 → 027**, **025 → 026**,
-**028** anytime (independent). Expect conflicts in `DictusImeService.kt` /
-`docs/dictus-inventory.md` when combining all five.
+Merge in PR number order: **#43 → #44 → #45 → #46 → #47**.
+Expect conflicts in `DictusImeService.kt` / `docs/dictus-inventory.md` when
+combining stacks; #44 shrinks after #43 lands, #46 shrinks after #45 lands.
