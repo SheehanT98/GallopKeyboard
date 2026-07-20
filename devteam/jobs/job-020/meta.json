@@ -1,0 +1,52 @@
+{
+  "id": "job-020",
+  "status": "awaiting_review",
+  "mode": "quick",
+  "originalAsk": "Execute plan 029 finish privacy backup and log scrub",
+  "planRef": "plans/029-finish-privacy-backup-and-log-scrub.md",
+  "feature": "Execute plan 029 finish privacy backup and log scrub",
+  "slug": "execute-plan-029-finish-privacy-backup-and-log-s",
+  "branch": "cursor/devteam-job-020-execute-plan-029-finish-privacy-backup-and-log-s-c1fc",
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-20T21:40:00.000Z",
+  "lastStatusAt": "2026-07-20T21:52:09.492Z",
+  "plannedFiles": [
+    "app/src/main/AndroidManifest.xml",
+    "app/src/main/res/xml/backup_rules.xml",
+    "app/src/main/res/xml/data_extraction_rules.xml",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/KeyboardScreen.kt",
+    "app/src/main/java/com/gallopkeyboard/service/DictationService.kt",
+    "whisper/src/main/java/com/gallopkeyboard/whisper/WhisperContext.kt",
+    "asr/src/main/java/com/gallopkeyboard/asr/parakeet/ParakeetEngine.kt",
+    "core/src/main/java/com/gallopkeyboard/core/log/CrashHandler.kt",
+    "scripts/verify.sh",
+    "docs/dictus-inventory.md",
+    "plans/README.md"
+  ],
+  "touchedFiles": [],
+  "blockedBy": [],
+  "dependsOn": [],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "done",
+    "test": "done",
+    "review": "done",
+    "doubleCheck": "done"
+  },
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/48",
+  "prNumber": 48,
+  "chatTitle": "devteam pr48",
+  "completedAt": "2026-07-20T21:52:09.491Z"
+}

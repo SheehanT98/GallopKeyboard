@@ -33,4 +33,27 @@ if grep -rn "Log\.d(" --include='*.kt' ime/src/main 2>/dev/null | grep -v "Build
   echo "WARN: Log.d in hot path without guard"
 fi
 
+echo "==> allowBackup disabled"
+if ! grep -q 'android:allowBackup="false"' app/src/main/AndroidManifest.xml; then
+  echo "FAIL: android:allowBackup=\"false\" missing from manifest"; exit 1
+fi
+
+echo "==> no keystroke/swipe PII logs in ime"
+if grep -rnE 'Key pressed|Swipe word committed|Accent selected:' --include='*.kt' ime/src/main 2>/dev/null; then
+  echo "FAIL: keystroke/swipe/accent PII log found in ime"; exit 1
+fi
+
+echo "==> no raw transcript logs in app/whisper/asr"
+if grep -rnE "Transcription result: raw=|result='%s'" --include='*.kt' app/src/main whisper/src/main 2>/dev/null; then
+  echo "FAIL: raw transcript log found"; exit 1
+fi
+if grep -rn 'finalize: "' --include='*.kt' asr/src/main/java/com/gallopkeyboard 2>/dev/null; then
+  echo "FAIL: Parakeet finalize logs transcript body"; exit 1
+fi
+
+echo "==> CrashHandler does not dump logcat"
+if grep -n 'logcat' core/src/main/java/com/gallopkeyboard/core/log/CrashHandler.kt 2>/dev/null; then
+  echo "FAIL: logcat exec in CrashHandler"; exit 1
+fi
+
 echo "OK"

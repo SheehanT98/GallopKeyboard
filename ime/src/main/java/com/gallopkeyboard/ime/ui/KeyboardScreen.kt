@@ -96,7 +96,6 @@ fun KeyboardScreen(
                             if (isShifted && !isCapsLock) {
                                 isShifted = false
                             }
-                            Timber.d("Swipe word committed: %s", word)
                         },
                         onDeleteBackwardWord = onDeleteBackwardWord,
                         onSpaceCursorDrag = onSpaceCursorDrag,
@@ -138,7 +137,6 @@ fun KeyboardScreen(
                             if (isShifted && !isCapsLock) {
                                 isShifted = false
                             }
-                            Timber.d("Accent selected: %s", accent)
                         },
                         modifier = Modifier.weight(1f),
                     )
@@ -173,8 +171,6 @@ internal fun handleKeyPress(
     onLayerChanged: (KeyboardLayer) -> Unit,
     onAutoUnshift: () -> Unit,
 ) {
-    Timber.d("Key pressed: %s", key.label)
-
     when (key.type) {
         KeyType.CHARACTER -> {
             val output = if (isShifted) key.output.uppercase() else key.output

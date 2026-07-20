@@ -604,3 +604,30 @@ Start companion-app test recording while Notes (or another editor) is focused
 with GallopKeyboard open → keyboard stays QWERTY / hybrid voice panel; does
 **not** show legacy IME `RecordingScreen`.
 
+## Plan 029 additions
+
+Disable Android Auto Backup and scrub PII from always-on file logs / crash
+artifacts.
+
+### Privacy / backup
+
+| Item | Detail |
+|------|--------|
+| `android:allowBackup` | `false` on `<application>` in `app/src/main/AndroidManifest.xml` |
+| Backup rules | Deny-all `res/xml/backup_rules.xml` + `data_extraction_rules.xml` |
+
+### Log sites removed or redacted
+
+| Path | Change |
+|------|--------|
+| `ime/.../ui/KeyboardScreen.kt` | Removed `Timber.d` for key labels, swipe words, accent chars |
+| `app/.../service/DictationService.kt` | Transcript log → char counts only |
+| `whisper/.../WhisperContext.kt` | Transcript log → char count only |
+| `asr/.../parakeet/ParakeetEngine.kt` | `finalize` log → char count only |
+| `core/.../log/CrashHandler.kt` | Dropped `logcat -d` radio tail from crash `.txt` files |
+
+### verify.sh guards
+
+Fail-closed greps for `allowBackup="false"`, forbidden PII patterns, and
+`logcat` in `CrashHandler`.
+

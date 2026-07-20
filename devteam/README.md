@@ -6,9 +6,10 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 
 **Active agent jobs:** 0
 **Queued:** 0
-**Awaiting your review:** 7
+**Awaiting your review:** 8
 | Job | Status | Feature | Branch | PR | Review |
 |-----|--------|---------|--------|-----|--------|
+| job-020 | awaiting_review | Execute plan 029 finish privacy backup and log scrub | `cursor/devteam-job-020-execute-plan-029-finish-privacy-backup-and-log-s-c1fc` | #48 | [04-review.md](jobs/job-020/04-review.md) |
 | job-019 | awaiting_review | Execute plan 017 fix accent popup commit and geometry | `cursor/devteam-job-019-execute-plan-017-fix-accent-popup-commit-and-geo-c1fc` | #42 | [04-review.md](jobs/job-019/04-review.md) |
 | job-018 | awaiting_review | Execute plan 016 voice dispose cancel and unify mic | `cursor/devteam-job-018-execute-plan-016-voice-dispose-cancel-and-unify--c1fc` | #41 | [04-review.md](jobs/job-018/04-review.md) |
 | job-017 | awaiting_review | Execute plan 014 offload streaming ASR from IME main thread | `cursor/devteam-job-017-execute-plan-014-offload-streaming-asr-from-ime--c1fc` | #40 | [04-review.md](jobs/job-017/04-review.md) |
@@ -26,6 +27,7 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 - **job-017** — Execute plan 014 offload streaming ASR from IME main thread · PR 40
 - **job-018** — Execute plan 016 voice dispose cancel and unify mic · PR 41
 - **job-019** — Execute plan 017 fix accent popup commit and geometry · PR 42
+- **job-020** — Execute plan 029 finish privacy backup and log scrub · PR 48
 
 ## Commands
 

@@ -50,7 +50,12 @@ class WhisperContext private constructor(private var ptr: Long) {
             }
 
             val durationMs = System.currentTimeMillis() - startMs
-            Timber.d("Transcription complete: %d segments, %d ms, result='%s'", textCount, durationMs, result)
+            Timber.d(
+                "Transcription complete: %d segments, %d ms, %d chars",
+                textCount,
+                durationMs,
+                result.length,
+            )
             return@withContext result
         }
 
