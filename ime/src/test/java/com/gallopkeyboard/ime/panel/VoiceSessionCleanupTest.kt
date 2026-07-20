@@ -4,6 +4,7 @@ import com.gallopkeyboard.ime.audio.AudioSession
 import com.gallopkeyboard.ime.audio.RingByteBuffer
 import com.gallopkeyboard.ime.audio.Transcriber
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -64,5 +65,35 @@ class VoiceSessionCleanupTest {
         cancelActiveSession(transcriber, null)
 
         assertEquals(1, cancelCount)
+    }
+
+    @Test
+    fun `dispose while recording should cancel`() {
+        assertTrue(
+            shouldCancelRecordingOnDispose(
+                recordingSessionActive = true,
+                stoppingJobActive = false,
+            ),
+        )
+    }
+
+    @Test
+    fun `dispose while stopping should keep polish`() {
+        assertFalse(
+            shouldCancelRecordingOnDispose(
+                recordingSessionActive = false,
+                stoppingJobActive = true,
+            ),
+        )
+    }
+
+    @Test
+    fun `dispose idle should not cancel`() {
+        assertFalse(
+            shouldCancelRecordingOnDispose(
+                recordingSessionActive = false,
+                stoppingJobActive = false,
+            ),
+        )
     }
 }
