@@ -8,7 +8,11 @@ into plan waves:
 - **Plans 011–013** — post-v1 UX: toolbar Voice, symbols clipboard pins,
   swipe typing on LETTERS (**DONE**).
 - **Plans 014–018** (2026-07-17, `standard` audit at `3571aab`) —
-  improve-skill hardening and docs (**TODO** except 018 when reconciled).
+  ASR threading, SHA defer, voice dispose, accent fix, docs (**DONE**).
+- **Plans 019–023** (2026-07-20, `deep` audit at `86dfd89`) — typing
+  quality + cancel correctness + swipe jank + privacy + swipe decoder
+  (**TODO**). Non-interactive default: top five by leverage (no user
+  selection this run).
 
 The repository contains the full GallopKeyboard Android tree (fork of
 [Dictus](https://github.com/getdictus/dictus-android)). Every plan is
@@ -44,18 +48,23 @@ Execute in numeric order unless a plan header says otherwise. Header
 | 016 | Cancel ASR on SmartVoice dispose + unify dual mic | 7 | P1 | M | 014 optional | DONE |
 | 017 | Fix accent popup double-commit + swipe accent geometry | 7 | P2 | S | — | DONE |
 | 018 | Reconcile AGENTS.md with shipped Plans 011–013 UX | 7 | P2 | S | — | DONE |
+| 019 | Wire suggestion bar + English dictionary defaults | 8 | P1 | M | — | TODO |
+| 020 | Discard composing on voice cancel + serialize IC writes | 8 | P1 | M | — | TODO |
+| 021 | Stop full-keyboard recomposition on swipe MOVE | 8 | P1 | M | — | TODO |
+| 022 | Disable Auto Backup + scrub keystroke/transcript logs | 8 | P1 | S | — | TODO |
+| 023 | Decode swipe paths with DictionaryEngine | 8 | P2 | M | 019 recommended | TODO |
 
 **Status values**: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` (with
 one-line reason) | `REJECTED` (with one-line rationale).
 
-## Recommended next execution order (Phase 7)
+## Recommended next execution order (Phase 8)
 
-1. **018** (docs, unblocks agents) — parallel-safe with everything
-2. **015** (cheap ANR win) — parallel-safe with 014/017/018
-3. **014** (ADR-0002 threading) — land before or with **016** if cancel
-   races an async frame queue
-4. **016** (dispose cancel + single mic product)
-5. **017** (accent correctness) — independent
+1. **019** (suggestion bar + EN defaults) — largest “lackluster typing” win
+2. **022** (privacy, cheap, parallel-safe with everything)
+3. **020** (voice cancel correctness) — parallel-safe with 019/021/022
+4. **021** (swipe jank) — parallel-safe with 019/020/022; land before or
+   with **023** so decoder work does not fight invalidation refactors
+5. **023** (swipe dictionary decode) — after **019** when possible
 
 ## Phase mapping
 
@@ -67,49 +76,65 @@ one-line reason) | `REJECTED` (with one-line rationale).
 - **Phase 5 — Hardening**: Plan 010.
 - **Phase 6 — Post-v1 UX**: Plans 011, 012, 013.
 - **Phase 7 — Improve audit follow-ups**: Plans 014–018.
+- **Phase 8 — Frontier typing + trust**: Plans 019–023.
 
 ## Dependency notes
 
-- **Plans 001 → 013**: historical; all `DONE`.
-- **014 and 015** are independent; either may start first.
-- **016** should call `onSessionCancel` regardless of 014, but if 014
-  introduces an async frame queue, land **014 before 016** (or serialize
-  cancel behind in-flight frames inside 016).
-- **017** is independent of 014–016.
-- **018** is docs-only; run ASAP so agents stop treating swipe as banned.
+- **Plans 001 → 018**: historical; all `DONE`.
+- **019** unblocks best results for **023** (English dict + engine wiring).
+- **020**, **021**, **022** are independent of each other.
+- **021** before **023** reduces merge conflict risk in `KeyboardView` /
+  swipe UI state.
 - Kotlin-touching plans still append **"Plan NNN additions"** to
   `docs/dictus-inventory.md`.
 
-## 2026-07-17 audit — vetted findings (summary)
+## 2026-07-20 deep audit — vetted findings (summary)
 
-Audit mode: **standard**. Planned against `3571aab`. Default plans: top
-five by leverage (no interactive selection).
+Audit mode: **deep** (all nine categories). Planned against `86dfd89`.
+Default plans: **019–023** (top five by leverage). Owner signal: keyboard
+feels lackluster vs a frontier / Gboard daily driver — typing quality
+weighted heavily.
 
 | # | Finding | Category | Impact | Effort | Risk | Evidence |
 |---|---------|----------|--------|--------|------|----------|
-| 1 | Streaming ASR (`acceptFrame` / decode) runs on Compose/IME main thread via `SmartVoiceButton` → `StreamingTranscriber.onAudioFrame` | perf / bug | H | M | MED | `SmartVoiceButton.kt` collect; `StreamingTranscriber.kt` `onAudioFrame`; `ParakeetEngine.acceptFrame`; ADR-0002 |
-| 2 | Daily SHA-256 of ~220 MB voice bundle on IME `onCreate` | perf | H | S | LOW | `DictusImeService.onCreate`; `ModelInstaller.verifyInstalledIfDue` |
-| 3 | `SmartVoiceButton` dispose cancels jobs + `fsm.reset()` but does not `onSessionCancel`; dual mic (`KeyType.MIC` → `DictationService` vs SmartVoice hybrid) | bug / debt | H | M | MED | `SmartVoiceButton` DisposableEffect; `GestureFsm.reset`; `KeyboardScreen` MIC; `DictusImeService` mic tap |
-| 4 | Accent popup `clickable` + pointer-up both commit; swipe accent index uses key width not 44.dp popup geometry | bug | M | S | MED | `AccentPopup.kt`; `KeyButton.kt`; `SwipeTypingController.resolveAccentIndex` |
-| 5 | `AGENTS.md` still bans swipe; `CONTEXT.md` historical out-of-scope contradicts Plan 013 | docs | M | S | LOW | `AGENTS.md` Do NOT; Plan 013 DONE; `SwipeTypingController.kt` |
+| 1 | Suggestion bar + DictionaryEngine exist but are unwired; IME defaults suggestions off; dict defaults to French | direction / bug | H | M | MED | `DictusImeService` `_suggestions*` never passed to `KeyboardScreen`; `DictionaryEngine` `?: "fr"`; `SettingsViewModel` `?: true` mismatch; `SuggestionBar.kt` unused |
+| 2 | Voice cancel finishes composing (commits partial); Handler-posted partials race cancel; pointer cancel never emits `GestureEvent.Cancel` | bug | H | M | MED | `ImeTextCommitter.clearComposing`; `StreamingTranscriber` post vs sync; `SmartVoiceButton` Up-only; ADR-0003 §6 |
+| 3 | Swipe bumps `gestureTick` every MOVE → full keyboard recomposition | perf | H | M | MED | `KeyboardView.kt` gestureTick; `KeyRow` per-key highlight reads |
+| 4 | Auto Backup default on + keystroke/transcript Timber/file logs | security | H | S | LOW | `app` manifest omits `allowBackup`; `KeyboardScreen` / `DictusImeService` Timber; `TimberSetup` FileLoggingTree |
+| 5 | Swipe commits raw path concat (`helo`); dictionary resolve unused | direction | H | M | MED | `SwipePathHelper`; `SwipeTypingControllerTest`; `KeyboardView.resolveSwipeWord` without engine |
 
-### Direction (not ranked as defects)
+### Other vetted findings (not in default top-five plans)
 
-- **On-device acceptance matrix** in `CONTEXT.md` / HANDOFF remains mostly
-  manual — still the gate for daily-driver confidence.
-- **Formalize swipe** in AGENTS (Plan 018) and optionally a short ADR if
-  swipe semantics keep growing (dictionary decoder, etc.).
-- **Consolidate companion onboarding** (`OnboardingActivity` 2-step vs
-  `MainActivity` multi-step) — product cleanup, separate plan later.
-- **Expand `testAll`** to `:asr` / lifecycle characterization — useful
-  after 014.
+| Finding | Category | Effort | Notes |
+|---------|----------|--------|-------|
+| Code-point backspace (`deleteSurroundingTextInCodePoints`) | bug | S | Follow-up after 019–022 |
+| `onSessionStop` on Compose scope cancelled when leaving voice panel | bug | M | CORRECTNESS-03 follow-up |
+| PCM ring writes / unbounded ASR frame launches / idle pulse animation | perf | S–M | After 021 |
+| DictionaryEngine early-exit with empty personal dict | perf | S | Pair with 019 if easy |
+| Legacy `ModelDownloader` without SHA-256 | security | M | SEC-01 follow-up |
+| Dual ModelRegistry vs ModelCatalog / dual downloaders | tech-debt | L | DEBT-01 |
+| IME still binds DictationService + legacy Recording UI | tech-debt | L | DEBT-02 |
+| Dual onboarding activities / completion flags | tech-debt / direction | M | DEBT-03 |
+| SDK docs say 34, compileSdk 35; plans README intro stale on 014–018 | docs / deps | S | Fix opportunistically with 022 docs or tiny doc plan |
+| `testAll` omits `:asr`/`:whisper`; LifecycleIMS untested | tests / dx | M | Follow-up |
+| AGP/Compose major upgrade | deps | L | Not worth blocking typing work |
+
+### Direction (options — not ranked as defects)
+
+1. **Wire suggestions + EN defaults (Plan 019)** — half-built surface; highest leverage.
+2. **On-device autocorrect on space** — absent vs Gboard; high trust risk; spike later.
+3. **Swipe dictionary decoder (Plan 023)** — Plan 013 raised expectations; raw concat is not enough.
+4. **Optional number row on LETTERS** — layer-switch friction; pref-gated.
+5. **Space-bar cursor control + long-press delete accelerate** — editing muscle memory.
+6. **Run `docs/manual-test-matrix.md` on S22 + consolidate onboarding** — daily-driver gate still ☐.
 
 ### Not audited / light coverage
 
-- Full dependency CVE sweep beyond normal Gradle resolution
-- Exhaustive review of `third_party/whisper.cpp`
-- Device battery traces / StrictMode field sessions
-- Play Store / release-signing production keystore (docs only)
+- Exhaustive review of `third_party/whisper.cpp` / native ONNX internals
+- Device battery traces / StrictMode field sessions / FrameTimeline jank captures
+- Full Gradle OWASP dependency CVE sweep (npm audit clean for tooling only)
+- Play Store listing / production keystore operational security beyond code
+- Pixel-perfect visual design system pass
 
 ## Findings considered and rejected
 
@@ -124,35 +149,42 @@ five by leverage (no interactive selection).
 
 ### From 2026-07-17 standard audit
 
-- **"Pinned clipboard plaintext + default Auto Backup as immediate P1"** —
-  real privacy posture issue (`PinnedClipboardStore` KDoc; app manifest
-  omits `allowBackup` so platform default applies). Deferred: user-chosen
-  pins + personal sideload; track as a follow-up security plan, not in
-  the default top five.
-- **"Transcription / key text in always-on Timber/Log"** — partial
-  (e.g. swipe word debug). Worth a small logging hygiene pass later;
-  not planned here.
-- **"No LifecycleInputMethodService characterization tests"** —
-  valuable but lower leverage than 014–016 ANR/correctness; follow-up.
-- **"Dual onboarding activities as a bug"** — product debt / direction,
-  not a correctness defect with a single obvious fix in-scope.
-- **"Missing `:asr` in `testAll`"** — DX follow-up; verify.sh already
-  runs `:ime` tests that fake the engine.
+- **"Pinned clipboard plaintext as immediate P1"** — still real; Plan **022**
+  contains via `allowBackup=false`; full encryption remains deferred.
+- **"No LifecycleInputMethodService characterization tests"** — still
+  valuable; not in top five this round.
+- **"Dual onboarding as a bug"** — product debt; direction item #6.
+- **"Missing `:asr` in `testAll`"** — DX follow-up after fakeable engines.
+
+### From 2026-07-20 deep audit
+
+- **"AGP 9 / Compose BOM major bump now"** — real lag; HIGH risk; defer until
+  typing/trust plans land (do not block daily-driver UX).
+- **"God-module split of SettingsScreen / DictusImeService"** — worthwhile
+  cleanup; lower leverage than shipping suggestion bar / cancel fixes.
+- **"Delete StubTranscriber / waveform re-export shims alone"** — tiny debt;
+  fold into DEBT-02 cleanup later.
+- **"Cloud / AI features to feel frontier"** — rejected; contradicts offline
+  ADRs and `AGENTS.md`.
+- **"Edit CONTEXT.md swipe out-of-scope bullet"** — AGENTS forbids editing
+  CONTEXT; supersession already documented in AGENTS + this index.
 
 ## Key documents each plan uses
 
 - [`../HANDOFF.md`](../HANDOFF.md) — historical input; do not edit.
 - [`../CONTEXT.md`](../CONTEXT.md) — glossary; swipe out-of-scope bullet
-  is **superseded by Plan 013** (see Plan 018 / AGENTS note).
+  is **superseded by Plan 013** (see AGENTS note).
 - [`../docs/adr/`](../docs/adr/) — especially ADR-0002 (threading) and
   ADR-0003 (smart button).
-- [`../AGENTS.md`](../AGENTS.md) — agent rules (update via Plan 018).
+- [`../AGENTS.md`](../AGENTS.md) — agent rules.
 - `../docs/dictus-inventory.md` — append Plan NNN additions.
 - `../docs/models.md` — model pins / SHA.
+- `../docs/manual-test-matrix.md` — still mostly unchecked on device.
 
 ## Advisor notes
 
-Original 2026-07-16 round planned greenfield delivery from HANDOFF.
-2026-07-17 `/improve` (standard) audited the shipped tree and wrote
-Plans **014–018** for the default top findings. Prefer **018 + 015**
-first for cheap wins, then **014 → 016**, with **017** anytime.
+2026-07-20 `/improve deep` found Phase 7 (014–018) complete. The remaining
+gap to a “frontier” daily driver is **typing quality and trust**, not more
+voice scaffolding: unwired suggestions, French dictionary default, swipe
+jank + raw-path commits, voice-cancel committing partials, and privacy
+posture holes. Plans **019–023** are the default execution set.
