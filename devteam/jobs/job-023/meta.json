@@ -1,6 +1,6 @@
 {
   "id": "job-023",
-  "status": "reviewing",
+  "status": "double_checking",
   "mode": "quick",
   "originalAsk": "Execute plan 032 swipe dictionary decoder and dwell",
   "planRef": "plans/032-swipe-dictionary-decoder-and-dwell.md",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-20T21:57:18.621Z",
-  "lastStatusAt": "2026-07-20T22:48:07.196Z",
+  "lastStatusAt": "2026-07-20T22:50:42.247Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -61,7 +61,7 @@
     "plan": "skipped",
     "code": "done",
     "test": "done",
-    "review": "in_progress",
-    "doubleCheck": "pending"
+    "review": "done",
+    "doubleCheck": "in_progress"
   }
 }
