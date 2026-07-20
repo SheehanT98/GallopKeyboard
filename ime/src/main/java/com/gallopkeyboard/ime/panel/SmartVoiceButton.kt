@@ -223,27 +223,6 @@ fun SmartVoiceButton(
         SmartVoiceButtonStyle.Panel -> 16.dp
     }
 
-    // Gate infinite pulse to recording-only — idle voice panel must not run forever.
-    val pulseRadius: Float
-    val pulseAlpha: Float
-    if (isRecordingVisual) {
-        val pulseTransition = rememberInfiniteTransition(label = "recording-pulse")
-        val radius by pulseTransition.animateFloat(
-            initialValue = 0f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 1000),
-                repeatMode = RepeatMode.Reverse,
-            ),
-            label = "pulse-radius",
-        )
-        pulseRadius = radius
-        pulseAlpha = 0.15f + radius * 0.25f
-    } else {
-        pulseRadius = 0f
-        pulseAlpha = 0f
-    }
-
     val gestureModifier = Modifier.pointerInput(cancelSlopPx) {
         awaitEachGesture {
             val down = awaitFirstDown(requireUnconsumed = false)
@@ -305,22 +284,20 @@ fun SmartVoiceButton(
             .height(boxHeight),
         contentAlignment = Alignment.Center,
     ) {
+        // Child composable owns rememberInfiniteTransition — only composed while recording
+        // (same gating pattern as RecordingDot; avoids conditional hooks in this parent).
+        if (isRecordingVisual) {
+            RecordingPulseHalo(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(boxHeight),
+            )
+        }
         Button(
             onClick = {},
             modifier = Modifier
                 .fillMaxWidth()
                 .height(boxHeight)
-                .drawBehind {
-                    if (isRecordingVisual) {
-                        val baseRadius = size.minDimension / 2f
-                        val extra = pulseRadius * 24.dp.toPx()
-                        drawCircle(
-                            color = GallopColors.RecordingAccent.copy(alpha = pulseAlpha),
-                            radius = baseRadius + extra,
-                            center = center,
-                        )
-                    }
-                }
                 .then(gestureModifier),
             shape = RoundedCornerShape(cornerRadius),
             colors = buttonColors,
@@ -357,6 +334,36 @@ fun SmartVoiceButton(
             }
         }
     }
+}
+
+/**
+ * Recording pulse halo. Always calls [rememberInfiniteTransition] unconditionally;
+ * parent must only compose this while recording (idle panel must not keep it alive).
+ */
+@Composable
+private fun RecordingPulseHalo(modifier: Modifier = Modifier) {
+    val pulseTransition = rememberInfiniteTransition(label = "recording-pulse")
+    val pulseRadius by pulseTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "pulse-radius",
+    )
+    val pulseAlpha = 0.15f + pulseRadius * 0.25f
+    Box(
+        modifier = modifier.drawBehind {
+            val baseRadius = size.minDimension / 2f
+            val extra = pulseRadius * 24.dp.toPx()
+            drawCircle(
+                color = GallopColors.RecordingAccent.copy(alpha = pulseAlpha),
+                radius = baseRadius + extra,
+                center = center,
+            )
+        },
+    )
 }
 
 @Composable
