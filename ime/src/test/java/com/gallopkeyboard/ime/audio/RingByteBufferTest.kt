@@ -10,6 +10,32 @@ import kotlin.concurrent.thread
 class RingByteBufferTest {
 
     @Test
+    fun `writeShorts matches byte write equivalence`() {
+        val samples = shortArrayOf(0, 1, -1, 256, -32768, 32767)
+        val viaBytes = RingByteBuffer(32)
+        val viaShorts = RingByteBuffer(32)
+        val scratch = ByteArray(samples.size * 2)
+
+        val encoded = ByteArray(samples.size * 2)
+        java.nio.ByteBuffer.wrap(encoded).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+            .asShortBuffer().put(samples)
+        viaBytes.write(encoded, 0, encoded.size)
+        viaShorts.writeShorts(samples, scratch)
+
+        assertArrayEquals(viaBytes.snapshot(), viaShorts.snapshot())
+        assertEquals(viaBytes.size(), viaShorts.size())
+        assertEquals(0L, viaShorts.droppedBytes())
+    }
+
+    @Test
+    fun `writeShorts without scratch still writes`() {
+        val buffer = RingByteBuffer(8)
+        buffer.writeShorts(shortArrayOf(0x0102, 0x0304))
+        assertEquals(4, buffer.size())
+        assertArrayEquals(byteArrayOf(0x02, 0x01, 0x04, 0x03), buffer.snapshot())
+    }
+
+    @Test
     fun `write less than capacity returns exact snapshot`() {
         val buffer = RingByteBuffer(10)
         buffer.write(byteArrayOf(1, 2, 3), 0, 3)

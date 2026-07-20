@@ -458,6 +458,125 @@ per-cell `clickable` commit.
 
 - `ACCENT_CELL_WIDTH_DP = 44.dp` — must stay in sync with `AccentPopup` cell `size`.
 
+## Plan 024 additions
+
+Keep voice stop/polish alive after leaving the voice panel; blank polish must not
+wipe streaming partials; late ASR frames after stop/cancel must not toast failure.
+
+### Product decision
+
+`onSessionStop` (streaming finalize + Whisper polish) runs on process-lifetime
+`voiceStopScope`, not Compose `rememberCoroutineScope`, so panel switch / IME hide
+does not cancel mid-polish. Dispose mid-recording still cancels; dispose mid-stop
+does not. Successful polish runs through `TextPostProcessor` (same as
+`DictationService`); empty/blank polish finishes composing instead of
+`commitText("")`.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../panel/VoiceSessionCleanup.kt` | `voiceStopScope`, `shouldCancelRecordingOnDispose` |
+| `ime/.../panel/SmartVoiceButton.kt` | `stoppingJob` on `sessionScope`; dispose keeps mid-stop |
+| `ime/.../asr/PolishingTranscriber.kt` | `TextPostProcessor`; blank → `clearComposing` |
+| `ime/.../asr/StreamingTranscriber.kt` | `sessionEpoch` late-frame guard |
+| `ime/src/test/.../panel/VoiceSessionCleanupTest.kt` | Dispose cancel vs keep policy |
+| `ime/src/test/.../asr/PolishingTranscriberTest.kt` | Empty polish + post-processor |
+| `ime/src/test/.../asr/StreamingTranscriberTest.kt` | Late frame after stop → no toast |
+
+### Manual test
+
+Release mic → immediately tap keyboard icon → polish must still replace composing
+text in Notes/WhatsApp. Empty Whisper result must leave streaming partial committed.
+
+## Plan 027 additions
+
+Move voice PCM collection off Compose Main; bound ASR frame work; gate idle pulse.
+
+### Product / perf decision
+
+- PCM collect/write runs on `RecorderCoroutineDispatcher` via `sessionScope.launch(recorderDispatcher)`
+  (not Compose `rememberCoroutineScope`), preserving Plan 024 stop/polish on `voiceStopScope`.
+- `StreamingTranscriber` uses a serial consumer + capacity-2 DROP_OLDEST frame queue instead of
+  unbounded per-frame `launch`.
+- `rememberInfiniteTransition` for the mic pulse runs only while `isRecordingVisual` (RecordingDot
+  was already gated). Idle voice panel must not spin an infinite transition.
+- Optional 60 s→5 min ring grow deferred — keep Plan 005 five-minute ceiling capacity.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../panel/SmartVoiceButton.kt` | Collect on recorder dispatcher; `writeShorts` + scratch; gate pulse |
+| `ime/.../asr/StreamingTranscriber.kt` | Bounded serial frame queue + single consumer; keep sessionEpoch |
+| `ime/.../audio/RingByteBuffer.kt` | `writeShorts(samples, scratch?)` bulk helper |
+| `ime/.../di/DictusImeEntryPoint.kt` | Expose `recorderCoroutineDispatcher()` |
+| `ime/src/test/.../audio/RingByteBufferTest.kt` | writeShorts equivalence |
+| `ime/src/test/.../asr/StreamingTranscriberTest.kt` | Slow-engine queue bound; interleaved drain for partials |
+
+### Manual / visual smoke
+
+Idle voice panel: no continuous pulse animation CPU. Start recording: pulse + RecordingDot
+animate. Release: pulse stops. Partials still update under normal speech (queue capacity 2).
+
+## Plan 025 additions
+
+Code-point delete, space-bar cursor drag, and accelerated word delete on long-hold.
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/.../EditorEditHelpers.kt` | Pure helpers: `countCharsToDeleteForWord`, `deleteMode`, `cursorOffsetAfterDrag` |
+| `ime/src/test/.../EditorEditHelpersTest.kt` | Unit tests (ASCII word delete, surrogate emoji UTF-16 lengths, delete-mode policy, cursor clamp) |
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../DictusImeService.kt` | `deleteBackward` prefers `deleteSurroundingTextInCodePoints`; adds `deleteBackwardWord`, `moveCursor` |
+| `ime/.../ui/KeyboardScreen.kt` | Wires `onDeleteBackwardWord`, `onSpaceCursorDrag` |
+| `ime/.../ui/KeyboardView.kt` / `KeyRow.kt` | Pass delete-word + space-drag callbacks to keys |
+| `ime/.../ui/KeyButton.kt` | DELETE accelerates to word after ~8 repeats or 900 ms; SPACE horizontal drag moves cursor (KeyButton-local; not swipe layer) |
+
+### Behavior notes
+
+- Word-delete length uses Java `String.length` (UTF-16) to match `deleteSurroundingText`.
+- Space drag does not commit spaces; tap / double-tap → `. ` still uses release-without-drag.
+- SPACE stays outside Plan 013 character swipe hit-testing (`KeyType.CHARACTER` only).
+
+## Plan 026 additions
+
+Opt-in on-device autocorrect on space (MVP spike). Default **OFF**.
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/.../suggestion/AutoCorrect.kt` | Pure `decideAutoCorrect` / `planSpaceCommit` / Levenshtein / undo length |
+| `ime/src/test/.../suggestion/AutoCorrectTest.kt` | Decision matrix (teh/hello/ambiguity/short/capital) |
+| `ime/src/test/.../suggestion/AutoCorrectCommitHelperTest.kt` | Pref-off / replace / undo buffer simulation |
+| `docs/adr/0005-opt-in-autocorrect-on-space.md` | Aggressiveness, undo, drag gate, default OFF |
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../suggestion/DictionaryEngine.kt` | `candidatesNear` — first-letter bucket + edit-distance filter |
+| `ime/.../DictusImeService.kt` | `commitSpace`, autocorrect undo in `deleteBackward`, period double-tap path |
+| `ime/.../ui/KeyboardScreen.kt` | `onReplaceTrailingSpaceWithPeriod` so double-tap does not consume undo |
+| `core/.../PreferenceKeys.kt` | `AUTOCORRECT_ENABLED` |
+| `app/.../settings/SettingsViewModel.kt` / `SettingsScreen.kt` | Autocorrect toggle (default false) |
+| `docs/manual-test-matrix.md` | Autocorrect checklist (unchecked) |
+
+### Behavior notes
+
+- Autocorrect runs only on SPACE **tap** commit; Plan 025 space-drag never fires it.
+- Immediate backspace undoes one replacement (`original` restored, no trailing space).
+- Ambiguous near-equal frequency pairs → no replace (prefer under-correct).
+- Microbenchmark: worst first-letter `candidatesNear` on `dict_en.txt` ≤ 5 ms on JVM host.
+- **Do not enable by default** until owner signs off and matrix cells are ticked.
+
 ## Plan 028 additions
 
 Stop IME from mirroring companion `DictationService` recording UI.

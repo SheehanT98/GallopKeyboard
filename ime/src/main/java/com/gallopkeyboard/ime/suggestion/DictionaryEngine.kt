@@ -119,6 +119,37 @@ class DictionaryEngine(
         return result
     }
 
+    /**
+     * Return up to [max] dictionary entries near [typed] for autocorrect ranking.
+     *
+     * Scans only the first-letter bucket of the prefix index, filters by
+     * Levenshtein distance ≤ [maxEditDistance], and keeps the highest-frequency
+     * hits. Bounded work for main-thread space-commit use (Plan 026).
+     */
+    fun candidatesNear(
+        typed: String,
+        max: Int = 25,
+        maxEditDistance: Int = 2,
+    ): List<WordEntry> {
+        if (typed.isBlank() || !_isReady.value || max <= 0) return emptyList()
+        val typedLower = typed.lowercase()
+        val firstChar = typedLower.firstOrNull() ?: return emptyList()
+        val bucket = prefixIndex[firstChar] ?: return emptyList()
+
+        // Bucket is already sorted by frequency desc at load time.
+        val results = ArrayList<WordEntry>(max.coerceAtMost(25))
+        val typedLen = typedLower.length
+        for (entry in bucket) {
+            if (results.size >= max) break
+            // Length band: |len diff| > maxEditDistance cannot be within distance.
+            if (kotlin.math.abs(entry.strippedLower.length - typedLen) > maxEditDistance) continue
+            if (levenshtein(typedLower, entry.strippedLower) <= maxEditDistance) {
+                results.add(entry)
+            }
+        }
+        return results
+    }
+
     private fun parseLine(line: String): WordEntry? {
         if (!line.startsWith("word=")) return null
         val parts = line.split(",")

@@ -35,6 +35,8 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.gallopkeyboard.core.theme.DictusColors
 import com.gallopkeyboard.core.theme.LocalDictusColors
+import com.gallopkeyboard.ime.DeleteRepeatMode
+import com.gallopkeyboard.ime.deleteMode
 import com.gallopkeyboard.ime.haptics.HapticHelper
 import com.gallopkeyboard.ime.model.KeyDefinition
 import com.gallopkeyboard.ime.model.KeyType
@@ -52,7 +54,10 @@ import kotlinx.coroutines.launch
  * Gesture handling varies by key type:
  * - Character keys: tap to type, long-press to open a local accent strip when available
  * - Other keys: tap on release
- * - DELETE: custom pointer input for key-repeat (400ms delay, then every 50ms)
+ * - DELETE: key-repeat (400ms delay, then every 50ms); accelerates to word delete
+ *   after ~8 char deletes or 900ms hold via [onDeleteWord]
+ * - SPACE: tap / double-tap via [onPress]; horizontal drag moves cursor via
+ *   [onSpaceCursorDrag] without inserting spaces (KeyButton-local only — not swipe layer)
  */
 @Composable
 fun KeyButton(
@@ -60,6 +65,8 @@ fun KeyButton(
     isShifted: Boolean,
     isCapsLock: Boolean = false,
     onPress: () -> Unit,
+    onDeleteWord: (() -> Unit)? = null,
+    onSpaceCursorDrag: ((Int) -> Unit)? = null,
     accentChars: List<String>? = null,
     onAccentSelected: ((String) -> Unit)? = null,
     hapticsEnabled: Boolean = true,
@@ -85,6 +92,7 @@ fun KeyButton(
         effectivePressed && key.type == KeyType.CHARACTER && !effectiveShowAccentPopup && !isSwipeHighlighted
     val accentCellWidthPx = with(density) { ACCENT_CELL_WIDTH_DP.toPx() }
     val selectionSlopPx = with(density) { 8.dp.toPx() }
+    val spaceDragSlopPx = with(density) { 10.dp.toPx() }
 
     // Horizontal shift (px) needed to keep the accent popup within screen bounds.
     // Computed once and shared between the Popup offset and resolveAccentIndex().
@@ -129,6 +137,8 @@ fun KeyButton(
     // callbacks even though the coroutine launched by pointerInput(Unit) is
     // long-lived and would otherwise capture stale references.
     val currentOnPress = rememberUpdatedState(onPress)
+    val currentOnDeleteWord = rememberUpdatedState(onDeleteWord)
+    val currentOnSpaceCursorDrag = rememberUpdatedState(onSpaceCursorDrag)
     val currentOnAccentSelected = rememberUpdatedState(onAccentSelected)
 
     fun resolveAccentIndex(pointerX: Float): Int? {
@@ -157,13 +167,26 @@ fun KeyButton(
 
                     isPressed = true
                     if (hapticsEnabled) HapticHelper.performKeyHaptic(view)
-                    currentOnPress.value()
+                    val pressStartMs = System.currentTimeMillis()
+                    var repeatIndex = 0
+                    fun fireDelete() {
+                        val heldMs = System.currentTimeMillis() - pressStartMs
+                        val mode = deleteMode(repeatIndex, heldMs)
+                        val wordCb = currentOnDeleteWord.value
+                        if (mode == DeleteRepeatMode.WORD && wordCb != null) {
+                            wordCb()
+                        } else {
+                            currentOnPress.value()
+                        }
+                        repeatIndex++
+                    }
+                    fireDelete()
 
                     val repeatJob = launch {
                         delay(400L)
                         while (isActive) {
                             if (hapticsEnabled) HapticHelper.performKeyHaptic(view)
-                            currentOnPress.value()
+                            fireDelete()
                             delay(50L)
                         }
                     }
@@ -180,6 +203,57 @@ fun KeyButton(
 
                     isPressed = false
                     repeatJob.cancel()
+                }
+            }
+        }
+    } else if (key.type == KeyType.SPACE && onSpaceCursorDrag != null) {
+        Modifier.pointerInput(Unit) {
+            coroutineScope {
+                while (isActive) {
+                    awaitPointerEventScope {
+                        val down = awaitPointerEvent()
+                        if (down.type != PointerEventType.Press) return@awaitPointerEventScope
+
+                        val downPosition = down.changes.firstOrNull()?.position ?: Offset.Zero
+                        var dragging = false
+                        var lastAppliedChars = 0
+                        var released = false
+
+                        isPressed = true
+                        if (hapticsEnabled) HapticHelper.performKeyHaptic(view)
+
+                        while (!released) {
+                            val event = awaitPointerEvent()
+                            val pointer = event.changes.firstOrNull()
+                            val position = pointer?.position
+
+                            if (position != null) {
+                                val dx = position.x - downPosition.x
+                                if (!dragging && kotlin.math.abs(dx) >= spaceDragSlopPx) {
+                                    dragging = true
+                                }
+                                if (dragging) {
+                                    val pxPerChar = (keyWidthPx / 8f).coerceAtLeast(1f)
+                                    val totalChars = (dx / pxPerChar).toInt()
+                                    val incremental = totalChars - lastAppliedChars
+                                    if (incremental != 0) {
+                                        currentOnSpaceCursorDrag.value?.invoke(incremental)
+                                        lastAppliedChars = totalChars
+                                    }
+                                }
+                            }
+
+                            if (event.type == PointerEventType.Release || pointer?.pressed == false) {
+                                released = true
+                            }
+                        }
+
+                        isPressed = false
+                        // Tap / double-tap period only when not dragging — no space commit on drag.
+                        if (!dragging) {
+                            currentOnPress.value()
+                        }
+                    }
                 }
             }
         }

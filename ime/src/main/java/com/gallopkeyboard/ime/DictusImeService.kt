@@ -12,7 +12,11 @@ import com.gallopkeyboard.core.preferences.PreferenceKeys
 import com.gallopkeyboard.core.theme.ThemeMode
 import com.gallopkeyboard.ime.di.DictusImeEntryPoint
 import com.gallopkeyboard.ime.suggestion.DictionaryEngine
+import com.gallopkeyboard.ime.suggestion.LastAutoCorrect
+import com.gallopkeyboard.ime.suggestion.SpaceCommitPlan
 import com.gallopkeyboard.ime.suggestion.SuggestionEngine
+import com.gallopkeyboard.ime.suggestion.autocorrectUndoDeleteLength
+import com.gallopkeyboard.ime.suggestion.planSpaceCommit
 import com.gallopkeyboard.ime.ui.KeyboardScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -70,17 +74,25 @@ class DictusImeService : LifecycleInputMethodService() {
     // so the user can toggle it in settings without restarting the IME.
     private val _suggestionsEnabled = MutableStateFlow(false)
 
+    // Opt-in autocorrect on space (Plan 026). Default OFF.
+    private val _autocorrectEnabled = MutableStateFlow(false)
+
+    // Single-shot undo for the last autocorrect replacement (immediate backspace).
+    private var lastAutoCorrect: LastAutoCorrect? = null
+
     // Production suggestion engine: loads AOSP FR/EN dictionary from assets on
     // Dispatchers.IO, performs accent-insensitive prefix matching with frequency
     // ranking, and boosts personal dictionary words. Until dictionary loads
     // (~500ms), returns empty suggestions gracefully.
-    private val suggestionEngine: SuggestionEngine by lazy {
+    private val dictionaryEngine: DictionaryEngine by lazy {
         DictionaryEngine(
             context = applicationContext,
             dataStore = entryPoint.dataStore(),
             coroutineScope = bindingScope,
         )
     }
+    private val suggestionEngine: SuggestionEngine
+        get() = dictionaryEngine
     private val _currentWord = MutableStateFlow("")
     private val _suggestions = MutableStateFlow<List<String>>(emptyList())
 
@@ -109,6 +121,12 @@ class DictusImeService : LifecycleInputMethodService() {
             entryPoint.dataStore().data
                 .map { it[PreferenceKeys.SUGGESTIONS_ENABLED] ?: false }
                 .collect { enabled -> _suggestionsEnabled.value = enabled }
+        }
+        // Observe autocorrect toggle (defaults to false — opt-in MVP)
+        bindingScope.launch {
+            entryPoint.dataStore().data
+                .map { it[PreferenceKeys.AUTOCORRECT_ENABLED] ?: false }
+                .collect { enabled -> _autocorrectEnabled.value = enabled }
         }
     }
 
@@ -256,9 +274,26 @@ class DictusImeService : LifecycleInputMethodService() {
             onClipboardTogglePin = { text -> pinnedClipboardStore.togglePin(text) },
             isClipboardPinned = { text -> pinnedClipboardStore.isPinned(text) },
         ) {
+            // Plan 028: always show KeyboardScreen — never mirror DictationService UI.
+            // Plan 025/026 callbacks (word delete, space drag, autocorrect) stay wired.
             KeyboardScreen(
-                onCommitText = { text -> commitText(text) },
+                onCommitText = { text ->
+                    if (text == " ") {
+                        commitSpace()
+                    } else {
+                        // Any non-space commit clears single-shot autocorrect undo.
+                        lastAutoCorrect = null
+                        commitText(text)
+                    }
+                },
                 onDeleteBackward = { deleteBackward() },
+                onDeleteBackwardWord = { deleteBackwardWord() },
+                onSpaceCursorDrag = { delta ->
+                    // Cursor drag is not a space commit — clear pending undo.
+                    lastAutoCorrect = null
+                    moveCursor(delta)
+                },
+                onReplaceTrailingSpaceWithPeriod = { replaceTrailingSpaceWithPeriod() },
                 onSendReturn = { sendReturnKey() },
                 onVoicePanelToggle = panelController::showVoice,
                 onClipboardPanelToggle = panelController::showClipboard,
@@ -284,10 +319,95 @@ class DictusImeService : LifecycleInputMethodService() {
     }
 
     /**
-     * Deletes one character before the cursor.
+     * Commits a space, optionally replacing the word before the cursor when
+     * autocorrect is enabled (Plan 026). Only reached from SPACE tap — KeyButton
+     * already suppresses space commit when the press was a cursor drag.
+     */
+    fun commitSpace() {
+        val ic = currentInputConnection ?: return
+        if (!_autocorrectEnabled.value) {
+            lastAutoCorrect = null
+            ic.commitText(" ", 1)
+            return
+        }
+
+        val beforeCursor = ic.getTextBeforeCursor(50, 0)?.toString().orEmpty()
+        val word = beforeCursor.split(" ", "\n").lastOrNull().orEmpty()
+        val candidates = dictionaryEngine.candidatesNear(word)
+            .map { it.word to it.frequency }
+        when (val plan = planSpaceCommit(_autocorrectEnabled.value, word, candidates)) {
+            is SpaceCommitPlan.Replace -> {
+                ic.deleteSurroundingText(plan.typed.length, 0)
+                ic.commitText("${plan.replacement} ", 1)
+                lastAutoCorrect = LastAutoCorrect(plan.typed, plan.replacement)
+            }
+            SpaceCommitPlan.JustSpace -> {
+                lastAutoCorrect = null
+                ic.commitText(" ", 1)
+            }
+        }
+    }
+
+    /**
+     * Deletes one Unicode code point before the cursor, falling back to a single
+     * UTF-16 unit when the code-point API is unavailable.
+     *
+     * Immediate backspace after an autocorrect restores the original typed word.
      */
     fun deleteBackward() {
-        currentInputConnection?.deleteSurroundingText(1, 0)
+        val ic = currentInputConnection ?: return
+        val pending = lastAutoCorrect
+        if (pending != null) {
+            lastAutoCorrect = null
+            val deleteLen = autocorrectUndoDeleteLength(pending.replacement)
+            ic.deleteSurroundingText(deleteLen, 0)
+            ic.commitText(pending.original, 1)
+            return
+        }
+        if (!ic.deleteSurroundingTextInCodePoints(1, 0)) {
+            ic.deleteSurroundingText(1, 0)
+        }
+    }
+
+    /**
+     * Double-tap space: convert the trailing space into ". " without consuming
+     * autocorrect undo (Plan 026).
+     */
+    fun replaceTrailingSpaceWithPeriod() {
+        val ic = currentInputConnection ?: return
+        lastAutoCorrect = null
+        ic.deleteSurroundingText(1, 0)
+        ic.commitText(". ", 1)
+    }
+
+    /**
+     * Deletes the trailing word (and any trailing whitespace) before the cursor.
+     *
+     * Length is computed in UTF-16 code units via [countCharsToDeleteForWord] so it
+     * matches [android.view.inputmethod.InputConnection.deleteSurroundingText].
+     */
+    fun deleteBackwardWord() {
+        val ic = currentInputConnection ?: return
+        lastAutoCorrect = null
+        val before = ic.getTextBeforeCursor(64, 0)?.toString().orEmpty()
+        if (before.isEmpty()) return
+        val deleteCount = countCharsToDeleteForWord(before)
+        if (deleteCount > 0) {
+            ic.deleteSurroundingText(deleteCount, 0)
+        }
+    }
+
+    /**
+     * Moves the cursor by [deltaChars] UTF-16 units relative to the current position.
+     * Clamped to the visible text window returned by getTextBefore/AfterCursor.
+     */
+    fun moveCursor(deltaChars: Int) {
+        if (deltaChars == 0) return
+        val ic = currentInputConnection ?: return
+        val before = ic.getTextBeforeCursor(2048, 0)?.toString().orEmpty()
+        val after = ic.getTextAfterCursor(2048, 0)?.toString().orEmpty()
+        val newPos = cursorOffsetAfterDrag(before.length, after.length, deltaChars)
+        ic.setSelection(newPos, newPos)
     }
 
     /**

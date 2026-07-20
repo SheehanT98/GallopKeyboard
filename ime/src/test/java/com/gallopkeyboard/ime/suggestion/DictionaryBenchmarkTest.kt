@@ -75,4 +75,42 @@ class DictionaryBenchmarkTest {
             elapsedMs < 100,
         )
     }
+
+    /**
+     * STOP gate (Plan 026): first-letter bucket scan for candidatesNear must stay
+     * under 5 ms on the JVM test host for the worst letter in dict_en.txt.
+     */
+    @Test
+    fun `candidatesNear worst letter on dict_en under 5ms`() = runTest(testDispatcher) {
+        val engine = DictionaryEngine(
+            context = context,
+            dataStore = dataStore,
+            coroutineScope = testScope,
+            assetName = "dict_en.txt",
+            ioDispatcher = testDispatcher,
+        )
+        advanceUntilIdle()
+
+        // 's' is the largest first-letter bucket in dict_en.txt (~5k entries).
+        val typed = "sxyz" // forces near-full bucket scan (few distance≤2 hits)
+        repeat(5) { engine.candidatesNear(typed, max = 25) } // warm-up / JIT
+
+        val samplesMs = mutableListOf<Double>()
+        repeat(30) {
+            val startNs = System.nanoTime()
+            engine.candidatesNear(typed, max = 25)
+            samplesMs.add((System.nanoTime() - startNs) / 1_000_000.0)
+        }
+        val sorted = samplesMs.sorted()
+        val worstMs = sorted.last()
+        val medianMs = sorted[sorted.size / 2]
+
+        // STOP condition targets algorithmic cost (>5 ms), not single GC spikes.
+        // Median of 30 samples is the gate; worst is logged for visibility.
+        assertTrue(
+            "candidatesNear worst-letter scan median must be <=5ms (STOP if >5); " +
+                "median=${"%.2f".format(medianMs)}ms worst=${"%.2f".format(worstMs)}ms samples=$samplesMs",
+            medianMs <= 5.0,
+        )
+    }
 }

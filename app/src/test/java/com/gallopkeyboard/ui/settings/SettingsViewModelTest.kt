@@ -111,6 +111,18 @@ class SettingsViewModelTest {
         advanceUntilIdle()
         assertTrue(viewModel.soundEnabled.value)
     }
+
+    @Test
+    fun `autocorrectEnabled defaults to false`() = testScope.runTest {
+        assertFalse(viewModel.autocorrectEnabled.value)
+    }
+
+    @Test
+    fun `toggleAutocorrect flips autocorrectEnabled to true`() = testScope.runTest {
+        viewModel.toggleAutocorrect()
+        advanceUntilIdle()
+        assertTrue(viewModel.autocorrectEnabled.value)
+    }
 }
 
 /**
