@@ -30,6 +30,8 @@ import timber.log.Timber
 fun KeyboardScreen(
     onCommitText: (String) -> Unit,
     onDeleteBackward: () -> Unit,
+    onDeleteBackwardWord: () -> Unit = {},
+    onSpaceCursorDrag: (Int) -> Unit = {},
     onSendReturn: () -> Unit,
     onVoicePanelToggle: () -> Unit,
     onClipboardPanelToggle: () -> Unit = {},
@@ -92,6 +94,8 @@ fun KeyboardScreen(
                             }
                             Timber.d("Swipe word committed: %s", word)
                         },
+                        onDeleteBackwardWord = onDeleteBackwardWord,
+                        onSpaceCursorDrag = onSpaceCursorDrag,
                         onKeyPress = { key ->
                             handleKeyPress(
                                 key = key,

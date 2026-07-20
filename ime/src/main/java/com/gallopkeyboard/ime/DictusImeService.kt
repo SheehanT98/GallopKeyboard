@@ -402,6 +402,8 @@ class DictusImeService : LifecycleInputMethodService() {
                     KeyboardScreen(
                         onCommitText = { text -> commitText(text) },
                         onDeleteBackward = { deleteBackward() },
+                        onDeleteBackwardWord = { deleteBackwardWord() },
+                        onSpaceCursorDrag = { delta -> moveCursor(delta) },
                         onSendReturn = { sendReturnKey() },
                         onVoicePanelToggle = panelController::showVoice,
                         onClipboardPanelToggle = panelController::showClipboard,
@@ -487,10 +489,43 @@ class DictusImeService : LifecycleInputMethodService() {
     }
 
     /**
-     * Deletes one character before the cursor.
+     * Deletes one Unicode code point before the cursor, falling back to a single
+     * UTF-16 unit when the code-point API is unavailable.
      */
     fun deleteBackward() {
-        currentInputConnection?.deleteSurroundingText(1, 0)
+        val ic = currentInputConnection ?: return
+        if (!ic.deleteSurroundingTextInCodePoints(1, 0)) {
+            ic.deleteSurroundingText(1, 0)
+        }
+    }
+
+    /**
+     * Deletes the trailing word (and any trailing whitespace) before the cursor.
+     *
+     * Length is computed in UTF-16 code units via [countCharsToDeleteForWord] so it
+     * matches [android.view.inputmethod.InputConnection.deleteSurroundingText].
+     */
+    fun deleteBackwardWord() {
+        val ic = currentInputConnection ?: return
+        val before = ic.getTextBeforeCursor(64, 0)?.toString().orEmpty()
+        if (before.isEmpty()) return
+        val deleteCount = countCharsToDeleteForWord(before)
+        if (deleteCount > 0) {
+            ic.deleteSurroundingText(deleteCount, 0)
+        }
+    }
+
+    /**
+     * Moves the cursor by [deltaChars] UTF-16 units relative to the current position.
+     * Clamped to the visible text window returned by getTextBefore/AfterCursor.
+     */
+    fun moveCursor(deltaChars: Int) {
+        if (deltaChars == 0) return
+        val ic = currentInputConnection ?: return
+        val before = ic.getTextBeforeCursor(2048, 0)?.toString().orEmpty()
+        val after = ic.getTextAfterCursor(2048, 0)?.toString().orEmpty()
+        val newPos = cursorOffsetAfterDrag(before.length, after.length, deltaChars)
+        ic.setSelection(newPos, newPos)
     }
 
     /**
