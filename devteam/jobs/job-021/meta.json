@@ -1,6 +1,6 @@
 {
   "id": "job-021",
-  "status": "reviewing",
+  "status": "double_checking",
   "mode": "quick",
   "originalAsk": "Execute plan 031 stop swipe recomposition jank",
   "planRef": "plans/031-stop-swipe-recomposition-jank.md",
@@ -18,7 +18,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-20T21:57:18.179Z",
-  "lastStatusAt": "2026-07-20T22:16:52.835Z",
+  "lastStatusAt": "2026-07-20T22:19:24.621Z",
   "completedAt": null,
   "plannedFiles": [
     "plans/README.md",
@@ -53,7 +53,7 @@
     "plan": "skipped",
     "code": "done",
     "test": "done",
-    "review": "in_progress",
-    "doubleCheck": "pending"
+    "review": "done",
+    "doubleCheck": "in_progress"
   }
 }
