@@ -206,6 +206,28 @@ class StreamingTranscriberTest {
         assertFalse(committer.calls.contains(CommitterCall.ClearComposing))
     }
 
+    @Test
+    fun `late frame after stop does not toast recognition failed`() = runTest {
+        engine.finalizeResult = "done"
+        Flags.polishEnabled = true
+        engine.throwOnAcceptAfterFinalize = true
+        val session = newSession()
+        transcriber.onSessionStart(session)
+        drainAsrAndMain()
+
+        transcriber.onSessionStop(session)
+        drainAsrAndMain()
+        ShadowToast.reset()
+        committer.calls.clear()
+
+        // Frame job launched after stop — sessionEpoch advanced; must not toast.
+        transcriber.onAudioFrame(session, ShortArray(1600))
+        drainAsrAndMain()
+
+        assertEquals(0, ShadowToast.shownToastCount())
+        assertFalse(committer.calls.contains(CommitterCall.ClearComposing))
+    }
+
     private fun drainAsrAndMain() {
         runBlocking(asrDispatcher.dispatcher) { }
         Shadows.shadowOf(Looper.getMainLooper()).idle()
@@ -253,9 +275,11 @@ class FakeStreamingAsrEngine : StreamingAsrEngine {
     var cancelCalled = false
     var acceptFrameThreadName: String? = null
     var onAcceptFrame: (() -> Unit)? = null
+    var throwOnAcceptAfterFinalize = false
 
     private var pollIndex = 0
     private var initialized = false
+    private var streamActive = false
 
     override fun init(config: ParakeetConfig) {
         initialized = true
@@ -264,10 +288,14 @@ class FakeStreamingAsrEngine : StreamingAsrEngine {
     override fun beginStream() {
         failBeginWith?.let { throw it }
         pollIndex = 0
+        streamActive = true
     }
 
     override fun acceptFrame(pcm16k: ShortArray) {
         acceptFrameThreadName = Thread.currentThread().name
+        if (throwOnAcceptAfterFinalize && !streamActive) {
+            throw IllegalStateException("No active stream — call beginStream() first")
+        }
         onAcceptFrame?.invoke()
     }
 
@@ -279,11 +307,13 @@ class FakeStreamingAsrEngine : StreamingAsrEngine {
 
     override fun finalize(): String {
         finalizeCalled = true
+        streamActive = false
         return finalizeResult
     }
 
     override fun cancel() {
         cancelCalled = true
+        streamActive = false
     }
 
     override fun close() = Unit

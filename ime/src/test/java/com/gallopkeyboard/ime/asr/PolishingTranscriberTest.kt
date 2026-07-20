@@ -58,7 +58,7 @@ class PolishingTranscriberTest {
     }
 
     @Test
-    fun `stop with polish success replaces composing text with polished result`() = runTest {
+    fun `stop with polish success applies TextPostProcessor and commits`() = runTest {
         streamingEngine.finalizeResult = "streaming partial"
         polishEngine.result = "polished result"
         val session = sessionWithPcm()
@@ -69,7 +69,24 @@ class PolishingTranscriberTest {
         Shadows.shadowOf(Looper.getMainLooper()).idle()
 
         assertTrue(polishEngine.transcribeCalled)
-        assertTrue(committer.calls.contains(CommitterCall.CommitText("polished result")))
+        // TextPostProcessor appends ". " when no sentence-ending punctuation.
+        assertTrue(committer.calls.contains(CommitterCall.CommitText("polished result. ")))
+    }
+
+    @Test
+    fun `stop with empty polish finishes composing without empty commit`() = runTest {
+        streamingEngine.finalizeResult = "streaming partial"
+        polishEngine.result = "   "
+        val session = sessionWithPcm()
+
+        transcriber.onSessionStart(session)
+        committer.calls.clear()
+        transcriber.onSessionStop(session)
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+
+        assertTrue(polishEngine.transcribeCalled)
+        assertTrue(committer.calls.contains(CommitterCall.ClearComposing))
+        assertFalse(committer.calls.any { it is CommitterCall.CommitText })
     }
 
     @Test
