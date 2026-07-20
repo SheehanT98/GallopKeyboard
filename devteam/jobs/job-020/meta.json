@@ -39,5 +39,8 @@
     "test": "pending",
     "review": "pending",
     "doubleCheck": "pending"
-  }
+  },
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/49",
+  "prNumber": 49,
+  "chatTitle": "devteam pr49"
 }
