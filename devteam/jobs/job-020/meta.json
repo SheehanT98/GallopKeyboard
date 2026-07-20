@@ -1,6 +1,6 @@
 {
   "id": "job-020",
-  "status": "reviewing",
+  "status": "double_checking",
   "mode": "quick",
   "originalAsk": "Execute plan 030 wire suggestion bar and English dictionary defaults",
   "planRef": "plans/030-wire-suggestion-bar-english-defaults.md",
@@ -15,7 +15,7 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-20T22:00:00.000Z",
-  "lastStatusAt": "2026-07-20T22:03:05.019Z",
+  "lastStatusAt": "2026-07-20T22:04:26.424Z",
   "plannedFiles": [
     "ime/src/main/java/com/gallopkeyboard/ime/DictusImeService.kt",
     "ime/src/main/java/com/gallopkeyboard/ime/ui/KeyboardScreen.kt",
@@ -37,8 +37,8 @@
     "plan": "skipped",
     "code": "done",
     "test": "done",
-    "review": "in_progress",
-    "doubleCheck": "pending"
+    "review": "done",
+    "doubleCheck": "in_progress"
   },
   "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/49",
   "prNumber": 49,
