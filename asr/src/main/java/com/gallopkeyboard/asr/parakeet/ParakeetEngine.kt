@@ -104,7 +104,7 @@ class ParakeetEngine(
         }
         val text = r.getResult(s).text.trim()
         releaseStream()
-        Log.d(TAG, "finalize: \"$text\"")
+        Log.d(TAG, "finalize: ${text.length} chars")
         return text
     }
 

@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 object CrashHandler {
 
     private const val MAX_CRASH_FILES = 20
-    private const val RADIO_LOG_LINES = 200
     private val installed = AtomicBoolean(false)
 
     private val timestampFormatter =
@@ -54,30 +53,16 @@ object CrashHandler {
         val isoTs = timestampFormatter.format(Instant.now())
         val file = File(dir, "$isoTs-$safeThread.txt")
 
-        val radioLog = readRadioLogTail()
-
         file.writeText(
             buildString {
                 appendLine("timestamp: $isoTs")
                 appendLine("thread: $threadName")
                 appendLine()
                 appendLine(throwable.stackTraceToString())
-                if (radioLog.isNotEmpty()) {
-                    appendLine()
-                    appendLine("--- radio log (last $RADIO_LOG_LINES lines) ---")
-                    append(radioLog)
-                }
             },
         )
 
         trimOldFiles(dir)
-    }
-
-    private fun readRadioLogTail(): String = try {
-        val process = Runtime.getRuntime().exec(arrayOf("logcat", "-d", "-t", RADIO_LOG_LINES.toString()))
-        process.inputStream.bufferedReader().readText()
-    } catch (_: Exception) {
-        ""
     }
 
     private fun trimOldFiles(dir: File) {

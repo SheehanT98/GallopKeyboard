@@ -37,7 +37,7 @@ Read [`../AGENTS.md`](../AGENTS.md) before executing any plan.
 | 026 | Spike opt-in on-device autocorrect on space | 9 | P1 | M | 019/030 | DONE (PR #46) |
 | 027 | Move voice PCM off Main + bound ASR frames + gate pulse | 9 | P1 | M | 024 | DONE (PR #44) |
 | 028 | Stop IME from mirroring DictationService Recording UI | 9 | P1 | M | — | DONE (PR #47) |
-| 029 | Finish privacy — backup off + scrub PII logs | 10 | P1 | S | Phase 9 on main | TODO |
+| 029 | Finish privacy — backup off + scrub PII logs | 10 | P1 | S | Phase 9 on main | DONE |
 | 030 | Wire SuggestionBar + English dictionary defaults | 10 | P1 | M | Phase 9 on main | TODO |
 | 031 | Stop swipe MOVE full recomposition (`gestureTick`) | 10 | P1 | M | — | TODO |
 | 032 | Swipe dictionary decoder + dwell for doubles | 10 | P1 | M | 030 | TODO |

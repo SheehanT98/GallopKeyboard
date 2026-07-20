@@ -347,7 +347,11 @@ class DictationService : Service(), DictationController {
 
             // 6. Post-process (trim + punctuation)
             val processedText = TextPostProcessor.process(rawText)
-            Timber.d("Transcription result: raw='%s', processed='%s'", rawText, processedText)
+            Timber.d(
+                "Transcription complete: raw=%d chars, processed=%d chars",
+                rawText.length,
+                processedText.length,
+            )
 
             _state.value = DictationState.Idle
             stopForeground(STOP_FOREGROUND_REMOVE)
