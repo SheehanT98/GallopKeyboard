@@ -3,68 +3,64 @@
 | Field | Value |
 |-------|-------|
 | **Job** | job-020 |
-| **Branch** | `cursor/devteam-job-020-execute-plan-029-finish-privacy-backup-and-log-s-c1fc` |
-| **PR** | [#48](https://github.com/SheehanT98/GallopKeyboard/pull/48) |
-| **Plan** | `plans/029-finish-privacy-backup-and-log-scrub.md` |
+| **Branch** | `cursor/devteam-job-020-execute-plan-030-wire-suggestion-bar-english-def-c1fc` |
+| **PR** | [#49](https://github.com/SheehanT98/GallopKeyboard/pull/49) |
+| **Plan** | `plans/030-wire-suggestion-bar-english-defaults.md` |
 | **Double-checker** | devteam-double-checker (composer-2.5) |
-| **Checked at** | 2026-07-20T21:58:00Z |
-| **SHA checked** | `3588aef` |
+| **Checked at** | 2026-07-20T22:12:00Z |
+| **SHA checked** | `a61ad3b` |
 | **Review verdict** | APPROVE (`04-review.md`) |
 | **Verdict** | **READY** |
 
 ## Summary
 
-Cold re-verification of Plan 029 done criteria confirms Auto Backup is disabled
-with deny-all extraction rules, keystroke/swipe/accent and transcript PII is
-scrubbed from always-on log sites, CrashHandler no longer embeds `logcat -d`,
-and `verify.sh` has fail-closed privacy guards. Reviewer findings confirmed; no
-blocking issues. **READY** for human merge after CI is green.
+Cold re-verification of Plan 030 done criteria confirms `SuggestionBar` is wired into
+`KeyboardScreen`, IME/Settings suggestion defaults agree (`true`), and dictionary asset
+selection defaults to English for missing/`auto`/unknown. Reviewer findings confirmed;
+`verify.sh` passes independently. **READY** for human merge after CI is green.
 
 ## Done criteria (independent re-run)
 
 | Criterion | Result | Evidence |
 |-----------|--------|----------|
-| `allowBackup="false"` present | **PASS** | manifest line 22; deny-all `backup_rules.xml` + `data_extraction_rules.xml` |
-| No keystroke/swipe-word Timber in `ime` production sources | **PASS** | `rg` no matches for `Key pressed`, `Swipe word committed`, `Accent selected:` |
-| CrashHandler does not exec `logcat -d` | **PASS** | `readRadioLogTail()` removed; no `logcat` in `CrashHandler.kt` |
-| `verify.sh` guards fail if those regress | **PASS** | four new fail-closed greps at lines 36–57 |
-| `bash scripts/verify.sh` → `OK` | **PASS** | exit 0, ends with `OK` (assembleDebug + testAll + lint + greps) |
-| Scope respected | **PASS** | diff limited to manifest/XML, log scrub sites, verify guards, inventory, plans index |
+| SuggestionBar visible when pref on; hidden when off | **PASS** | `KeyboardScreen` renders `SuggestionBar` only when `suggestionsEnabled`; IME passes collected `_suggestionsEnabled` flow |
+| IME and Settings default agree (`true`) | **PASS** | `DictusImeService` `?: true` + `_suggestionsEnabled` init `true`; `SettingsViewModel` `?: true` |
+| Missing/`auto` language loads `dict_en.txt` | **PASS** | `dictionaryAssetForLanguage()` in `DictionaryEngine.kt`; table tests in `DictionaryEngineTest` |
+| Suggestion tap replaces current word + space | **PASS** | `commitSuggestion()` deletes `typed.length` then `commitText("$word ")`; clears `lastAutoCorrect` |
+| `verify.sh` OK; scope respected | **PASS** | `bash scripts/verify.sh` exit 0, `OK`; product diff limited to 6 planned files |
 
 ## Review confirmation (`04-review.md`)
 
 | Review finding | Confirmed |
 |----------------|-----------|
-| DictationService / Whisper / Parakeet transcript logs → char counts only | **Yes** |
-| Settings export path still exists; crash share has stack + thread only | **Yes** (code inspection) |
-| Manual export smoke not run on device | **Yes** — non-blocking; recommend S22 check before sharing logs |
-| Guards are pattern-specific | **Yes** — acceptable for this plan |
-| Pins plaintext at rest | **Yes** — explicitly out of scope |
+| Layout: MicButtonRow → SuggestionBar → ClipboardStrip → KeyboardView | **Yes** |
+| `commitCurrentWord` adds trailing space on typed fragment | **Yes** |
+| Optional `recordWordTyped` on space/suggestion commit | **Yes** |
+| `KeyboardScreen` preview default `suggestionsEnabled = false` is safe | **Yes** — production path passes IME flow |
+| No swipe resolver / autocorrect default-ON / bar redesign | **Yes** |
+| Inventory Plan 030 + README 030 DONE | **Yes** |
 
 ## STOP conditions
 
 | Condition | Outcome |
 |-----------|---------|
-| Product owner requires backup for pin migrate | **Not hit** — `allowBackup="false"` applied |
-| Log site required for failing CI test | **Not hit** — redacted logs; tests pass |
-| Phase 9 code missing (`voiceStopScope` absent) | **Not hit** — Phase 9 present on branch |
+| Bar + clipboard strip exceeds host height | **Not evaluated** — maintenance note for S22 manual QA |
+| KeyboardScreen conflicts with unmerged Phase 9 | **Not hit** — compiles; all tests pass |
 
 ## Commands run (cold)
 
 | Check | Command | Result |
 |-------|---------|--------|
-| Branch / SHA | `git branch --show-current`; `git rev-parse HEAD` | correct branch; `3588aef` |
-| allowBackup grep | `rg -n 'allowBackup' app/src/main/AndroidManifest.xml` | `22: android:allowBackup="false"` |
-| PII keystroke grep | `rg -n 'Key pressed\|Swipe word committed' ime/src/main` | no matches |
-| PII/logcat scope grep | `rg -n 'Key pressed\|Swipe word committed\|logcat' ime/... DictationService.kt CrashHandler.kt` | no matches |
-| Unit tests | `./gradlew :app:testDebugUnitTest :core:testDebugUnitTest :ime:testDebugUnitTest` | BUILD SUCCESSFUL |
+| Branch / SHA | `git branch --show-current`; `git rev-parse HEAD` | correct branch; `a61ad3b` |
+| Product diff scope | `git diff origin/main...HEAD --stat` (planned files) | 6 files, +111/−10 |
+| Pref defaults grep | `rg 'SUGGESTIONS_ENABLED.*\?:' ime app` | both `?: true` |
+| Dictionary helper | `rg 'dictionaryAssetForLanguage' ime` | helper + init + tests |
 | Full verify | `bash scripts/verify.sh` | exit 0, `OK` |
 
 ## CI / human gate
 
-Confirm PR #48 CI green before `/devteam approve job-020`. Manual check on S22:
-Settings → export logs after typing/swiping/dictating — no key labels, swipe
-words, or transcript bodies; sample crash `.txt` has no embedded logcat section.
+Confirm PR #49 CI green before `/devteam approve job-020`. Manual check: Settings
+Suggestions ON → type `hel` → bar shows candidates → tap center replaces word + space.
 
 ## Advance
 

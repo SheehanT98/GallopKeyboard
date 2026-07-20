@@ -234,4 +234,15 @@ class DictionaryEngineTest {
         val near = engine.candidatesNear("h", max = 3, maxEditDistance = 2)
         assertTrue("Result size ${near.size} should be <= 3", near.size <= 3)
     }
+
+    @Test
+    fun `dictionaryAssetForLanguage maps language codes to bundled assets`() {
+        assertEquals("dict_en.txt", dictionaryAssetForLanguage(null))
+        assertEquals("dict_en.txt", dictionaryAssetForLanguage("auto"))
+        assertEquals("dict_en.txt", dictionaryAssetForLanguage("en"))
+        assertEquals("dict_en.txt", dictionaryAssetForLanguage("EN"))
+        assertEquals("dict_en.txt", dictionaryAssetForLanguage("unknown"))
+        assertEquals("dict_fr.txt", dictionaryAssetForLanguage("fr"))
+        assertEquals("dict_fr.txt", dictionaryAssetForLanguage("FR"))
+    }
 }

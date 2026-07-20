@@ -631,3 +631,28 @@ artifacts.
 Fail-closed greps for `allowBackup="false"`, forbidden PII patterns, and
 `logcat` in `CrashHandler`.
 
+## Plan 030 additions
+
+Wire the existing `SuggestionBar` composable into `KeyboardScreen`, align IME
+and Settings suggestion defaults, and default the bundled dictionary to English.
+
+### Suggestion bar wiring
+
+| Item | Detail |
+|------|--------|
+| `KeyboardScreen` | Renders `SuggestionBar` above keys when `suggestionsEnabled` |
+| `DictusImeService` | Passes `_currentWord` / `_suggestions` flows; `commitSuggestion` replaces typed fragment + space |
+| Pref default | `SUGGESTIONS_ENABLED ?: true` in IME (matches `SettingsViewModel`) |
+
+### English dictionary defaults
+
+| Item | Detail |
+|------|--------|
+| `dictionaryAssetForLanguage` | `null` / `auto` / `en` / unknown → `dict_en.txt`; `fr` → `dict_fr.txt` |
+| `DictionaryEngine` init | Uses helper instead of French fallback |
+
+### Personal dictionary learning
+
+`PersonalDictionary.recordWordTyped` on space commit (no autocorrect) and on
+suggestion bar selection.
+
