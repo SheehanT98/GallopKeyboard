@@ -14,8 +14,8 @@ into plan waves:
   [#43](https://github.com/SheehanT98/GallopKeyboard/pull/43)–[#47](https://github.com/SheehanT98/GallopKeyboard/pull/47);
   deep #3 **assumes merged** (local audit merge `32b0d20`).
 - **Plans 029–033** (2026-07-20 deep #3 at `32b0d20`) — finish phantom Phase 8
-  privacy/suggestions/swipe + post–Phase 9 voice IC/permission (**TODO**).
-  Non-interactive default: top five by leverage.
+  privacy/suggestions/swipe + post–Phase 9 voice IC/permission. **029 DONE**;
+  **030–033 TODO**.
 
 Read [`../AGENTS.md`](../AGENTS.md) before executing any plan.
 
@@ -38,7 +38,7 @@ Read [`../AGENTS.md`](../AGENTS.md) before executing any plan.
 | 027 | Move voice PCM off Main + bound ASR frames + gate pulse | 9 | P1 | M | 024 | DONE (PR #44) |
 | 028 | Stop IME from mirroring DictationService Recording UI | 9 | P1 | M | — | DONE (PR #47) |
 | 029 | Finish privacy — backup off + scrub PII logs | 10 | P1 | S | Phase 9 on main | DONE |
-| 030 | Wire SuggestionBar + English dictionary defaults | 10 | P1 | M | Phase 9 on main | TODO |
+| 030 | Wire SuggestionBar + English dictionary defaults | 10 | P1 | M | Phase 9 on main | DONE |
 | 031 | Stop swipe MOVE full recomposition (`gestureTick`) | 10 | P1 | M | — | TODO |
 | 032 | Swipe dictionary decoder + dwell for doubles | 10 | P1 | M | 030 | TODO |
 | 033 | Async mic permission + pin IC through polish | 10 | P1 | M | 024/027 | TODO |

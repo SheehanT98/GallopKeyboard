@@ -49,6 +49,11 @@ fun KeyboardScreen(
     keyboardLayout: String = "qwerty",
     clipboardItems: List<String> = emptyList(),
     clipboardStore: ClipboardStore? = null,
+    suggestionsEnabled: Boolean = false,
+    currentWord: String = "",
+    suggestions: List<String> = emptyList(),
+    onSuggestionSelected: (String) -> Unit = {},
+    onCurrentWordSelected: () -> Unit = {},
 ) {
     var currentLayer by remember(initialLayer) { mutableStateOf(initialLayer) }
     var isShifted by remember { mutableStateOf(false) }
@@ -78,6 +83,14 @@ fun KeyboardScreen(
                 )
 
                 Column(modifier = Modifier.height(310.dp)) {
+                    if (suggestionsEnabled) {
+                        SuggestionBar(
+                            currentWord = currentWord,
+                            suggestions = suggestions,
+                            onSuggestionSelected = onSuggestionSelected,
+                            onCurrentWordSelected = onCurrentWordSelected,
+                        )
+                    }
                     if (clipboardStore != null && clipboardItems.isNotEmpty()) {
                         ClipboardStrip(
                             items = clipboardItems,

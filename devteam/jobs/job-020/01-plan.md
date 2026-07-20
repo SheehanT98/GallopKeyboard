@@ -1,4 +1,4 @@
-# Plan 029: Finish privacy — disable Auto Backup and scrub PII logs
+# Plan 030: Wire suggestion bar + English dictionary defaults (finish 019)
 
 > **Executor instructions**: Follow this plan step by step. Run every
 > verification command and confirm the expected result before moving to the
@@ -7,164 +7,164 @@
 > in `plans/README.md` — unless a reviewer dispatched you and told you they
 > maintain the index.
 >
-> **Drift check (run first)**: `git diff --stat 32b0d20..HEAD -- app/src/main/AndroidManifest.xml core/src/main/java/com/gallopkeyboard/core/log/CrashHandler.kt core/src/main/java/com/gallopkeyboard/core/logging/TimberSetup.kt ime/src/main/java/com/gallopkeyboard/ime/ui/KeyboardScreen.kt app/src/main/java/com/gallopkeyboard/service/DictationService.kt whisper/src/main/java/com/gallopkeyboard/whisper/WhisperContext.kt asr/src/main/java/com/k2fsa/sherpa/onnx/ scripts/verify.sh`
-> If Phase 9 code is missing on your branch (`voiceStopScope` absent), merge
-> PRs #43–#47 (or equivalent) before continuing — this plan assumes 024–028
-> landed. If in-scope files drifted vs excerpts below, STOP.
+> **Drift check (run first)**: `git diff --stat 32b0d20..HEAD -- ime/src/main/java/com/gallopkeyboard/ime/DictusImeService.kt ime/src/main/java/com/gallopkeyboard/ime/ui/KeyboardScreen.kt ime/src/main/java/com/gallopkeyboard/ime/ui/SuggestionBar.kt ime/src/main/java/com/gallopkeyboard/ime/suggestion/DictionaryEngine.kt app/src/main/java/com/gallopkeyboard/ui/settings/SettingsViewModel.kt core/src/main/java/com/gallopkeyboard/core/preferences/PreferenceKeys.kt`
+> If Phase 9 missing or excerpts mismatch, STOP.
 >
-> **Supersedes**: Plan 022 was marked DONE in the index but **never merged**
-> (deep #3 audit). Do not skip this because 022 says DONE.
+> **Supersedes incomplete Plan 019**: index marked DONE; code never wired the
+> bar or fixed English defaults.
 
 ## Status
 
 - **Priority**: P1
-- **Effort**: S
-- **Risk**: LOW
-- **Depends on**: none (after Phase 9 on main)
-- **Category**: security
-- **Planned at**: commit `32b0d20` (post–Phase 9 audit merge of #43–#47 onto `489699a`), 2026-07-20
+- **Effort**: M
+- **Risk**: MED
+- **Depends on**: none (Phase 9 assumed on main)
+- **Category**: bug / direction
+- **Planned at**: commit `32b0d20`, 2026-07-20
 
 ## Why this matters
 
-The product claims 100% on-device privacy, but:
+`DictusImeService` already computes `_suggestions` / `_currentWord` when the
+pref is on, and `SuggestionBar` composable exists — but `KeyboardScreen` never
+renders it and never receives those flows. Settings defaults
+`SUGGESTIONS_ENABLED` to **true**; IME observes `?: false` — fresh installs
+disagree. `DictionaryEngine` defaults missing/`auto` language to **French**
+`dict_fr.txt` on an English-only product, so autocorrect (026) and any bar
+would rank French words.
 
-1. `AndroidManifest.xml` omits `android:allowBackup` → platform **default
-   allows backup** of DataStore (pins, last transcription, personal dict) and
-   `filesDir/dictus.log`.
-2. Timber/Log call sites still record **raw keys, swipe words, and
-   transcripts** into an always-on file log; CrashHandler appends `logcat -d`
-   tails into shareable crash files.
-
-Plan 022 specified this work; deep #3 confirmed it is still absent.
+Without this, Plans 023/032 swipe decode and personal-dict learning stay
+pointless.
 
 ## Current state
 
-```xml
-<!-- app/src/main/AndroidManifest.xml — <application> has no allowBackup -->
-<application
-    android:name="com.gallopkeyboard.DictusApplication"
-    ...
-    android:theme="@style/Theme.AppCompat.NoActionBar">
-```
-
 ```kotlin
-// ime/.../ui/KeyboardScreen.kt (~99, ~176)
-Timber.d("Swipe word committed: %s", word)
-Timber.d("Key pressed: %s", key.label)
+// DictusImeService.kt — computed but never passed to UI
+_suggestions.value = if (_suggestionsEnabled.value) {
+    suggestionEngine.getSuggestions(currentWord)
+} else emptyList()
 
-// core/.../log/CrashHandler.kt (~76-78)
-Runtime.getRuntime().exec(arrayOf("logcat", "-d", "-t", RADIO_LOG_LINES.toString()))
+// IME default
+.map { it[PreferenceKeys.SUGGESTIONS_ENABLED] ?: false }
+
+// SettingsViewModel.kt
+.map { it[PreferenceKeys.SUGGESTIONS_ENABLED] ?: true }
+
+// DictionaryEngine.kt init
+val lang = dataStore.data.first()[PreferenceKeys.TRANSCRIPTION_LANGUAGE] ?: "fr"
+if (lang == "en") "dict_en.txt" else "dict_fr.txt"  // "auto" → French!
+
+// KeyboardScreen.kt — no SuggestionBar params / call
+fun KeyboardScreen( onCommitText: ..., ... clipboardStore: ... )
 ```
 
-`rg allowBackup app/` → no matches. Settings can export `dictus.log`.
+`SuggestionBar.kt` exists with 3-slot Gboard layout (~40+).
 
-**Conventions**: Offline privacy (`AGENTS.md` Do NOT / CONTEXT). Match
-`scripts/verify.sh` grep-guard style for new checks. Never log secret values
-in plans or commits.
+**Conventions**: English-only (`AGENTS.md`, ADR-0004/0005). Compose Material3.
+Match existing `collectAsState` patterns in `KeyboardContent`.
 
 ## Commands you will need
 
 | Purpose | Command | Expected on success |
 |---------|---------|---------------------|
+| IME tests | `./gradlew :ime:testDebugUnitTest` | BUILD SUCCESSFUL |
+| Focused | `./gradlew :ime:testDebugUnitTest --tests '*Dictionary*' --tests '*Suggestion*'` | BUILD SUCCESSFUL |
 | Verify | `bash scripts/verify.sh` | `OK` |
-| Grep backup | `rg -n 'allowBackup' app/src/main/AndroidManifest.xml` | shows `false` |
-| Grep PII logs | `rg -n 'Key pressed|Swipe word committed' ime/src/main` | no matches |
-| Unit | `./gradlew :app:testDebugUnitTest :core:testDebugUnitTest :ime:testDebugUnitTest` | BUILD SUCCESSFUL |
 
 ## Scope
 
 **In scope**:
-- `app/src/main/AndroidManifest.xml` — `allowBackup="false"` (+ optional
-  deny-all `dataExtractionRules` / `fullBackupContent` XML if easy)
-- `ime/.../ui/KeyboardScreen.kt` — remove keystroke/swipe word Timber.d
-- `app/.../service/DictationService.kt` — scrub raw transcript Timber if present
-- `whisper/.../WhisperContext.kt` and/or `asr/...` finalize Log.d of full text —
-  remove or gate behind `BuildConfig.DEBUG`
-- `core/.../log/CrashHandler.kt` — drop `logcat -d` dump from crash files
-- `scripts/verify.sh` — fail-closed greps for `allowBackup="false"` and
-  forbidden PII log patterns
-- `docs/dictus-inventory.md` Plan 029 additions
+- `ime/.../DictusImeService.kt` — pass suggestion state + commit handlers;
+  align default `?: true` with Settings (or both false — pick **true** to
+  match Settings and Plan 019 intent)
+- `ime/.../ui/KeyboardScreen.kt` — render `SuggestionBar` when enabled
+- `ime/.../suggestion/DictionaryEngine.kt` — English default for missing/`auto`
+- Optional: call `personalDictionary.recordWordTyped` on space / suggestion
+  commit (small; include if one-liner path is clear)
+- Unit tests for language→asset mapping
+- `docs/dictus-inventory.md` Plan 030
 - `plans/README.md`
 
 **Out of scope**:
-- Encrypting pins at rest (follow-up after backup-off)
-- Replacing Timber entirely
-- Log file rotation (nice-to-have; note if easy)
+- SwipeWordResolver (Plan 032)
+- Autocorrect default-ON promote
+- Number row
+- Changing SuggestionBar visual design
 
 ## Git workflow
 
-- Branch: `cursor/029-finish-privacy-backup-and-log-scrub`
-- Commit: `fix(security): disable backup; scrub keystroke/transcript logs`
+- Branch: `cursor/030-wire-suggestion-bar-english-defaults`
+- Commit: `feat(ime): wire SuggestionBar; default English dictionary`
 - Do NOT push/PR unless instructed.
 
 ## Steps
 
-### Step 1: Disable Auto Backup
+### Step 1: English dictionary asset selection
 
-On `<application>` in `app/src/main/AndroidManifest.xml`:
-
-```xml
-android:allowBackup="false"
+```kotlin
+fun dictionaryAssetForLanguage(lang: String?): String =
+    when (lang?.lowercase()) {
+        "fr" -> "dict_fr.txt"
+        else -> "dict_en.txt" // en, auto, null, unknown
+    }
 ```
 
-Optionally add `android:fullBackupContent="@xml/backup_rules"` /
-`android:dataExtractionRules="@xml/data_extraction_rules"` with deny-all
-stubs under `app/src/main/res/xml/` if targeting API 31+ extraction cleanly.
+Use in `DictionaryEngine` init instead of `?: "fr"` / `lang == "en"` check.
 
-**Verify**: `rg -n 'allowBackup' app/src/main/AndroidManifest.xml` → `false`.
+**Verify**: unit test — `null`/`"auto"`/`"en"` → `dict_en.txt`; `"fr"` → `dict_fr.txt`.
 
-### Step 2: Scrub PII Timber/Log call sites
+### Step 2: Align suggestions pref default
 
-1. Remove or redact `Timber.d("Key pressed…")` and `Timber.d("Swipe word…")`
-   (and accent char dumps) in `KeyboardScreen.kt`.
-2. Scrub DictationService / Whisper / Parakeet sites that log full transcript
-   strings — prefer delete; if diagnostics needed, `if (BuildConfig.DEBUG)`
-   with length-only message (no body).
-3. In `CrashHandler`, remove `readRadioLogTail()` / `logcat -d` from crash
-   file content; keep stack trace + thread metadata.
+IME DataStore collect: `?: true` to match `SettingsViewModel`. Document that
+v1 UX shows the bar by default (height budget: SuggestionBar already documents
+fixed height).
 
-**Verify**:
-`rg -n 'Key pressed|Swipe word committed|logcat' ime/src/main app/src/main/java/com/gallopkeyboard/service core/src/main/java/com/gallopkeyboard/core/log`
-→ no keystroke/transcript dumps; no logcat exec in CrashHandler.
+**Verify**: Settings + IME both use `?: true`.
 
-### Step 3: verify.sh guards
+### Step 3: Wire SuggestionBar into KeyboardScreen
 
-Add fail-closed checks (mirror style of existing greps):
+1. Add params: `suggestionsEnabled: Boolean`, `currentWord: String`,
+   `suggestions: List<String>`, `onSuggestionSelected: (String) -> Unit`,
+   `onCurrentWordSelected: () -> Unit`.
+2. When `suggestionsEnabled`, place `SuggestionBar` above the key grid (and
+   above clipboard strip if that is above keys — match Gboard: bar above
+   keys; keep clipboard strip behavior unchanged).
+3. From `DictusImeService.KeyboardContent`, `collectAsState` the flows and
+   pass them in. On suggestion select: delete current word fragment via
+   `deleteSurroundingText(currentWord.length, 0)` then `commitText("$word ")`
+   (or existing helper if any). Clear autocorrect undo on suggestion commit.
+4. Pass `suggestionEngine` / dictionary into `KeyboardView` only if already
+   parameterized — do **not** implement swipe resolver here (032).
 
-- Manifest contains `android:allowBackup="false"`
-- Forbidden patterns in production sources (adjust list to match removed sites)
+**Verify**: `./gradlew :ime:compileDebugKotlin` success; existing UI tests pass.
 
-**Verify**: `bash scripts/verify.sh` → `OK`.
+### Step 4: Docs + verify
 
-### Step 4: Inventory
-
-Document Plan 029: backup off; which log sites removed; crash files no longer
-embed logcat.
+Inventory Plan 030. `bash scripts/verify.sh` → `OK`.
 
 ## Test plan
 
-- No new unit tests required if purely config/log deletion; smoke compile.
-- Manual: Settings → export logs after typing — must not contain key labels /
-  swipe words / full transcripts.
+- `dictionaryAssetForLanguage` table tests.
+- Optional Robolectric/UI: SuggestionBar receives lists (if cheap; else manual).
+- Manual: enable Suggestions in Settings → type `hel` → see hello; tap center.
 
 ## Done criteria
 
-- [ ] `allowBackup="false"` present
-- [ ] No keystroke/swipe-word Timber in `ime` production sources
-- [ ] CrashHandler does not exec `logcat -d`
-- [ ] `verify.sh` guards fail if those regress
-- [ ] `bash scripts/verify.sh` → `OK`
-- [ ] Scope respected
+- [ ] SuggestionBar visible when pref on; hidden when off
+- [ ] IME and Settings default agree (`true`)
+- [ ] Missing/`auto` language loads `dict_en.txt`
+- [ ] Suggestion tap replaces current word + space
+- [ ] `verify.sh` OK; scope respected
 
 ## STOP conditions
 
-- Product owner requires backup for pin migrate — document and keep
-  `allowBackup="false"` anyway unless they override in writing.
-- A log site is required for a failing CI test — redact payload, don’t keep
-  plaintext transcript.
+- Suggestion bar + clipboard strip + Plan 019 height exceeds host usable
+  area on a density you can measure — reduce strip, don’t shrink key hit
+  targets without reporting.
+- `KeyboardScreen` signature conflicts with unmerged Phase 9 — rebase on
+  025/026 first.
 
 ## Maintenance notes
 
-- Encrypt-at-rest for pins can follow once backup is off.
-- Reviewer: confirm Settings log export + crash share paths.
-- Mark Plan 022 superseded by 029 in the index (022 DONE claim was false).
+- Plan 032 needs this engine wired for swipe decode quality.
+- Reviewer: S22 height with suggestions ON + clipboard strip.
+- Mark Plan 019 superseded / completed by 030 in the index.

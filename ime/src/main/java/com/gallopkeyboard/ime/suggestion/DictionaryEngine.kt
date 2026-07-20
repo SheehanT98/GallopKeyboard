@@ -12,6 +12,17 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
+ * Maps transcription-language preference to the bundled dictionary asset.
+ *
+ * GallopKeyboard v1 is English-only; missing, `auto`, and unknown codes load English.
+ */
+fun dictionaryAssetForLanguage(lang: String?): String =
+    when (lang?.lowercase()) {
+        "fr" -> "dict_fr.txt"
+        else -> "dict_en.txt" // en, auto, null, unknown
+    }
+
+/**
  * Production SuggestionEngine backed by AOSP FR+EN dictionaries loaded from APK assets.
  *
  * Performance: accent-stripped lowercase forms are pre-computed at load time and words
@@ -45,8 +56,8 @@ class DictionaryEngine(
     init {
         coroutineScope.launch(ioDispatcher) {
             val name = assetName ?: run {
-                val lang = dataStore.data.first()[PreferenceKeys.TRANSCRIPTION_LANGUAGE] ?: "fr"
-                if (lang == "en") "dict_en.txt" else "dict_fr.txt"
+                val lang = dataStore.data.first()[PreferenceKeys.TRANSCRIPTION_LANGUAGE]
+                dictionaryAssetForLanguage(lang)
             }
             val entries = context.assets.open(name).bufferedReader().useLines { lines ->
                 lines.mapNotNull { parseLine(it) }

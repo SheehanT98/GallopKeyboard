@@ -72,7 +72,7 @@ class DictusImeService : LifecycleInputMethodService() {
 
     // Whether the built-in suggestion bar is enabled. Observed from DataStore
     // so the user can toggle it in settings without restarting the IME.
-    private val _suggestionsEnabled = MutableStateFlow(false)
+    private val _suggestionsEnabled = MutableStateFlow(true)
 
     // Opt-in autocorrect on space (Plan 026). Default OFF.
     private val _autocorrectEnabled = MutableStateFlow(false)
@@ -116,10 +116,10 @@ class DictusImeService : LifecycleInputMethodService() {
             }
         }
 
-        // Observe suggestions toggle from DataStore (defaults to false — bar hidden in v1 UX)
+        // Observe suggestions toggle from DataStore (defaults to true — matches Settings)
         bindingScope.launch {
             entryPoint.dataStore().data
-                .map { it[PreferenceKeys.SUGGESTIONS_ENABLED] ?: false }
+                .map { it[PreferenceKeys.SUGGESTIONS_ENABLED] ?: true }
                 .collect { enabled -> _suggestionsEnabled.value = enabled }
         }
         // Observe autocorrect toggle (defaults to false — opt-in MVP)
@@ -256,6 +256,10 @@ class DictusImeService : LifecycleInputMethodService() {
         val clipboardItems by clipboardStore.itemsFlow.collectAsState()
         val pinnedClipboardEntries by pinnedClipboardStore.entriesFlow.collectAsState()
 
+        val suggestionsEnabled by _suggestionsEnabled.collectAsState()
+        val currentWord by _currentWord.collectAsState()
+        val suggestions by _suggestions.collectAsState()
+
         PanelHost(
             controller = panelController,
             themeMode = themeMode,
@@ -307,6 +311,11 @@ class DictusImeService : LifecycleInputMethodService() {
                 keyboardLayout = keyboardLayout,
                 clipboardItems = clipboardItems,
                 clipboardStore = clipboardStore,
+                suggestionsEnabled = suggestionsEnabled,
+                currentWord = currentWord,
+                suggestions = suggestions,
+                onSuggestionSelected = { word -> commitSuggestion(word) },
+                onCurrentWordSelected = { commitCurrentWord() },
             )
         }
     }
@@ -319,20 +328,49 @@ class DictusImeService : LifecycleInputMethodService() {
     }
 
     /**
+     * Replaces the in-progress word with a bar suggestion and commits a trailing space.
+     */
+    fun commitSuggestion(word: String) {
+        val ic = currentInputConnection ?: return
+        lastAutoCorrect = null
+        val typed = _currentWord.value
+        if (typed.isNotEmpty()) {
+            ic.deleteSurroundingText(typed.length, 0)
+        }
+        ic.commitText("$word ", 1)
+        dictionaryEngine.personalDictionary.recordWordTyped(word)
+    }
+
+    /**
+     * Commits the raw in-progress word (left suggestion slot) with a trailing space.
+     */
+    fun commitCurrentWord() {
+        val ic = currentInputConnection ?: return
+        lastAutoCorrect = null
+        val typed = _currentWord.value
+        if (typed.isEmpty()) return
+        ic.commitText(" ", 1)
+        dictionaryEngine.personalDictionary.recordWordTyped(typed)
+    }
+
+    /**
      * Commits a space, optionally replacing the word before the cursor when
      * autocorrect is enabled (Plan 026). Only reached from SPACE tap — KeyButton
      * already suppresses space commit when the press was a cursor drag.
      */
     fun commitSpace() {
         val ic = currentInputConnection ?: return
+        val beforeCursor = ic.getTextBeforeCursor(50, 0)?.toString().orEmpty()
+        val word = beforeCursor.split(" ", "\n").lastOrNull().orEmpty()
         if (!_autocorrectEnabled.value) {
             lastAutoCorrect = null
+            if (word.isNotBlank()) {
+                dictionaryEngine.personalDictionary.recordWordTyped(word)
+            }
             ic.commitText(" ", 1)
             return
         }
 
-        val beforeCursor = ic.getTextBeforeCursor(50, 0)?.toString().orEmpty()
-        val word = beforeCursor.split(" ", "\n").lastOrNull().orEmpty()
         val candidates = dictionaryEngine.candidatesNear(word)
             .map { it.word to it.frequency }
         when (val plan = planSpaceCommit(_autocorrectEnabled.value, word, candidates)) {
@@ -343,6 +381,9 @@ class DictusImeService : LifecycleInputMethodService() {
             }
             SpaceCommitPlan.JustSpace -> {
                 lastAutoCorrect = null
+                if (word.isNotBlank()) {
+                    dictionaryEngine.personalDictionary.recordWordTyped(word)
+                }
                 ic.commitText(" ", 1)
             }
         }
