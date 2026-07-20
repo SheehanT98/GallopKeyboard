@@ -61,6 +61,11 @@ class SettingsViewModel @Inject constructor(
         .map { it[PreferenceKeys.SUGGESTIONS_ENABLED] ?: true }
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
+    /** Whether opt-in autocorrect-on-space is enabled (Plan 026). Default OFF. */
+    val autocorrectEnabled: StateFlow<Boolean> = dataStore.data
+        .map { it[PreferenceKeys.AUTOCORRECT_ENABLED] ?: false }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     /** Whether haptic feedback is enabled on dictation actions. */
     val hapticsEnabled: StateFlow<Boolean> = dataStore.data
         .map { it[PreferenceKeys.HAPTICS_ENABLED] ?: true }
@@ -107,6 +112,16 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             dataStore.edit { prefs ->
                 prefs[PreferenceKeys.SUGGESTIONS_ENABLED] = !(prefs[PreferenceKeys.SUGGESTIONS_ENABLED] ?: true)
+            }
+        }
+    }
+
+    /** Toggle autocorrect-on-space on/off (default false). */
+    fun toggleAutocorrect() {
+        viewModelScope.launch {
+            dataStore.edit { prefs ->
+                prefs[PreferenceKeys.AUTOCORRECT_ENABLED] =
+                    !(prefs[PreferenceKeys.AUTOCORRECT_ENABLED] ?: false)
             }
         }
     }

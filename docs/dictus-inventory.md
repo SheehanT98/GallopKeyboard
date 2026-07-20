@@ -545,4 +545,35 @@ Code-point delete, space-bar cursor drag, and accelerated word delete on long-ho
 - Space drag does not commit spaces; tap / double-tap → `. ` still uses release-without-drag.
 - SPACE stays outside Plan 013 character swipe hit-testing (`KeyType.CHARACTER` only).
 
+## Plan 026 additions
+
+Opt-in on-device autocorrect on space (MVP spike). Default **OFF**.
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/.../suggestion/AutoCorrect.kt` | Pure `decideAutoCorrect` / `planSpaceCommit` / Levenshtein / undo length |
+| `ime/src/test/.../suggestion/AutoCorrectTest.kt` | Decision matrix (teh/hello/ambiguity/short/capital) |
+| `ime/src/test/.../suggestion/AutoCorrectCommitHelperTest.kt` | Pref-off / replace / undo buffer simulation |
+| `docs/adr/0005-opt-in-autocorrect-on-space.md` | Aggressiveness, undo, drag gate, default OFF |
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../suggestion/DictionaryEngine.kt` | `candidatesNear` — first-letter bucket + edit-distance filter |
+| `ime/.../DictusImeService.kt` | `commitSpace`, autocorrect undo in `deleteBackward`, period double-tap path |
+| `ime/.../ui/KeyboardScreen.kt` | `onReplaceTrailingSpaceWithPeriod` so double-tap does not consume undo |
+| `core/.../PreferenceKeys.kt` | `AUTOCORRECT_ENABLED` |
+| `app/.../settings/SettingsViewModel.kt` / `SettingsScreen.kt` | Autocorrect toggle (default false) |
+| `docs/manual-test-matrix.md` | Autocorrect checklist (unchecked) |
+
+### Behavior notes
+
+- Autocorrect runs only on SPACE **tap** commit; Plan 025 space-drag never fires it.
+- Immediate backspace undoes one replacement (`original` restored, no trailing space).
+- Ambiguous near-equal frequency pairs → no replace (prefer under-correct).
+- Microbenchmark: worst first-letter `candidatesNear` on `dict_en.txt` ≤ 5 ms on JVM host.
+- **Do not enable by default** until owner signs off and matrix cells are ticked.
 

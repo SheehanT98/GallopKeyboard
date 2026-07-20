@@ -56,6 +56,20 @@ first real measurement if the target was too aspirational.
 2. Confirm `filesDir/crashes/*.txt` is written.
 3. Settings → Crash logs — list, copy, share, delete work.
 
+## Autocorrect on space (Plan 026)
+
+Default **OFF**. Enable in Settings → Autocorrect before testing.
+
+| Check | Pass |
+|-------|------|
+| Pref default OFF — typing `teh ` does **not** replace | ☐ |
+| Pref ON — `teh ` → `the ` | ☐ |
+| Immediate backspace after correction restores `teh` | ☐ |
+| Pref ON — known word `the ` stays `the ` | ☐ |
+| Space cursor drag does **not** autocorrect / insert spaces | ☐ |
+| Double-tap space still yields `. ` after a correction | ☐ |
+| Leave pref OFF for daily use until owner promotes | ☐ |
+
 ## Release APK parity
 
 1. `./gradlew assembleRelease`
