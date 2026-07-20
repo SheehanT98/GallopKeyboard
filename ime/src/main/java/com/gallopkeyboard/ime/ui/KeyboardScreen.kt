@@ -32,6 +32,10 @@ fun KeyboardScreen(
     onDeleteBackward: () -> Unit,
     onDeleteBackwardWord: () -> Unit = {},
     onSpaceCursorDrag: (Int) -> Unit = {},
+    onReplaceTrailingSpaceWithPeriod: () -> Unit = {
+        onDeleteBackward()
+        onCommitText(". ")
+    },
     onSendReturn: () -> Unit,
     onVoicePanelToggle: () -> Unit,
     onClipboardPanelToggle: () -> Unit = {},
@@ -106,6 +110,7 @@ fun KeyboardScreen(
                                 lastSpaceTapTime = lastSpaceTapTime,
                                 onCommitText = onCommitText,
                                 onDeleteBackward = onDeleteBackward,
+                                onReplaceTrailingSpaceWithPeriod = onReplaceTrailingSpaceWithPeriod,
                                 onSendReturn = onSendReturn,
                                 onEmojiToggle = onEmojiToggle,
                                 onVoicePanelToggle = onVoicePanelToggle,
@@ -155,6 +160,10 @@ internal fun handleKeyPress(
     lastSpaceTapTime: Long,
     onCommitText: (String) -> Unit,
     onDeleteBackward: () -> Unit,
+    onReplaceTrailingSpaceWithPeriod: () -> Unit = {
+        onDeleteBackward()
+        onCommitText(". ")
+    },
     onSendReturn: () -> Unit,
     onEmojiToggle: () -> Unit = {},
     onVoicePanelToggle: () -> Unit = {},
@@ -177,8 +186,8 @@ internal fun handleKeyPress(
             val now = System.currentTimeMillis()
             if (lastSpaceTapTime > 0L && now - lastSpaceTapTime < 350L) {
                 // Double-tap space → period + space (classic phone keyboard).
-                onDeleteBackward()
-                onCommitText(". ")
+                // Use dedicated path so autocorrect undo is not consumed.
+                onReplaceTrailingSpaceWithPeriod()
                 onSpaceTapTime(0L)
             } else {
                 onCommitText(" ")

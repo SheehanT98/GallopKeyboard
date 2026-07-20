@@ -202,4 +202,36 @@ class DictionaryEngineTest {
             )
         }
     }
+
+    @Test
+    fun `candidatesNear returns same-first-letter words within edit distance`() = runTest(testDispatcher) {
+        val engine = createEngine()
+        advanceUntilIdle()
+
+        val near = engine.candidatesNear("helo", max = 10)
+
+        assertTrue("Should find hello near helo, got: $near", near.any { it.word == "hello" })
+        assertTrue(
+            "All results share first letter h",
+            near.all { it.strippedLower.startsWith('h') },
+        )
+        assertTrue("Should respect max cap", near.size <= 10)
+    }
+
+    @Test
+    fun `candidatesNear blank returns empty`() = runTest(testDispatcher) {
+        val engine = createEngine()
+        advanceUntilIdle()
+        assertTrue(engine.candidatesNear("").isEmpty())
+        assertTrue(engine.candidatesNear("   ").isEmpty())
+    }
+
+    @Test
+    fun `candidatesNear caps result count`() = runTest(testDispatcher) {
+        val engine = createEngine()
+        advanceUntilIdle()
+
+        val near = engine.candidatesNear("h", max = 3, maxEditDistance = 2)
+        assertTrue("Result size ${near.size} should be <= 3", near.size <= 3)
+    }
 }

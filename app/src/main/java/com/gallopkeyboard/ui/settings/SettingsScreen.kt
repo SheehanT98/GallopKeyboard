@@ -82,6 +82,7 @@ fun SettingsScreen(
 ) {
     val language by viewModel.language.collectAsState()
     val suggestionsEnabled by viewModel.suggestionsEnabled.collectAsState()
+    val autocorrectEnabled by viewModel.autocorrectEnabled.collectAsState()
     val hapticsEnabled by viewModel.hapticsEnabled.collectAsState()
     val keyboardLayout by viewModel.keyboardLayout.collectAsState()
     val keyboardMode by viewModel.keyboardMode.collectAsState()
@@ -146,6 +147,12 @@ fun SettingsScreen(
                 label = stringResource(R.string.settings_suggestions),
                 checked = suggestionsEnabled,
                 onToggle = { viewModel.toggleSuggestions() },
+            )
+            SettingDivider()
+            SettingToggleRow(
+                label = stringResource(R.string.settings_autocorrect),
+                checked = autocorrectEnabled,
+                onToggle = { viewModel.toggleAutocorrect() },
             )
             SettingDivider()
             SettingToggleRow(
