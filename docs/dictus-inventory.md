@@ -458,6 +458,67 @@ per-cell `clickable` commit.
 
 - `ACCENT_CELL_WIDTH_DP = 44.dp` — must stay in sync with `AccentPopup` cell `size`.
 
+## Plan 024 additions
+
+Keep voice stop/polish alive after leaving the voice panel; blank polish must not
+wipe streaming partials; late ASR frames after stop/cancel must not toast failure.
+
+### Product decision
+
+`onSessionStop` (streaming finalize + Whisper polish) runs on process-lifetime
+`voiceStopScope`, not Compose `rememberCoroutineScope`, so panel switch / IME hide
+does not cancel mid-polish. Dispose mid-recording still cancels; dispose mid-stop
+does not. Successful polish runs through `TextPostProcessor` (same as
+`DictationService`); empty/blank polish finishes composing instead of
+`commitText("")`.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../panel/VoiceSessionCleanup.kt` | `voiceStopScope`, `shouldCancelRecordingOnDispose` |
+| `ime/.../panel/SmartVoiceButton.kt` | `stoppingJob` on `sessionScope`; dispose keeps mid-stop |
+| `ime/.../asr/PolishingTranscriber.kt` | `TextPostProcessor`; blank → `clearComposing` |
+| `ime/.../asr/StreamingTranscriber.kt` | `sessionEpoch` late-frame guard |
+| `ime/src/test/.../panel/VoiceSessionCleanupTest.kt` | Dispose cancel vs keep policy |
+| `ime/src/test/.../asr/PolishingTranscriberTest.kt` | Empty polish + post-processor |
+| `ime/src/test/.../asr/StreamingTranscriberTest.kt` | Late frame after stop → no toast |
+
+### Manual test
+
+Release mic → immediately tap keyboard icon → polish must still replace composing
+text in Notes/WhatsApp. Empty Whisper result must leave streaming partial committed.
+
+## Plan 027 additions
+
+Move voice PCM collection off Compose Main; bound ASR frame work; gate idle pulse.
+
+### Product / perf decision
+
+- PCM collect/write runs on `RecorderCoroutineDispatcher` via `sessionScope.launch(recorderDispatcher)`
+  (not Compose `rememberCoroutineScope`), preserving Plan 024 stop/polish on `voiceStopScope`.
+- `StreamingTranscriber` uses a serial consumer + capacity-2 DROP_OLDEST frame queue instead of
+  unbounded per-frame `launch`.
+- `rememberInfiniteTransition` for the mic pulse runs only while `isRecordingVisual` (RecordingDot
+  was already gated). Idle voice panel must not spin an infinite transition.
+- Optional 60 s→5 min ring grow deferred — keep Plan 005 five-minute ceiling capacity.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../panel/SmartVoiceButton.kt` | Collect on recorder dispatcher; `writeShorts` + scratch; gate pulse |
+| `ime/.../asr/StreamingTranscriber.kt` | Bounded serial frame queue + single consumer; keep sessionEpoch |
+| `ime/.../audio/RingByteBuffer.kt` | `writeShorts(samples, scratch?)` bulk helper |
+| `ime/.../di/DictusImeEntryPoint.kt` | Expose `recorderCoroutineDispatcher()` |
+| `ime/src/test/.../audio/RingByteBufferTest.kt` | writeShorts equivalence |
+| `ime/src/test/.../asr/StreamingTranscriberTest.kt` | Slow-engine queue bound; interleaved drain for partials |
+
+### Manual / visual smoke
+
+Idle voice panel: no continuous pulse animation CPU. Start recording: pulse + RecordingDot
+animate. Release: pulse stops. Partials still update under normal speech (queue capacity 2).
+
 ## Plan 025 additions
 
 Code-point delete, space-bar cursor drag, and accelerated word delete on long-hold.
@@ -483,4 +544,5 @@ Code-point delete, space-bar cursor drag, and accelerated word delete on long-ho
 - Word-delete length uses Java `String.length` (UTF-16) to match `deleteSurroundingText`.
 - Space drag does not commit spaces; tap / double-tap → `. ` still uses release-without-drag.
 - SPACE stays outside Plan 013 character swipe hit-testing (`KeyType.CHARACTER` only).
+
 

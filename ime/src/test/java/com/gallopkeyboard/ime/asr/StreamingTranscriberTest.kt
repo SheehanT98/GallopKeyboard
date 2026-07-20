@@ -69,10 +69,11 @@ class StreamingTranscriberTest {
         drainAsrAndMain()
         committer.calls.clear()
 
+        // Interleave drain so the bounded queue is not DROP_OLDEST-starved in unit tests.
         repeat(10) {
             transcriber.onAudioFrame(session, ShortArray(1600))
+            drainAsrAndMain()
         }
-        drainAsrAndMain()
 
         assertEquals(
             listOf(
@@ -93,8 +94,8 @@ class StreamingTranscriberTest {
 
         repeat(15) {
             transcriber.onAudioFrame(session, ShortArray(1600))
+            drainAsrAndMain()
         }
-        drainAsrAndMain()
 
         assertEquals(
             listOf(
@@ -129,10 +130,47 @@ class StreamingTranscriberTest {
 
         repeat(50) {
             transcriber.onAudioFrame(session, ShortArray(1600))
+            // Keep consumer fed enough frames under DROP_OLDEST capacity.
+            if (it % 3 == 2) {
+                runBlocking(asrDispatcher.dispatcher) { }
+            }
         }
         drainAsrAndMain()
 
         assertTrue(committer.calls.any { it == CommitterCall.SetComposing("hello") })
+    }
+
+    @Test
+    fun `slow acceptFrame keeps queued copies bounded`() {
+        val acceptStarted = CountDownLatch(1)
+        val releaseAccept = CountDownLatch(1)
+        engine.onAcceptFrame = {
+            acceptStarted.countDown()
+            releaseAccept.await(5, TimeUnit.SECONDS)
+        }
+        val session = newSession()
+        transcriber.onSessionStart(session)
+        drainAsrAndMain()
+
+        // First frame enters acceptFrame and blocks; subsequent frames fill/drop in queue.
+        transcriber.onAudioFrame(session, ShortArray(1600))
+        assertTrue(acceptStarted.await(5, TimeUnit.SECONDS))
+
+        repeat(100) {
+            transcriber.onAudioFrame(session, ShortArray(1600))
+        }
+
+        assertTrue(
+            "peak queued copies=${transcriber.peakQueuedFrameCopies.get()}",
+            transcriber.peakQueuedFrameCopies.get() <= StreamingTranscriber.FRAME_QUEUE_CAPACITY,
+        )
+        assertTrue(
+            "current queued=${transcriber.queuedFrameCopies.get()}",
+            transcriber.queuedFrameCopies.get() <= StreamingTranscriber.FRAME_QUEUE_CAPACITY,
+        )
+
+        releaseAccept.countDown()
+        drainAsrAndMain()
     }
 
     @Test
@@ -206,6 +244,28 @@ class StreamingTranscriberTest {
         assertFalse(committer.calls.contains(CommitterCall.ClearComposing))
     }
 
+    @Test
+    fun `late frame after stop does not toast recognition failed`() = runTest {
+        engine.finalizeResult = "done"
+        Flags.polishEnabled = true
+        engine.throwOnAcceptAfterFinalize = true
+        val session = newSession()
+        transcriber.onSessionStart(session)
+        drainAsrAndMain()
+
+        transcriber.onSessionStop(session)
+        drainAsrAndMain()
+        ShadowToast.reset()
+        committer.calls.clear()
+
+        // Frame job launched after stop — sessionEpoch advanced; must not toast.
+        transcriber.onAudioFrame(session, ShortArray(1600))
+        drainAsrAndMain()
+
+        assertEquals(0, ShadowToast.shownToastCount())
+        assertFalse(committer.calls.contains(CommitterCall.ClearComposing))
+    }
+
     private fun drainAsrAndMain() {
         runBlocking(asrDispatcher.dispatcher) { }
         Shadows.shadowOf(Looper.getMainLooper()).idle()
@@ -253,9 +313,11 @@ class FakeStreamingAsrEngine : StreamingAsrEngine {
     var cancelCalled = false
     var acceptFrameThreadName: String? = null
     var onAcceptFrame: (() -> Unit)? = null
+    var throwOnAcceptAfterFinalize = false
 
     private var pollIndex = 0
     private var initialized = false
+    private var streamActive = false
 
     override fun init(config: ParakeetConfig) {
         initialized = true
@@ -264,10 +326,14 @@ class FakeStreamingAsrEngine : StreamingAsrEngine {
     override fun beginStream() {
         failBeginWith?.let { throw it }
         pollIndex = 0
+        streamActive = true
     }
 
     override fun acceptFrame(pcm16k: ShortArray) {
         acceptFrameThreadName = Thread.currentThread().name
+        if (throwOnAcceptAfterFinalize && !streamActive) {
+            throw IllegalStateException("No active stream — call beginStream() first")
+        }
         onAcceptFrame?.invoke()
     }
 
@@ -279,11 +345,13 @@ class FakeStreamingAsrEngine : StreamingAsrEngine {
 
     override fun finalize(): String {
         finalizeCalled = true
+        streamActive = false
         return finalizeResult
     }
 
     override fun cancel() {
         cancelCalled = true
+        streamActive = false
     }
 
     override fun close() = Unit

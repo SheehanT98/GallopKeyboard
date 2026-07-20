@@ -3,6 +3,7 @@ package com.gallopkeyboard.ime.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.gallopkeyboard.ime.audio.AudioRecorderEngine
+import com.gallopkeyboard.ime.audio.RecorderCoroutineDispatcher
 import com.gallopkeyboard.ime.audio.Transcriber
 import com.gallopkeyboard.ime.asr.InputConnectionSupplier
 import com.gallopkeyboard.ime.asr.ModelLifecycleController
@@ -29,6 +30,7 @@ import dagger.hilt.components.SingletonComponent
 interface DictusImeEntryPoint {
     fun dataStore(): DataStore<Preferences>
     fun audioRecorderEngine(): AudioRecorderEngine
+    fun recorderCoroutineDispatcher(): RecorderCoroutineDispatcher
     fun transcriber(): Transcriber
     fun permissionRequester(): PermissionRequester
     fun inputConnectionSupplier(): InputConnectionSupplier
