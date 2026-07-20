@@ -26,5 +26,5 @@ object AsrModule {
     @Singleton
     fun provideImeTextCommitter(
         inputConnectionSupplier: InputConnectionSupplier,
-    ): ImeTextCommitter = ImeTextCommitter { inputConnectionSupplier.supplier() }
+    ): ImeTextCommitter = ImeTextCommitter(inputConnectionSupplier::connection)
 }

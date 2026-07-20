@@ -9,6 +9,8 @@ import com.gallopkeyboard.ime.audio.AsrCoroutineDispatcher
 import com.gallopkeyboard.ime.audio.RingByteBuffer
 import com.gallopkeyboard.whisper.AsrPolishEngine
 import com.gallopkeyboard.whisper.WhisperConfig
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -32,6 +34,7 @@ class PolishingTranscriberTest {
     private lateinit var streamingEngine: PolishFakeStreamingAsrEngine
     private lateinit var polishEngine: FakeAsrPolishEngine
     private lateinit var committer: RecordingImeTextCommitter
+    private lateinit var inputConnectionSupplier: InputConnectionSupplier
     private lateinit var asrDispatcher: AsrCoroutineDispatcher
     private lateinit var streaming: StreamingTranscriber
     private lateinit var lifecycle: RecordingModelLifecycleController
@@ -41,12 +44,19 @@ class PolishingTranscriberTest {
     fun setUp() {
         streamingEngine = PolishFakeStreamingAsrEngine()
         polishEngine = FakeAsrPolishEngine()
-        committer = RecordingImeTextCommitter()
+        inputConnectionSupplier = InputConnectionSupplier()
+        committer = RecordingImeTextCommitter(inputConnectionSupplier::connection)
         lifecycle = RecordingModelLifecycleController()
         asrDispatcher = AsrCoroutineDispatcher()
         val context: Context = androidx.test.core.app.ApplicationProvider.getApplicationContext()
         streaming = StreamingTranscriber(streamingEngine, committer, asrDispatcher, VoiceModelPromptState(), context)
-        transcriber = PolishingTranscriber(streaming, polishEngine, committer, lifecycle)
+        transcriber = PolishingTranscriber(
+            streaming,
+            polishEngine,
+            committer,
+            inputConnectionSupplier,
+            lifecycle,
+        )
         Flags.polishEnabled = true
     }
 
@@ -55,6 +65,38 @@ class PolishingTranscriberTest {
         Flags.polishEnabled = true
         streamingEngine.close()
         polishEngine.close()
+    }
+
+    @Test
+    fun `polish commit uses pinned IC when supplier cleared mid-polish`() = runTest {
+        val fakeIc = PinAwareFakeInputConnection()
+        inputConnectionSupplier.supplier = { fakeIc }
+        val wiredCommitter = ImeTextCommitter(inputConnectionSupplier::connection)
+        transcriber = PolishingTranscriber(
+            streaming,
+            polishEngine,
+            wiredCommitter,
+            inputConnectionSupplier,
+            lifecycle,
+        )
+        streamingEngine.finalizeResult = "streaming partial"
+        polishEngine.result = "polished result"
+        polishEngine.blockMs = 200
+        val session = sessionWithPcm()
+
+        transcriber.onSessionStart(session)
+        val stopJob = launch {
+            transcriber.onSessionStop(session)
+        }
+        while (!polishEngine.transcribeCalled) {
+            delay(10)
+        }
+        inputConnectionSupplier.supplier = { null }
+        stopJob.join()
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+
+        assertTrue(fakeIc.finishComposingCount > 0)
+        assertEquals("polished result. ", fakeIc.composingText)
     }
 
     @Test
@@ -183,6 +225,53 @@ class PolishingTranscriberTest {
         buffer.write(bytes, 0, bytes.size)
         return AudioSession(startedAtElapsedMs = 0L, buffer = buffer)
     }
+}
+
+private class PinAwareFakeInputConnection : android.view.inputmethod.InputConnection {
+    var composingText: String? = null
+    var finishComposingCount = 0
+
+    override fun setComposingText(text: CharSequence?, newCursorPosition: Int): Boolean {
+        composingText = text?.toString()
+        return true
+    }
+
+    override fun finishComposingText(): Boolean {
+        finishComposingCount++
+        return true
+    }
+
+    override fun getTextBeforeCursor(n: Int, flags: Int): CharSequence? = null
+    override fun getTextAfterCursor(n: Int, flags: Int): CharSequence? = null
+    override fun getSelectedText(flags: Int): CharSequence? = null
+    override fun getCursorCapsMode(reqModes: Int): Int = 0
+    override fun getExtractedText(request: android.view.inputmethod.ExtractedTextRequest?, flags: Int) = null
+    override fun deleteSurroundingTextInCodePoints(beforeLength: Int, afterLength: Int): Boolean = false
+    override fun deleteSurroundingText(beforeLength: Int, afterLength: Int): Boolean = false
+    override fun setComposingRegion(start: Int, end: Int): Boolean = false
+    override fun commitText(text: CharSequence?, newCursorPosition: Int): Boolean = false
+    override fun commitCompletion(text: android.view.inputmethod.CompletionInfo?): Boolean = false
+    override fun commitCorrection(correctionInfo: android.view.inputmethod.CorrectionInfo?): Boolean = false
+    override fun setSelection(start: Int, end: Int): Boolean = false
+    override fun performEditorAction(editorAction: Int): Boolean = false
+    override fun performContextMenuAction(id: Int): Boolean = false
+    override fun beginBatchEdit(): Boolean = false
+    override fun endBatchEdit(): Boolean = false
+    override fun sendKeyEvent(event: android.view.KeyEvent?): Boolean = false
+    override fun clearMetaKeyStates(states: Int): Boolean = false
+    override fun reportFullscreenMode(enabled: Boolean): Boolean = false
+    override fun performPrivateCommand(action: String?, data: android.os.Bundle?): Boolean = false
+    override fun requestCursorUpdates(cursorUpdateMode: Int): Boolean = false
+    override fun requestCursorUpdates(cursorUpdateMode: Int, sequenceNumber: Int): Boolean = false
+    override fun closeConnection() = Unit
+    override fun getHandler(): android.os.Handler? = null
+    override fun commitContent(
+        inputContentInfo: android.view.inputmethod.InputContentInfo,
+        flags: Int,
+        opts: android.os.Bundle?,
+    ): Boolean = false
+    override fun performSpellCheck(): Boolean = false
+    override fun setImeConsumesInput(imeConsumesInput: Boolean): Boolean = false
 }
 
 class FakeAsrPolishEngine : AsrPolishEngine {

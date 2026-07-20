@@ -519,6 +519,38 @@ Move voice PCM collection off Compose Main; bound ASR frame work; gate idle puls
 Idle voice panel: no continuous pulse animation CPU. Start recording: pulse + RecordingDot
 animate. Release: pulse stops. Partials still update under normal speech (queue capacity 2).
 
+## Plan 033 additions
+
+Async mic permission request and pin InputConnection through Whisper polish.
+
+### Product decision
+
+- **Mic permission**: first press launches async `PermissionRequester.request` on
+  Compose scope — no `runBlocking` on the pointer thread. User taps again after
+  grant (second-press pattern; avoids FSM races).
+- **Polish IC pin**: `PolishingTranscriber.onSessionStop` calls
+  `InputConnectionSupplier.beginPolishCommit()` to capture the live IC before
+  polish. `DictusImeService.onFinishInputView` calls `clearSupplierIfIdle()` so
+  hide-keyboard mid-polish does not drop a successful commit when the pinned IC
+  is still valid. Dead IC → commit methods return false and are dropped (logged).
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../panel/SmartVoiceButton.kt` | Async permission; second-press after grant |
+| `ime/.../asr/InputConnectionSupplier` + `ImeTextCommitter.kt` | Pin/defer clear; inactive IC safe drop |
+| `ime/.../asr/PolishingTranscriber.kt` | `beginPolishCommit` / `endPolishCommit` around polish |
+| `ime/.../DictusImeService.kt` | `clearSupplierIfIdle()` in `onFinishInputView` |
+| `ime/.../di/AsrModule.kt` | Committer uses `connection()` |
+| `ime/src/test/.../InputConnectionSupplierTest.kt` | Pin + defer clear |
+| `ime/src/test/.../PolishingTranscriberTest.kt` | Supplier nulled mid-polish still commits |
+
+### Manual test
+
+Grant mic on first voice use (no IME freeze). Release mic → immediately hide
+keyboard → polish must still land in Notes when the target field is unchanged.
+
 ## Plan 025 additions
 
 Code-point delete, space-bar cursor drag, and accelerated word delete on long-hold.

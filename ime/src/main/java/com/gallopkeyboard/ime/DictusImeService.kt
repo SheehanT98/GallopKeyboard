@@ -161,7 +161,8 @@ class DictusImeService : LifecycleInputMethodService() {
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
-        entryPoint.inputConnectionSupplier().supplier = { null }
+        // Defer supplier clear while polish runs on voiceStopScope (Plan 033).
+        entryPoint.inputConnectionSupplier().clearSupplierIfIdle()
         panelController.reset()
         super.onFinishInputView(finishingInput)
     }

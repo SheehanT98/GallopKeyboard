@@ -285,7 +285,9 @@ sealed class CommitterCall {
     data class CommitText(val text: String) : CommitterCall()
 }
 
-class RecordingImeTextCommitter : ImeTextCommitter({ null }) {
+class RecordingImeTextCommitter(
+    ic: () -> android.view.inputmethod.InputConnection? = { null },
+) : ImeTextCommitter(ic) {
     val calls = mutableListOf<CommitterCall>()
 
     override fun setComposing(text: String) {

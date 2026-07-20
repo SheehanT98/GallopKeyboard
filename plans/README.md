@@ -41,7 +41,7 @@ Read [`../AGENTS.md`](../AGENTS.md) before executing any plan.
 | 030 | Wire SuggestionBar + English dictionary defaults | 10 | P1 | M | Phase 9 on main | DONE |
 | 031 | Stop swipe MOVE full recomposition (`gestureTick`) | 10 | P1 | M | — | DONE |
 | 032 | Swipe dictionary decoder + dwell for doubles | 10 | P1 | M | 030 | TODO |
-| 033 | Async mic permission + pin IC through polish | 10 | P1 | M | 024/027 | TODO |
+| 033 | Async mic permission + pin IC through polish | 10 | P1 | M | 024/027 | DONE |
 
 **Status values**: `TODO` | `IN PROGRESS` | `DONE` | `BLOCKED` | `REJECTED` | `SUPERSEDED`.
 
