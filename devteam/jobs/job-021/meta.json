@@ -7,9 +7,9 @@
   "feature": "Execute plan 031 stop swipe recomposition jank",
   "slug": "execute-plan-031-stop-swipe-recomposition-jank",
   "branch": "cursor/devteam-job-021-execute-plan-031-stop-swipe-recomposition-jank-c1fc",
-  "pr": null,
-  "prNumber": null,
-  "chatTitle": null,
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/50",
+  "prNumber": 50,
+  "chatTitle": "devteam pr50",
   "models": {
     "plan": "cursor-grok-4.5-high",
     "code": "composer-2.5",
