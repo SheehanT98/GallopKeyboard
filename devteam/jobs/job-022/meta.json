@@ -1,6 +1,6 @@
 {
   "id": "job-022",
-  "status": "double_checking",
+  "status": "awaiting_review",
   "mode": "quick",
   "originalAsk": "Execute plan 033 async mic permission and polish ic",
   "planRef": "plans/033-async-mic-permission-and-polish-ic.md",
@@ -18,8 +18,8 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-20T21:57:18.407Z",
-  "lastStatusAt": "2026-07-20T22:34:07.450Z",
-  "completedAt": null,
+  "lastStatusAt": "2026-07-20T22:35:44.595Z",
+  "completedAt": "2026-07-20T22:35:44.594Z",
   "plannedFiles": [
     "plans/README.md",
     "ime/.../panel/SmartVoiceButton.kt",
@@ -60,6 +60,6 @@
     "code": "done",
     "test": "done",
     "review": "done",
-    "doubleCheck": "in_progress"
+    "doubleCheck": "done"
   }
 }
