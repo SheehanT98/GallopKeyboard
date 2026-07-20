@@ -656,3 +656,24 @@ and Settings suggestion defaults, and default the bundled dictionary to English.
 `PersonalDictionary.recordWordTyped` on space commit (no autocorrect) and on
 suggestion bar selection.
 
+## Plan 031 additions
+
+Remove `gestureTick` full-keyboard invalidation on swipe MOVE; drive key
+highlights and accent popup from discrete Compose state that updates only when
+membership or accent selection changes.
+
+### Swipe UI state
+
+| Item | Detail |
+|------|--------|
+| `GestureUiState` | Hoisted `highlightedKeys`, `pressedKey`, `accentPopupKey`, `highlightedAccentIndex` |
+| `SwipeTypingController.snapshotGestureUi()` | Snapshot after pointer mutations; assign only when `!=` previous |
+| `KeyboardView` | No `gestureTick`; `keyBoundsMap` updates via `onCharacterBoundsChanged` only |
+| `KeyRow` / `KeyButton` | Per-key `isSwipeHighlighted` / accent props from `GestureUiState` |
+
+### Manual smoke
+
+Long-press accent strip on a letter key still tracks finger across cells;
+swipe across LETTERS highlights keys without janking the full QWERTY tree on
+every MOVE when the highlight set is unchanged.
+

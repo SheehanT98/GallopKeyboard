@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,7 +82,17 @@ fun KeyboardView(
         columnCoordinates?.size?.width?.toFloat() ?: view.rootView.width.toFloat()
 
     val keyBoundsMap = remember { mutableStateMapOf<KeyDefinition, Rect>() }
-    var gestureTick by remember { mutableIntStateOf(0) }
+    var gestureUi by remember { mutableStateOf(GestureUiState.Empty) }
+
+    fun syncGestureUi() {
+        gestureUiStateIfChanged(gestureUi, swipeController.snapshotGestureUi())?.let { gestureUi = it }
+    }
+
+    fun refreshKeyBounds() {
+        swipeController.updateKeyBounds(
+            keyBoundsMap.map { (key, bounds) -> CharacterKeyBounds(key, bounds) },
+        )
+    }
 
     val currentOnKeyPress = rememberUpdatedState(onKeyPress)
     val currentOnAccentSelected = rememberUpdatedState(onAccentSelected)
@@ -134,13 +143,13 @@ fun KeyboardView(
                                         ?: displayChar?.let(AccentMap::accentsFor)
 
                                     swipeController.onPointerDown(downPosition, hitKey, accentChars)
-                                    gestureTick++
+                                    syncGestureUi()
                                     if (hapticsEnabled) HapticHelper.performKeyHaptic(view)
 
                                     val longPressJob = launch {
                                         delay(400L)
                                         swipeController.onLongPressThreshold()
-                                        gestureTick++
+                                        syncGestureUi()
                                     }
 
                                     var released = false
@@ -148,7 +157,7 @@ fun KeyboardView(
                                         val event = awaitPointerEvent(PointerEventPass.Initial)
                                         val change = event.changes.firstOrNull() ?: continue
                                         swipeController.onPointerMove(change.position)
-                                        gestureTick++
+                                        syncGestureUi()
 
                                         if (swipeController.isSwipeActive || swipeController.shouldShowAccentPopup()) {
                                             change.consume()
@@ -161,10 +170,10 @@ fun KeyboardView(
 
                                     longPressJob.cancel()
                                     val result = swipeController.onPointerUp()
+                                    syncGestureUi()
                                     if (result !is SwipeTypingResult.None) {
                                         downChange.consume()
                                     }
-                                    gestureTick++
                                     commitSwipeResult(result)
                                 }
                             }
@@ -175,14 +184,6 @@ fun KeyboardView(
                 },
             ),
     ) {
-        // gestureTick is read so recomposition happens while a swipe or accent popup is active.
-        @Suppress("UNUSED_VARIABLE")
-        val recompositionTrigger = gestureTick
-
-        swipeController.updateKeyBounds(
-            keyBoundsMap.map { (key, bounds) -> CharacterKeyBounds(key, bounds) },
-        )
-
         rows.forEach { rowKeys ->
             KeyRow(
                 keys = rowKeys,
@@ -194,10 +195,11 @@ fun KeyboardView(
                 onSpaceCursorDrag = onSpaceCursorDrag,
                 hapticsEnabled = hapticsEnabled,
                 externalCharacterGestures = swipeEnabled,
-                swipeController = if (swipeEnabled) swipeController else null,
+                gestureUi = if (swipeEnabled) gestureUi else null,
                 columnCoordinates = columnCoordinates,
                 onCharacterBoundsChanged = { key, bounds ->
                     keyBoundsMap[key] = bounds
+                    refreshKeyBounds()
                 },
             )
         }

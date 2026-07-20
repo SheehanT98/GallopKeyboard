@@ -31,7 +31,7 @@ fun KeyRow(
     onSpaceCursorDrag: (Int) -> Unit = {},
     hapticsEnabled: Boolean = true,
     externalCharacterGestures: Boolean = false,
-    swipeController: SwipeTypingController? = null,
+    gestureUi: GestureUiState? = null,
     columnCoordinates: LayoutCoordinates? = null,
     onCharacterBoundsChanged: (KeyDefinition, Rect) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
@@ -68,10 +68,11 @@ fun KeyRow(
                 onAccentSelected = onAccentSelected,
                 hapticsEnabled = hapticsEnabled,
                 externalGesturesEnabled = useExternalGestures,
-                isExternallyPressed = swipeController?.isPressedKey(key) == true,
-                isSwipeHighlighted = swipeController?.isKeyHighlighted(key) == true,
-                showAccentPopupOverride = swipeController?.accentPopupKey() == key,
-                highlightedAccentIndexOverride = swipeController?.highlightedAccentIndex(),
+                isExternallyPressed = gestureUi?.pressedKey == key,
+                isSwipeHighlighted = gestureUi?.highlightedKeys?.contains(key) == true,
+                showAccentPopupOverride = gestureUi?.accentPopupKey == key,
+                highlightedAccentIndexOverride =
+                    if (gestureUi?.accentPopupKey == key) gestureUi.highlightedAccentIndex else null,
                 modifier = Modifier
                     .weight(key.widthMultiplier)
                     .then(

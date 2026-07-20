@@ -1,0 +1,59 @@
+{
+  "id": "job-021",
+  "status": "awaiting_review",
+  "mode": "quick",
+  "originalAsk": "Execute plan 031 stop swipe recomposition jank",
+  "planRef": "plans/031-stop-swipe-recomposition-jank.md",
+  "feature": "Execute plan 031 stop swipe recomposition jank",
+  "slug": "execute-plan-031-stop-swipe-recomposition-jank",
+  "branch": "cursor/devteam-job-021-execute-plan-031-stop-swipe-recomposition-jank-c1fc",
+  "pr": "https://github.com/SheehanT98/GallopKeyboard/pull/50",
+  "prNumber": 50,
+  "chatTitle": "devteam pr50",
+  "models": {
+    "plan": "cursor-grok-4.5-high",
+    "code": "composer-2.5",
+    "test": "composer-2.5",
+    "review": "cursor-grok-4.5-high",
+    "doubleCheck": "composer-2.5"
+  },
+  "startedAt": "2026-07-20T21:57:18.179Z",
+  "lastStatusAt": "2026-07-20T22:20:43.070Z",
+  "completedAt": "2026-07-20T22:20:43.069Z",
+  "plannedFiles": [
+    "plans/README.md",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/KeyboardView.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/KeyRow.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/KeyButton.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/SwipeTypingController.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/GestureUiState.kt",
+    "ime/src/test/java/com/gallopkeyboard/ime/ui/GestureUiStateTest.kt",
+    "docs/dictus-inventory.md"
+  ],
+  "touchedFiles": [
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/GestureUiState.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/KeyboardView.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/KeyRow.kt",
+    "ime/src/main/java/com/gallopkeyboard/ime/ui/SwipeTypingController.kt",
+    "ime/src/test/java/com/gallopkeyboard/ime/ui/GestureUiStateTest.kt",
+    "docs/dictus-inventory.md",
+    "plans/README.md"
+  ],
+  "blockedBy": [],
+  "dependsOn": [
+    "job-020"
+  ],
+  "revisionNotes": [],
+  "retryCounts": {
+    "test": 0,
+    "doubleCheck": 0
+  },
+  "notifiedAt": null,
+  "stages": {
+    "plan": "skipped",
+    "code": "done",
+    "test": "done",
+    "review": "done",
+    "doubleCheck": "done"
+  }
+}
