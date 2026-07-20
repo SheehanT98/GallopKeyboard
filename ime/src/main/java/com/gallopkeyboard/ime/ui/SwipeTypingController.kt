@@ -132,6 +132,14 @@ class SwipeTypingController(
 
     fun accentPopupKey(): KeyDefinition? = if (accentPopupVisible) downKey else null
 
+    /** Snapshot for Compose; call after controller mutations and assign only when changed. */
+    fun snapshotGestureUi(): GestureUiState = GestureUiState(
+        highlightedKeys = if (swipeActive) pathKeys.toSet() else emptySet(),
+        pressedKey = if (!swipeActive && !accentPopupVisible) downKey else null,
+        accentPopupKey = if (accentPopupVisible) downKey else null,
+        highlightedAccentIndex = highlightedAccentIndex,
+    )
+
     private fun appendKey(key: KeyDefinition) {
         if (key.type != KeyType.CHARACTER) return
         if (pathKeys.isEmpty() || pathKeys.last() != key) {
