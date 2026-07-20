@@ -4,14 +4,14 @@ Job-based pipeline for GallopKeyboard: no active-job cap; jobs queue only for de
 
 ## Dashboard
 
-**Active agent jobs:** 1
+**Active agent jobs:** 0
 **Queued:** 0
 **Awaiting your review:** 9
 | Job | Status | Feature | Branch | PR | Review |
 |-----|--------|---------|--------|-----|--------|
 | job-020 | awaiting_review | Wire SuggestionBar + English dictionary defaults | `cursor/devteam-job-020-execute-plan-030-wire-suggestion-bar-english-def-c1fc` | #49 | [04-review.md](jobs/job-020/04-review.md) |
 | job-023 | conflict_hold | Execute plan 032 swipe dictionary decoder and dwell | `cursor/devteam-job-023-execute-plan-032-swipe-dictionary-decoder-and-dw-c1fc` | — | — |
-| job-022 | reviewing | Execute plan 033 async mic permission and polish ic | `cursor/devteam-job-022-execute-plan-033-async-mic-permission-and-polish-c1fc` | #51 | — |
+| job-022 | double_checking | Execute plan 033 async mic permission and polish ic | `cursor/devteam-job-022-execute-plan-033-async-mic-permission-and-polish-c1fc` | #51 | — |
 | job-021 | awaiting_review | Execute plan 031 stop swipe recomposition jank | `cursor/devteam-job-021-execute-plan-031-stop-swipe-recomposition-jank-c1fc` | #50 | [04-review.md](jobs/job-021/04-review.md) |
 | job-019 | awaiting_review | Execute plan 017 fix accent popup commit and geometry | `cursor/devteam-job-019-execute-plan-017-fix-accent-popup-commit-and-geo-c1fc` | #42 | [04-review.md](jobs/job-019/04-review.md) |
 | job-018 | awaiting_review | Execute plan 016 voice dispose cancel and unify mic | `cursor/devteam-job-018-execute-plan-016-voice-dispose-cancel-and-unify--c1fc` | #41 | [04-review.md](jobs/job-018/04-review.md) |
