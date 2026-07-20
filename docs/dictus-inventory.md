@@ -458,3 +458,34 @@ per-cell `clickable` commit.
 
 - `ACCENT_CELL_WIDTH_DP = 44.dp` — must stay in sync with `AccentPopup` cell `size`.
 
+## Plan 024 additions
+
+Keep voice stop/polish alive after leaving the voice panel; blank polish must not
+wipe streaming partials; late ASR frames after stop/cancel must not toast failure.
+
+### Product decision
+
+`onSessionStop` (streaming finalize + Whisper polish) runs on process-lifetime
+`voiceStopScope`, not Compose `rememberCoroutineScope`, so panel switch / IME hide
+does not cancel mid-polish. Dispose mid-recording still cancels; dispose mid-stop
+does not. Successful polish runs through `TextPostProcessor` (same as
+`DictationService`); empty/blank polish finishes composing instead of
+`commitText("")`.
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../panel/VoiceSessionCleanup.kt` | `voiceStopScope`, `shouldCancelRecordingOnDispose` |
+| `ime/.../panel/SmartVoiceButton.kt` | `stoppingJob` on `sessionScope`; dispose keeps mid-stop |
+| `ime/.../asr/PolishingTranscriber.kt` | `TextPostProcessor`; blank → `clearComposing` |
+| `ime/.../asr/StreamingTranscriber.kt` | `sessionEpoch` late-frame guard |
+| `ime/src/test/.../panel/VoiceSessionCleanupTest.kt` | Dispose cancel vs keep policy |
+| `ime/src/test/.../asr/PolishingTranscriberTest.kt` | Empty polish + post-processor |
+| `ime/src/test/.../asr/StreamingTranscriberTest.kt` | Late frame after stop → no toast |
+
+### Manual test
+
+Release mic → immediately tap keyboard icon → polish must still replace composing
+text in Notes/WhatsApp. Empty Whisper result must leave streaming partial committed.
+

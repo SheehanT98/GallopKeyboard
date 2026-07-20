@@ -2,6 +2,7 @@ package com.gallopkeyboard.ime.asr
 
 import android.util.Log
 import com.gallopkeyboard.core.flags.Flags
+import com.gallopkeyboard.core.whisper.TextPostProcessor
 import com.gallopkeyboard.ime.audio.AudioSession
 import com.gallopkeyboard.ime.audio.Transcriber
 import com.gallopkeyboard.whisper.AsrPolishEngine
@@ -59,10 +60,11 @@ class PolishingTranscriber @Inject constructor(
             null
         }
 
-        if (polished != null) {
-            committer.commitText(polished)
-        } else {
-            committer.clearComposing()
+        // Empty / blank polish must not wipe the streaming partial via commitText("").
+        val processed = polished?.let { TextPostProcessor.process(it) }.orEmpty()
+        when {
+            processed.isNotEmpty() -> committer.commitText(processed)
+            else -> committer.clearComposing() // finish composing → keep last partial
         }
         lifecycleManager.onSessionStopped()
     }

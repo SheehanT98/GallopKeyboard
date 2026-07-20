@@ -42,12 +42,20 @@ class StreamingTranscriber @Inject constructor(
     private var frameCount = 0
     private var lastPartial = ""
 
+    /** Bumped on start/stop/cancel so late frame jobs exit silently. */
+    @Volatile
+    private var sessionEpoch = 0
+
     override fun onSessionStart(session: AudioSession) {
+        sessionEpoch++
+        val epoch = sessionEpoch
         frameCount = 0
         lastPartial = ""
         asrScope.launch {
+            if (epoch != sessionEpoch) return@launch
             try {
                 engine.beginStream()
+                if (epoch != sessionEpoch) return@launch
                 promptState.dismissBanner()
                 setComposingOnMain("")
             } catch (e: AsrModelMissingException) {
@@ -55,6 +63,7 @@ class StreamingTranscriber @Inject constructor(
                 promptState.showBanner()
                 showToast(R.string.asr_models_missing)
             } catch (e: Exception) {
+                if (epoch != sessionEpoch) return@launch
                 Log.e(TAG, "session start failed", e)
                 clearComposingOnMain()
                 showToast(R.string.asr_recognition_failed)
@@ -63,19 +72,28 @@ class StreamingTranscriber @Inject constructor(
     }
 
     override fun onAudioFrame(session: AudioSession, frame: ShortArray) {
+        val epoch = sessionEpoch
         val frameCopy = frame.copyOf()
         asrScope.launch {
+            if (epoch != sessionEpoch) return@launch
             try {
                 engine.acceptFrame(frameCopy)
+                if (epoch != sessionEpoch) return@launch
                 frameCount++
                 if (frameCount % PARTIAL_POLL_INTERVAL_FRAMES == 0) {
                     val partial = engine.currentPartial()
+                    if (epoch != sessionEpoch) return@launch
                     if (partial != lastPartial) {
                         lastPartial = partial
                         setComposingOnMain(partial)
                     }
                 }
+            } catch (e: IllegalStateException) {
+                // Late frame after finalize/cancel — "No active stream" etc.
+                if (epoch != sessionEpoch) return@launch
+                Log.w(TAG, "frame after session end: ${e.message}")
             } catch (e: Exception) {
+                if (epoch != sessionEpoch) return@launch
                 Log.e(TAG, "frame processing failed", e)
                 clearComposingOnMain()
                 showToast(R.string.asr_recognition_failed)
@@ -84,6 +102,7 @@ class StreamingTranscriber @Inject constructor(
     }
 
     override suspend fun onSessionStop(session: AudioSession) {
+        sessionEpoch++
         withContext(asrDispatcher.dispatcher) {
             try {
                 val finalText = engine.finalize()
@@ -102,6 +121,7 @@ class StreamingTranscriber @Inject constructor(
     }
 
     override fun onSessionCancel(session: AudioSession) {
+        sessionEpoch++
         runBlocking(asrDispatcher.dispatcher) {
             try {
                 engine.cancel()

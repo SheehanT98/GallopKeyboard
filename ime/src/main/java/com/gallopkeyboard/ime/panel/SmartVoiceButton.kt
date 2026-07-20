@@ -53,6 +53,7 @@ import com.gallopkeyboard.ime.audio.RING_BUFFER_CAPACITY_BYTES
 import com.gallopkeyboard.ime.audio.RingByteBuffer
 import com.gallopkeyboard.ime.audio.Transcriber
 import com.gallopkeyboard.ime.theme.GallopColors
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -74,6 +75,8 @@ fun SmartVoiceButton(
     permissionRequester: PermissionRequester,
     modifier: Modifier = Modifier,
     style: SmartVoiceButtonStyle = SmartVoiceButtonStyle.Panel,
+    /** Outlives this composable so stop/polish survives panel leave. */
+    sessionScope: CoroutineScope = voiceStopScope,
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -83,6 +86,7 @@ fun SmartVoiceButton(
     var visualRecording by remember { mutableStateOf(false) }
     var activeSession by remember { mutableStateOf<AudioSession?>(null) }
     var recordingJob by remember { mutableStateOf<Job?>(null) }
+    var stoppingJob by remember { mutableStateOf<Job?>(null) }
     var holdTimerJob by remember { mutableStateOf<Job?>(null) }
     var pointerPressed by remember { mutableStateOf(false) }
 
@@ -127,13 +131,16 @@ fun SmartVoiceButton(
                 activeSession = null
                 if (session != null) {
                     session.stoppedAtElapsedMs = SystemClock.elapsedRealtime()
-                    scope.launch { transcriber.onSessionStop(session) }
+                    // Launch on sessionScope so polish survives SmartVoiceButton dispose.
+                    stoppingJob = sessionScope.launch { transcriber.onSessionStop(session) }
                 }
             },
             onSessionCancel = {
                 visualRecording = false
                 recordingJob?.cancel()
                 recordingJob = null
+                stoppingJob?.cancel()
+                stoppingJob = null
                 activeSession = cancelActiveSession(transcriber, activeSession)
             },
         )
@@ -145,7 +152,15 @@ fun SmartVoiceButton(
             recordingJob = null
             holdTimerJob?.cancel()
             visualRecording = false
-            activeSession = cancelActiveSession(transcriber, activeSession)
+            // Mid-recording → cancel. Mid-stop/polish → let stoppingJob finish.
+            if (shouldCancelRecordingOnDispose(
+                    recordingSessionActive = activeSession != null,
+                    stoppingJobActive = stoppingJob?.isActive == true,
+                )
+            ) {
+                activeSession = cancelActiveSession(transcriber, activeSession)
+            }
+            // Do not cancel stoppingJob — polish must outlive panel leave.
             fsm.reset()
         }
     }
