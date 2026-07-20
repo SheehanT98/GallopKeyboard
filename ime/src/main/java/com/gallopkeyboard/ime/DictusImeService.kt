@@ -1,14 +1,7 @@
 package com.gallopkeyboard.ime
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
-import android.content.pm.PackageManager
-import android.os.IBinder
 import android.view.KeyEvent
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import dagger.hilt.android.EntryPointAccessors
@@ -16,19 +9,12 @@ import com.gallopkeyboard.core.log.CrashHandler
 import com.gallopkeyboard.core.models.ModelInstaller
 import com.gallopkeyboard.core.models.ModelRegistry
 import com.gallopkeyboard.core.preferences.PreferenceKeys
-import com.gallopkeyboard.core.service.DictationController
-import com.gallopkeyboard.core.service.DictationState
-import com.gallopkeyboard.core.theme.DictusTheme
 import com.gallopkeyboard.core.theme.ThemeMode
-import com.gallopkeyboard.core.ui.WaveformDriver
 import com.gallopkeyboard.ime.di.DictusImeEntryPoint
 import com.gallopkeyboard.ime.suggestion.DictionaryEngine
 import com.gallopkeyboard.ime.suggestion.SuggestionEngine
 import com.gallopkeyboard.ime.ui.KeyboardScreen
-import com.gallopkeyboard.ime.ui.RecordingScreen
-import com.gallopkeyboard.ime.ui.TranscribingScreen
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,37 +26,23 @@ import com.gallopkeyboard.ime.panel.PanelController
 import com.gallopkeyboard.ime.panel.PanelHost
 import com.gallopkeyboard.ime.panel.PanelState
 import com.gallopkeyboard.ime.panel.VoicePanelDependencies
-import com.gallopkeyboard.ime.asr.InputConnectionSupplier
 import com.gallopkeyboard.ime.clipboard.ClipboardStore
 import com.gallopkeyboard.ime.clipboard.ClipboardWatcher
 import com.gallopkeyboard.ime.clipboard.PinnedClipboardStore
 import com.gallopkeyboard.ime.model.KeyboardLayer
 
 /**
- * Main IME service for Dictus keyboard.
+ * Main IME service for GallopKeyboard.
  *
  * Extends LifecycleInputMethodService to get Compose lifecycle wiring.
  * Uses Hilt EntryPointAccessors (not @AndroidEntryPoint) because
  * InputMethodService is not supported by Hilt's standard injection.
  *
- * Binds to DictationService (in the app module) via ServiceConnection to
- * observe dictation state and control recording. The binding uses an explicit
- * component name because the ime module cannot reference the app module's
- * classes at compile time. The binder exposes a DictationController interface
- * (defined in core) for type-safe access.
- *
- * WHY component name binding: The ime module depends on core but not on app
- * (app depends on ime, so the reverse would be circular). By binding with an
- * explicit ComponentName and casting the binder to access the DictationController
- * interface, we avoid the circular dependency while keeping type safety.
+ * Voice dictation uses the hybrid PanelHost path (SmartVoiceButton +
+ * PolishingTranscriber). This service does not bind DictationService —
+ * that foreground service remains for companion-app test recording only.
  */
 class DictusImeService : LifecycleInputMethodService() {
-
-    companion object {
-        /** Fully-qualified class name of DictationService in the app module. */
-        private const val DICTATION_SERVICE_CLASS =
-            "com.gallopkeyboard.service.DictationService"
-    }
 
     private val entryPoint: DictusImeEntryPoint by lazy {
         EntryPointAccessors.fromApplication(
@@ -79,15 +51,7 @@ class DictusImeService : LifecycleInputMethodService() {
         )
     }
 
-    // Service binding state
-    private var dictationController: DictationController? = null
-    private var isBound = false
-    private var stateCollectionJob: Job? = null
     private val bindingScope = MainScope()
-
-    // Local mirror of the DictationService state, observed by Compose via collectAsState().
-    // This MutableStateFlow is updated by collecting the service's StateFlow after binding.
-    private val _serviceState = MutableStateFlow<DictationState>(DictationState.Idle)
 
     private val panelController = PanelController()
 
@@ -120,54 +84,12 @@ class DictusImeService : LifecycleInputMethodService() {
     private val _currentWord = MutableStateFlow("")
     private val _suggestions = MutableStateFlow<List<String>>(emptyList())
 
-    // Waveform animation driver: smooths raw microphone energy for organic bar movement.
-    // smoothingFactor=0.3 (fast rise) and decayFactor=0.85 (slow fall) match iOS BrandWaveformDriver.
-    private val waveformDriver = WaveformDriver()
-
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-            // The binder is a DictationService.LocalBinder. We use getDeclaredMethod
-            // to call getService() which returns a DictationService that implements
-            // DictationController. This avoids compile-time dependency on the app module.
-            try {
-                val getServiceMethod = binder?.javaClass?.getMethod("getService")
-                val service = getServiceMethod?.invoke(binder)
-                if (service is DictationController) {
-                    dictationController = service
-                    isBound = true
-                    Timber.d("Bound to DictationService")
-
-                    // Observe service state and mirror to local flow
-                    stateCollectionJob = bindingScope.launch {
-                        service.state.collect { state ->
-                            _serviceState.value = state
-                        }
-                    }
-                } else {
-                    Timber.w("DictationService binder does not implement DictationController")
-                }
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to bind to DictationService")
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            dictationController = null
-            isBound = false
-            stateCollectionJob?.cancel()
-            stateCollectionJob = null
-            _serviceState.value = DictationState.Idle
-            Timber.d("Unbound from DictationService")
-        }
-    }
-
     override fun onCreate() {
         super.onCreate()
         CrashHandler.install(this)
         Timber.d("DictusImeService created")
         clipboardWatcher = ClipboardWatcher(applicationContext, clipboardStore)
         clipboardWatcher.start()
-        bindDictationService()
 
         val installer = ModelInstaller(applicationContext)
         if (!installer.areFilesPresent(ModelRegistry.defaultVoiceBundle)) {
@@ -193,11 +115,6 @@ class DictusImeService : LifecycleInputMethodService() {
     override fun onDestroy() {
         if (::clipboardWatcher.isInitialized) {
             clipboardWatcher.stop()
-        }
-        stateCollectionJob?.cancel()
-        if (isBound) {
-            unbindService(serviceConnection)
-            isBound = false
         }
         bindingScope.cancel()
         super.onDestroy()
@@ -282,60 +199,8 @@ class DictusImeService : LifecycleInputMethodService() {
         }
     }
 
-    /**
-     * Bind to DictationService using explicit component name.
-     *
-     * BIND_AUTO_CREATE ensures the service is created if not already running.
-     * The service runs in the same process as the IME, so local binding
-     * gives direct object access with zero IPC overhead.
-     */
-    private fun bindDictationService() {
-        val intent = Intent().apply {
-            component = ComponentName(packageName, DICTATION_SERVICE_CLASS)
-        }
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-    }
-
-    /**
-     * Handle mic button tap: start or stop recording.
-     *
-     * When idle, checks RECORD_AUDIO permission and delegates to the bound
-     * controller which starts the foreground service and audio capture.
-     * When recording, stops and returns to idle.
-     */
-    private fun handleMicTap() {
-        Timber.d("handleMicTap called, state=%s, bound=%s", _serviceState.value, isBound)
-        val controller = dictationController
-        if (controller == null) {
-            Timber.w("DictationService not bound, cannot toggle recording")
-            return
-        }
-
-        when (_serviceState.value) {
-            is DictationState.Idle -> {
-                if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
-                    != PackageManager.PERMISSION_GRANTED
-                ) {
-                    Timber.w("RECORD_AUDIO permission not granted")
-                    return
-                }
-                controller.startRecording()
-                Timber.d("Recording started via mic tap")
-            }
-            is DictationState.Recording -> {
-                controller.stopRecording()
-                Timber.d("Recording stopped via mic tap")
-            }
-            is DictationState.Transcribing -> {
-                // Ignore mic taps during transcription -- user must wait.
-                Timber.d("Mic tap ignored during transcription")
-            }
-        }
-    }
-
     @Composable
     override fun KeyboardContent() {
-        val dictationState by _serviceState.collectAsState()
         val isEmojiPickerOpen by _isEmojiPickerOpen.collectAsState()
 
         // Read theme preference from DataStore and map to ThemeMode.
@@ -373,12 +238,6 @@ class DictusImeService : LifecycleInputMethodService() {
         val clipboardItems by clipboardStore.itemsFlow.collectAsState()
         val pinnedClipboardEntries by pinnedClipboardStore.entriesFlow.collectAsState()
 
-        val switchKeyboard = {
-            val imm = getSystemService(INPUT_METHOD_SERVICE)
-                as android.view.inputmethod.InputMethodManager
-            imm.showInputMethodPicker()
-        }
-
         PanelHost(
             controller = panelController,
             themeMode = themeMode,
@@ -397,85 +256,23 @@ class DictusImeService : LifecycleInputMethodService() {
             onClipboardTogglePin = { text -> pinnedClipboardStore.togglePin(text) },
             isClipboardPinned = { text -> pinnedClipboardStore.isPinned(text) },
         ) {
-            when (dictationState) {
-                is DictationState.Idle -> {
-                    KeyboardScreen(
-                        onCommitText = { text -> commitText(text) },
-                        onDeleteBackward = { deleteBackward() },
-                        onSendReturn = { sendReturnKey() },
-                        onVoicePanelToggle = panelController::showVoice,
-                        onClipboardPanelToggle = panelController::showClipboard,
-                        onMicTap = panelController::showVoice,
-                        isEmojiPickerOpen = isEmojiPickerOpen,
-                        onEmojiToggle = { _isEmojiPickerOpen.value = !_isEmojiPickerOpen.value },
-                        onEmojiSelected = { emoji -> commitText(emoji) },
-                        themeMode = themeMode,
-                        initialLayer = initialLayer,
-                        hapticsEnabled = hapticsEnabled,
-                        keyboardLayout = keyboardLayout,
-                        clipboardItems = clipboardItems,
-                        clipboardStore = clipboardStore,
-                    )
-                }
-                is DictationState.Recording -> {
-                    val recording = dictationState as DictationState.Recording
-
-                    // Feed raw energy into the driver so it has up-to-date targets.
-                    waveformDriver.update(recording.energy)
-
-                    // Run the per-frame animation loop. LaunchedEffect(Unit) starts it when
-                    // the Recording composable enters composition and cancels automatically
-                    // when it leaves (i.e. when state transitions away from Recording).
-                    LaunchedEffect(Unit) {
-                        waveformDriver.runLoop()
-                    }
-
-                    // Collect the smoothed display levels for WaveformBars.
-                    val smoothedEnergy by waveformDriver.displayLevels.collectAsState()
-
-                    // Wrap in DictusTheme so MaterialTheme.colorScheme.background
-                    // resolves to the Dictus brand colors instead of Material 3 defaults
-                    // (which have a pinkish/rose tint).
-                    DictusTheme(themeMode = themeMode) {
-                        RecordingScreen(
-                            elapsedMs = recording.elapsedMs,
-                            energy = smoothedEnergy,
-                            onCancel = {
-                                dictationController?.cancelRecording()
-                                Timber.d("Recording cancelled")
-                            },
-                            onConfirm = {
-                                val controller = dictationController
-                                if (controller != null) {
-                                    bindingScope.launch {
-                                        val text = controller.confirmAndTranscribe()
-                                        if (text != null) {
-                                            commitText(text)
-                                            Timber.d("Transcribed text inserted: '%s'", text)
-                                            // Clear suggestions after voice transcription so the bar
-                                            // does not show stale suggestions from the last typed word.
-                                            // Suggestions resume when user types on keyboard.
-                                            _suggestions.value = emptyList()
-                                            _currentWord.value = ""
-                                        } else {
-                                            Timber.w("Transcription returned null (failed or empty)")
-                                        }
-                                    }
-                                }
-                            },
-                            onSwitchKeyboard = switchKeyboard,
-                            onMicTap = { handleMicTap() },
-                        )
-                    }
-                }
-                is DictationState.Transcribing -> {
-                    // Wrap in DictusTheme so MaterialTheme.colorScheme.background
-                    // resolves to the Dictus brand colors instead of Material 3 defaults.
-                    DictusTheme(themeMode = themeMode) {
-                        TranscribingScreen()
-                    }
-                }
-            }
+            KeyboardScreen(
+                onCommitText = { text -> commitText(text) },
+                onDeleteBackward = { deleteBackward() },
+                onSendReturn = { sendReturnKey() },
+                onVoicePanelToggle = panelController::showVoice,
+                onClipboardPanelToggle = panelController::showClipboard,
+                onMicTap = panelController::showVoice,
+                isEmojiPickerOpen = isEmojiPickerOpen,
+                onEmojiToggle = { _isEmojiPickerOpen.value = !_isEmojiPickerOpen.value },
+                onEmojiSelected = { emoji -> commitText(emoji) },
+                themeMode = themeMode,
+                initialLayer = initialLayer,
+                hapticsEnabled = hapticsEnabled,
+                keyboardLayout = keyboardLayout,
+                clipboardItems = clipboardItems,
+                clipboardStore = clipboardStore,
+            )
         }
     }
 

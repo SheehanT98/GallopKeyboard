@@ -21,6 +21,17 @@ expected size). It does **not** re-hash ~220 MB every time. Full SHA-256
 verification runs at most once per day on IME start (`verifyInstalledIfDue`)
 and in the Voice models settings screen.
 
+## Companion DictationService vs IME voice
+
+The companion app’s `DictationService` (onboarding / in-app test recording)
+does **not** drive the IME keyboard UI. Starting that service while an editor
+is focused leaves the IME on QWERTY / hybrid voice panel — it will not blank
+the keyboard under legacy `RecordingScreen` / `TranscribingScreen`.
+
+IME mic / Voice toolbar uses the hybrid panel path only. Transcripts from
+companion test recording appear in the app UI (and DataStore), not via IME
+`InputConnection` insertion from the service overlay.
+
 
 Release and debug APKs ship **arm64-v8a only** to keep the install size smaller.
 32-bit-only devices are not supported in v1. Galaxy S22 and other modern phones

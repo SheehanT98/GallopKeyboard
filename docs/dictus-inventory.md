@@ -458,3 +458,30 @@ per-cell `clickable` commit.
 
 - `ACCENT_CELL_WIDTH_DP = 44.dp` — must stay in sync with `AccentPopup` cell `size`.
 
+## Plan 028 additions
+
+Stop IME from mirroring companion `DictationService` recording UI.
+
+### Product decision
+
+IME dictation is **hybrid-only** (`PanelHost` + `SmartVoiceButton` +
+`PolishingTranscriber`). `DictusImeService` no longer binds `DictationService`
+and never swaps the typing/voice panel for legacy `RecordingScreen` /
+`TranscribingScreen` when the companion service is Recording/Transcribing.
+
+`DictationService` remains for companion-app / onboarding test recording
+(`MainActivity` binds it; results stay in the app UI / DataStore).
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../DictusImeService.kt` | Remove service bind/unbind, `ServiceConnection`, `_serviceState`, `handleMicTap`; always show `KeyboardScreen` inside `PanelHost` |
+| `docs/limitations.md` | Document companion-vs-IME recording separation |
+
+### Manual smoke
+
+Start companion-app test recording while Notes (or another editor) is focused
+with GallopKeyboard open → keyboard stays QWERTY / hybrid voice panel; does
+**not** show legacy IME `RecordingScreen`.
+
