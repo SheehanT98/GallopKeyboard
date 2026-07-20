@@ -1,6 +1,6 @@
 {
   "id": "job-021",
-  "status": "double_checking",
+  "status": "awaiting_review",
   "mode": "quick",
   "originalAsk": "Execute plan 031 stop swipe recomposition jank",
   "planRef": "plans/031-stop-swipe-recomposition-jank.md",
@@ -18,8 +18,8 @@
     "doubleCheck": "composer-2.5"
   },
   "startedAt": "2026-07-20T21:57:18.179Z",
-  "lastStatusAt": "2026-07-20T22:19:24.621Z",
-  "completedAt": null,
+  "lastStatusAt": "2026-07-20T22:20:43.070Z",
+  "completedAt": "2026-07-20T22:20:43.069Z",
   "plannedFiles": [
     "plans/README.md",
     "ime/src/main/java/com/gallopkeyboard/ime/ui/KeyboardView.kt",
@@ -54,6 +54,6 @@
     "code": "done",
     "test": "done",
     "review": "done",
-    "doubleCheck": "in_progress"
+    "doubleCheck": "done"
   }
 }
