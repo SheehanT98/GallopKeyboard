@@ -140,3 +140,21 @@ like Gboard**, **optional autocorrect**, **keep recording off the UI thread**,
 and **stop the legacy DictationService overlay from hijacking the IME**.
 On reconcile: verify 019–023 code actually exists on HEAD; if not, execute
 Phase 8 before Phase 9.
+
+## Execute results (2026-07-20)
+
+`/improve execute` dispatched isolated worktree executors; advisor reviewed
+diffs + re-ran done criteria. **Code was not merged into `main`** — merge is
+owner decision.
+
+| Plan | Verdict | Worktree | Branch | HEAD |
+|------|---------|----------|--------|------|
+| 024 | APPROVE | `/tmp/plan-024-wt` | `advisor/024-voice-stop-outlives-panel` | `75ea90c` |
+| 025 | APPROVE | `/tmp/plan-025-wt` | `advisor/025-editing-cursor-and-delete` | `b1cbc2f` |
+| 026 | APPROVE | `/tmp/plan-026-wt` | `advisor/026-autocorrect-on-space-spike` | `aab29cc` (based on 025) |
+| 027 | APPROVE | `/tmp/plan-027-wt` | `advisor/027-voice-pcm-and-frame-backpressure` | `6935b2c` (based on 024; + Compose pulse fix) |
+| 028 | APPROVE | `/tmp/plan-028-wt` | `advisor/028-ime-detach-dictation-service-ui` | `c7c60d4` |
+
+Suggested merge order into product branch: **024 → 027**, **025 → 026**,
+**028** anytime (independent). Expect conflicts in `DictusImeService.kt` /
+`docs/dictus-inventory.md` when combining all five.
