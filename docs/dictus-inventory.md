@@ -458,3 +458,29 @@ per-cell `clickable` commit.
 
 - `ACCENT_CELL_WIDTH_DP = 44.dp` — must stay in sync with `AccentPopup` cell `size`.
 
+## Plan 025 additions
+
+Code-point delete, space-bar cursor drag, and accelerated word delete on long-hold.
+
+### Files added
+
+| Path | Role |
+|------|------|
+| `ime/.../EditorEditHelpers.kt` | Pure helpers: `countCharsToDeleteForWord`, `deleteMode`, `cursorOffsetAfterDrag` |
+| `ime/src/test/.../EditorEditHelpersTest.kt` | Unit tests (ASCII word delete, surrogate emoji UTF-16 lengths, delete-mode policy, cursor clamp) |
+
+### Files edited
+
+| Path | Change |
+|------|--------|
+| `ime/.../DictusImeService.kt` | `deleteBackward` prefers `deleteSurroundingTextInCodePoints`; adds `deleteBackwardWord`, `moveCursor` |
+| `ime/.../ui/KeyboardScreen.kt` | Wires `onDeleteBackwardWord`, `onSpaceCursorDrag` |
+| `ime/.../ui/KeyboardView.kt` / `KeyRow.kt` | Pass delete-word + space-drag callbacks to keys |
+| `ime/.../ui/KeyButton.kt` | DELETE accelerates to word after ~8 repeats or 900 ms; SPACE horizontal drag moves cursor (KeyButton-local; not swipe layer) |
+
+### Behavior notes
+
+- Word-delete length uses Java `String.length` (UTF-16) to match `deleteSurroundingText`.
+- Space drag does not commit spaces; tap / double-tap → `. ` still uses release-without-drag.
+- SPACE stays outside Plan 013 character swipe hit-testing (`KeyType.CHARACTER` only).
+

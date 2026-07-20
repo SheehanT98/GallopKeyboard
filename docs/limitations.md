@@ -25,3 +25,11 @@ and in the Voice models settings screen.
 Release and debug APKs ship **arm64-v8a only** to keep the install size smaller.
 32-bit-only devices are not supported in v1. Galaxy S22 and other modern phones
 are arm64.
+
+## Space-bar cursor drag (`setSelection`)
+
+Horizontal drag on the space bar moves the cursor via
+`InputConnection.setSelection`. Native editors (Gmail compose, Samsung Notes,
+most `EditText`s) honor this. Some WebViews and browser URL/omnibox fields
+ignore or partially apply `setSelection`; the feature remains enabled for native
+editors — we do not synthesize key-event cursor hacks as a workaround.
